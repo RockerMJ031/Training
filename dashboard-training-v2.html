@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Designing Dashboards · Implementation · Purple Ruler v2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: #130826; color: #FFFFFF;
+    font-family: Calibri, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased; }
+
+  /* === Decorative circles (matches 0423 PPT) === */
+  body::before { content: ''; position: fixed; top: -180px; right: -180px; width: 460px; height: 460px; border-radius: 50%; background: radial-gradient(circle, rgba(139, 92, 246, 0.18), transparent 70%); z-index: 0; pointer-events: none; }
+  body::after { content: ''; position: fixed; bottom: -160px; left: -160px; width: 360px; height: 360px; border-radius: 50%; background: radial-gradient(circle, rgba(45, 22, 84, 0.7), transparent 70%); z-index: 0; pointer-events: none; }
+
+  /* === Deck framework === */
+  .deck { position: relative; width: 100vw; height: 100vh; z-index: 1; }
+  .slide { position: absolute; inset: 0; padding: 5vh 5vw 8vh; opacity: 0; pointer-events: none;
+    transition: opacity 240ms ease; display: flex; flex-direction: column; overflow-y: auto; }
+  .slide.active { opacity: 1; pointer-events: auto; }
+  .slide::-webkit-scrollbar { width: 6px; } .slide::-webkit-scrollbar-thumb { background: #3B1F6A; border-radius: 3px; }
+
+  /* === Top brand strip (replaces time chip) === */
+  .meta { display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; color: #C4B5FD; letter-spacing: .25em; margin-bottom: 4vh; flex-shrink: 0; text-transform: uppercase; }
+  .meta .brand { font-weight: 600; }
+  .meta .section-name { color: #8B7BB5; letter-spacing: .15em; }
+
+  /* === Typography === */
+  h1 { font-size: 56px; font-weight: 700; letter-spacing: -.005em; line-height: 1.1; margin-bottom: 14px; color: #FFFFFF; }
+  h1 .accent { color: #C4B5FD; }
+  h2 { font-size: 36px; font-weight: 700; letter-spacing: -.005em; line-height: 1.2; margin-bottom: 10px; display: flex; align-items: baseline; gap: 18px; color: #FFFFFF; }
+  h2 .num { color: #4A3878; font-variant-numeric: tabular-nums; font-weight: 500; }
+  h2 .accent { color: #C4B5FD; }
+  h3 { font-size: 16px; font-weight: 700; color: #C4B5FD; letter-spacing: .12em; text-transform: uppercase; margin: 16px 0 12px; }
+  .gold-divider { width: 80px; height: 3px; background: #D4AF37; border-radius: 2px; margin: 0 0 18px; }
+  .subtitle { font-size: 22px; color: #D4C8F0; font-weight: 400; margin-bottom: 4vh; line-height: 1.4; }
+  .lead { font-size: 17px; color: #C4B5FD; line-height: 1.55; max-width: 1100px; margin-bottom: 3vh; }
+  .lead strong { color: #FFFFFF; font-weight: 600; }
+  .anchor-line { font-size: 13px; color: #8B7BB5; font-style: italic; padding: 8px 14px; background: rgba(139, 92, 246, 0.08); border-left: 2px solid #8B5CF6; border-radius: 4px; max-width: 1100px; margin-bottom: 3vh; }
+
+  /* === Pipeline diagram === */
+  .pipeline { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 1vh 0 3vh; max-width: 1300px; }
+  .pipeline .step { padding: 18px 16px; border: 1px solid #3B1F6A; border-radius: 8px; background: rgba(45, 22, 84, 0.5); position: relative; }
+  .pipeline .step.gate { border-color: #DC2626; background: rgba(220, 38, 38, 0.08); }
+  .pipeline .step .label { font-size: 10px; color: #8B7BB5; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 6px; font-weight: 600; }
+  .pipeline .step.gate .label { color: #FCA5A5; }
+  .pipeline .step .name { font-size: 18px; font-weight: 700; color: #FFFFFF; margin-bottom: 6px; }
+  .pipeline .step .tool { font-size: 12px; color: #C4B5FD; }
+  .pipeline .arrow { position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: #8B5CF6; font-weight: 700; z-index: 2; font-size: 18px; }
+
+  /* === Criteria table === */
+  .criteria-table { width: 100%; max-width: 1400px; border-collapse: collapse; font-size: 14px; margin-bottom: 3vh; color: #FFFFFF; }
+  .criteria-table th { background: rgba(139, 92, 246, 0.15); color: #C4B5FD; text-align: left; padding: 10px 14px; font-weight: 700; border-bottom: 2px solid #8B5CF6; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+  .criteria-table td { padding: 11px 14px; border-bottom: 1px solid rgba(139, 92, 246, 0.15); vertical-align: top; line-height: 1.5; }
+  .criteria-table td.n { color: #C4B5FD; font-weight: 700; width: 40px; font-size: 15px; }
+  .criteria-table td.crit-name { font-weight: 700; color: #FFFFFF; width: 240px; }
+  .criteria-table td.crit-desc { color: #D4C8F0; }
+  .criteria-table td.crit-write { color: #8B5CF6; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; width: 280px; }
+
+  /* === Anti-pattern blocks === */
+  .anti-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 1400px; }
+  .anti-row .cell { padding: 14px 18px; background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px; }
+  .anti-row .cell .label { font-size: 10px; color: #FCA5A5; font-weight: 700; letter-spacing: .14em; margin-bottom: 4px; }
+  .anti-row .cell .name { font-size: 15px; font-weight: 700; color: #FFFFFF; margin-bottom: 5px; }
+  .anti-row .cell .desc { font-size: 13px; color: #D4C8F0; line-height: 1.45; }
+
+  /* === Decision rule === */
+  .decision-rule { padding: 14px 18px; background: rgba(16, 185, 129, 0.10); border-left: 3px solid #10B981; border-radius: 4px; margin-top: 2vh; font-size: 14px; max-width: 1200px; color: #D4C8F0; }
+  .decision-rule strong { color: #6EE7B7; }
+  .decision-rule.warn { background: rgba(220, 38, 38, 0.10); border-left-color: #DC2626; }
+  .decision-rule.warn strong { color: #FCA5A5; }
+
+  /* === Lark element catalog === */
+  .group-header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .group-header .num { font-size: 28px; font-weight: 700; color: #C4B5FD; }
+  .group-header .name { font-size: 20px; font-weight: 700; color: #FFFFFF; }
+  .group-header .desc { font-size: 13px; color: #C4B5FD; font-style: italic; }
+
+  .element-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 1500px; margin-bottom: 2vh; }
+  .element-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 1300px; margin-bottom: 2vh; }
+  .element-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 1500px; margin-bottom: 2vh; }
+
+  .element-card { background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+  .element-card.must-have { border-color: #8B5CF6; border-width: 2px; background: rgba(139, 92, 246, 0.08); }
+  .element-card.featured { grid-column: span 2; }
+  .element-card .mock-box { height: 90px; background: #1F0A3A; border-radius: 4px; display: flex; align-items: center; justify-content: center; padding: 8px; overflow: hidden; }
+  .element-card.featured .mock-box { height: 120px; }
+  .element-card .name { font-size: 14px; font-weight: 700; color: #FFFFFF; display: flex; align-items: center; gap: 8px; }
+  .element-card .name .req { background: #8B5CF6; color: white; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 3px; letter-spacing: .08em; }
+  .element-card .use { font-size: 11px; color: #D4C8F0; line-height: 1.35; }
+  .element-card .anti { font-size: 11px; color: #FCA5A5; line-height: 1.35; padding-top: 4px; border-top: 1px dashed rgba(220, 38, 38, 0.3); }
+  .element-card .anti::before { content: "⚠ "; }
+
+  .m-bignum { font-size: 22px; font-weight: 700; color: #FFFFFF; }
+  .m-tiny { font-size: 9px; color: #C4B5FD; }
+  .m-up { color: #10B981; }
+  .m-down { color: #FCA5A5; }
+
+  /* === Cover slide === */
+  .slide.cover { justify-content: center; }
+  .slide.cover .meta { display: none; }
+  .slide.cover .brand-tag { font-size: 12px; color: #C4B5FD; letter-spacing: .35em; text-transform: uppercase; margin-bottom: 28px; font-weight: 600; }
+  .slide.cover h1 { font-size: 88px; line-height: 1.04; margin-bottom: 28px; }
+  .slide.cover h1 .line2 { color: #C4B5FD; }
+  .slide.cover .gold-bar { width: 140px; height: 4px; background: #D4AF37; margin: 18px 0; border-radius: 2px; }
+  .slide.cover .subtitle { font-size: 24px; max-width: 800px; margin-bottom: 14px; color: #D4C8F0; }
+  .slide.cover .tagline { font-size: 14px; color: #8B7BB5; font-style: italic; }
+
+  /* === Q&A finale === */
+  .slide.qa { justify-content: flex-start; }
+  .slide.qa h1 { font-size: 72px; margin-bottom: 14px; color: #FFFFFF; }
+  .deliverables-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin-bottom: 4vh; }
+  .deliverables-pair .d { padding: 22px 24px; border: 2px solid #8B5CF6; border-radius: 10px; background: rgba(139, 92, 246, 0.08); }
+  .deliverables-pair .d .label { font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .18em; margin-bottom: 8px; }
+  .deliverables-pair .d .name { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #FFFFFF; }
+  .deliverables-pair .d .desc { font-size: 14px; color: #D4C8F0; line-height: 1.5; }
+
+  .timeline-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 1100px; margin-bottom: 3vh; }
+  .timeline-strip .stop { padding: 12px 14px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px; }
+  .timeline-strip .stop .when { font-size: 10px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; }
+  .timeline-strip .stop .what { font-size: 13px; color: #FFFFFF; line-height: 1.4; margin-top: 5px; }
+
+  /* === Prompts overview cards (slide 3) === */
+  .prompt-overview-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; max-width: 1500px; margin-bottom: 2vh; }
+  .prompt-overview-grid .card { background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 8px; padding: 16px 18px; }
+  .prompt-overview-grid .card .pid { display: inline-block; padding: 3px 8px; background: #8B5CF6; color: white; font-size: 11px; font-weight: 700; letter-spacing: .08em; border-radius: 3px; margin-bottom: 10px; }
+  .prompt-overview-grid .card .title { font-size: 16px; font-weight: 700; color: #FFFFFF; margin-bottom: 8px; line-height: 1.3; }
+  .prompt-overview-grid .card .when { font-size: 12px; color: #C4B5FD; line-height: 1.4; margin-bottom: 6px; }
+  .prompt-overview-grid .card .out { font-size: 12px; color: #D4C8F0; line-height: 1.4; }
+  .prompt-overview-grid .card .out .lbl { color: #8B7BB5; text-transform: uppercase; letter-spacing: .08em; font-size: 9px; font-weight: 700; margin-right: 4px; }
+
+  /* === Kamohelo chain === */
+  .chain { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 1500px; margin: 2vh 0; }
+  .chain .step { padding: 14px 12px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px; }
+  .chain .step .n { font-size: 9px; color: #C4B5FD; font-weight: 700; letter-spacing: .14em; }
+  .chain .step .name { font-size: 13px; font-weight: 700; margin: 4px 0; color: #FFFFFF; }
+  .chain .step .ex { font-size: 11px; color: #D4C8F0; line-height: 1.4; }
+  .chain .step .ex code { background: rgba(139, 92, 246, 0.2); padding: 1px 4px; border-radius: 2px; font-size: 10px; color: #C4B5FD; }
+
+  /* === HTML draft mini render === */
+  .html-mini-render { border: 2px solid #8B5CF6; border-radius: 8px; background: #FAFAFA; color: #222; padding: 12px; max-width: 700px; max-height: 56vh; overflow-y: auto; font-family: -apple-system, sans-serif; }
+  .html-mini-render .header { font-size: 10px; color: #8B5CF6; font-weight: 700; letter-spacing: .12em; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #ebebeb; text-transform: uppercase; }
+  .html-mini-render h4 { font-size: 13px; margin: 8px 0 6px; color: #1a1a1a; }
+  .html-mini-render .kpi-row-mini { display: flex; gap: 8px; }
+  .html-mini-render .kpi-mini { flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #fafafa; font-size: 11px; color: #333; }
+  .html-mini-render .kpi-mini .v { font-size: 18px; font-weight: 700; color: #1a1a1a; }
+  .html-mini-render .ann { font-size: 10px; color: #555; font-style: italic; padding: 4px 8px; background: #f5f5f5; border-left: 2px solid #aac; margin: 4px 0; }
+  .html-mini-render .bar-mini { display: flex; align-items: center; font-size: 10px; gap: 4px; margin: 2px 0; color: #333; }
+  .html-mini-render .bar-mini .lbl { width: 70px; }
+  .html-mini-render .bar-mini .b { height: 10px; background: #5b8def; }
+  .html-mini-render table.mini-tbl { width: 100%; border-collapse: collapse; font-size: 10px; color: #333; }
+  .html-mini-render table.mini-tbl th, .html-mini-render table.mini-tbl td { border: 1px solid #ddd; padding: 3px 6px; text-align: left; }
+  .html-mini-render table.mini-tbl th { background: #f0f0f0; }
+
+  /* === Gap List table === */
+  .gaplist-table { width: 100%; max-width: 1300px; border-collapse: collapse; font-size: 13px; margin-top: 2vh; color: #FFFFFF; }
+  .gaplist-table th { background: #8B5CF6; color: white; padding: 10px 12px; text-align: left; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+  .gaplist-table td { padding: 10px 12px; border-bottom: 1px solid rgba(139, 92, 246, 0.2); vertical-align: top; color: #D4C8F0; }
+  .gaplist-table td code { background: rgba(139, 92, 246, 0.2); padding: 1px 5px; border-radius: 3px; font-size: 12px; color: #C4B5FD; }
+  .gaplist-table tr.example td { background: rgba(212, 175, 55, 0.08); color: #FFFFFF; }
+  .gaplist-table tr.example td:first-child::before { content: "(example) "; color: #D4AF37; font-size: 11px; font-style: italic; }
+
+  /* === Prompt full text inline === */
+  .prompt-block { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 1600px; flex: 1; min-height: 0; }
+  .prompt-block .col { display: flex; flex-direction: column; min-height: 0; }
+  .prompt-block .col h3 { margin-top: 0; }
+  .prompt-block pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; line-height: 1.5; color: #D4C8F0; white-space: pre-wrap; word-break: break-word; overflow-y: auto; padding: 12px; background: rgba(15, 4, 30, 0.6); border: 1px solid #3B1F6A; border-radius: 6px; flex: 1; }
+  .prompt-block .col .meta-line { font-size: 12px; color: #C4B5FD; margin-bottom: 8px; line-height: 1.4; }
+  .prompt-block .col .meta-line strong { color: #FFFFFF; }
+
+  /* === Prompt toggle button + full text panel (slide 3) === */
+  .prompt-toggle { background: rgba(139, 92, 246, 0.18); border: 1px solid #8B5CF6; color: #C4B5FD; padding: 7px 12px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer; margin-top: 10px; letter-spacing: .04em; transition: background 150ms; width: 100%; text-align: left; }
+  .prompt-toggle:hover { background: rgba(139, 92, 246, 0.32); color: #FFFFFF; }
+  .prompt-full { display: none; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 9px; line-height: 1.5; color: #D4C8F0; white-space: pre-wrap; word-break: break-word; padding: 10px; background: rgba(15, 4, 30, 0.7); border: 1px solid #3B1F6A; border-radius: 4px; margin-top: 8px; max-height: 320px; overflow-y: auto; }
+  .prompt-full.show { display: block; }
+
+  /* === Customization tip block (slide 3) === */
+  .custom-tip { margin-top: 2vh; padding: 16px 20px; background: rgba(212, 175, 55, 0.08); border-left: 3px solid #D4AF37; border-radius: 4px; max-width: 1500px; }
+  .custom-tip .lbl { font-size: 11px; color: #D4AF37; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 8px; }
+  .custom-tip ul { list-style: none; padding: 0; }
+  .custom-tip li { font-size: 13px; color: #D4C8F0; line-height: 1.55; padding-left: 18px; position: relative; margin-bottom: 4px; }
+  .custom-tip li::before { content: "▸"; position: absolute; left: 0; color: #D4AF37; }
+  .custom-tip li strong { color: #FFFFFF; }
+
+  /* === HUD === */
+  .hud { position: fixed; bottom: 16px; left: 0; right: 0;
+    display: flex; justify-content: space-between; padding: 0 24px;
+    font-size: 12px; color: #8B7BB5; pointer-events: none; user-select: none; z-index: 10; }
+  .hud .progress { font-variant-numeric: tabular-nums; font-weight: 700; color: #C4B5FD; }
+  .hud .hint { color: #4A3878; }
+
+  @media (max-width: 1100px) {
+    .pipeline, .anti-row, .prompt-overview-grid { grid-template-columns: repeat(2, 1fr); }
+    .element-grid-4, .element-grid-5 { grid-template-columns: repeat(2, 1fr); }
+    .chain { grid-template-columns: repeat(3, 1fr); }
+    .prompt-block { grid-template-columns: 1fr; }
+    h1 { font-size: 40px; } h2 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+<!-- ================== Slide 1 · Cover ================== -->
+<section class="slide cover active">
+  <div class="brand-tag">Purple Ruler · Internal Training</div>
+  <h1>Designing Dashboards<br><span class="line2">· Implementation ·</span></h1>
+  <div class="gold-bar"></div>
+  <p class="subtitle">From cognition to building — 0423 explained <em>why</em>, today is <em>how</em>.</p>
+  <p class="tagline">Not prettier dashboards. Better diagnosis, better decisions.</p>
+</section>
+
+<!-- ================== Slide 2 · How this training works ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Section 1 · Overview</span></div>
+  <h2><span class="num">01</span>How this training works</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead">0423 established <strong>diagnostic dashboard ≠ activity counter</strong>. Today gives you a 4-stage pipeline from OKR to a deployed Lark dashboard. Each stage has a tool — a checklist or a Claude prompt.</p>
+
+  <div class="pipeline">
+    <div class="step gate">
+      <div class="label">Stage ① · Hard gate</div>
+      <div class="name">OKR Self-evaluation</div>
+      <div class="tool">→ checklist 01</div>
+      <span class="arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="label">Stage ②</div>
+      <div class="name">HTML Draft</div>
+      <div class="tool">→ Prompt P2 on Claude web</div>
+      <span class="arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="label">Stage ③</div>
+      <div class="name">Standard Self-check</div>
+      <div class="tool">→ checklist 03</div>
+      <span class="arrow">→</span>
+    </div>
+    <div class="step">
+      <div class="label">Stage ④</div>
+      <div class="name">Lark Deploy + Gap List</div>
+      <div class="tool">→ Prompt P3</div>
+    </div>
+  </div>
+
+  <div class="decision-rule warn">
+    <strong>Hard gate framing</strong> · Failing the OKR self-evaluation means <strong>no dashboard work</strong> until the OKR is fixed. <strong>But everyone stays for the full session</strong> — the gate gates only the dashboard work after, not the training itself. Failing the eval is not being asked to leave.
+  </div>
+</section>
+
+<!-- ================== Slide 3 · Self-serve package · 4 prompts overview ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Section 2 · Tools</span></div>
+  <h2><span class="num">02</span>Self-serve package · 4 Prompts on Claude Web</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead">A <strong>prompt</strong> is a block of text you paste into Claude on the web. Claude reads the prompt + your input (your filled checklist, your HTML draft) and returns the next-stage output. Four prompts — one per fork in the pipeline.</p>
+
+  <div class="prompt-overview-grid">
+    <div class="card">
+      <span class="pid">P1a</span>
+      <div class="title">OKR Readiness Assistant</div>
+      <div class="when"><span style="color:#8B7BB5;">When:</span> Optional aid — paste your filled OKR checklist, get back third-party Socratic critique. Beginner default-recommended once.</div>
+      <div class="out"><span class="lbl">Out:</span> ✓ / ⚠ / ✗ verdict per criterion + targeted counter-questions.</div>
+      <button class="prompt-toggle" onclick="togglePrompt('p1a')">▸ Show full prompt text</button>
+      <pre id="prompt-p1a" class="prompt-full">You are a strict third-party OKR evaluator. You find holes in how a team member filled the OKR readiness checklist. You are NOT an OKR coach (you don't teach how to fix). You only find gaps and ask sharp counter-questions. Fixing is the team member's job + their line-manager 1:1 job.
+
+[Hard ban]
+Forbidden to say "looks good" / "should be fine" / "more or less" / "OK" or any soft judgement. For every criterion you can only output ONE of three verdicts: ✓ (clear pass) / ⚠ (specific gap) / ✗ (clear fail).
+
+[Force Socratic]
+For every ⚠ or ✗, ask a specific counter-question — specific enough that the team member cannot wave it off. Don't ask "are you sure about the data source?" — ask "you said data is from Lark base, but who owns it? Is it ops or teaching staff? Did that owner agree to maintain this field weekly?"
+
+[Subjects]
+Evaluate against these 5 criteria + 3 anti-patterns. Full definitions are in the team member's checklist. Names only:
+
+5 criteria:
+1. Management question
+2. Action owner
+3. Input lineage
+4. Reality check
+5. Diagnostic
+
+3 anti-patterns:
+A. Activity counter
+B. Dataset-first
+C. All-in-one
+
+[Output format]
+For each of the 5 criteria + 3 anti-patterns output one block:
+
+Criterion N · Name → ✓ / ⚠ / ✗
+[If ⚠ or ✗] Counter-question: ...
+
+Anti-pattern X · Name → not triggered / triggered
+[If triggered] Counter-question: ...
+
+Summary: This checklist likely passes / does not pass. Areas needing the most work: criterion N / anti-pattern X.
+
+[Empty equals fail]
+If a criterion is left blank, "TBD", or hand-waved with one sentence — verdict is automatically ✗. Don't fill in blanks for the team member.
+
+Now wait for the team member to paste their filled checklist.</pre>
+    </div>
+    <div class="card">
+      <span class="pid">P1b</span>
+      <div class="title">OKR Rewrite Coach</div>
+      <div class="when"><span style="color:#8B7BB5;">When:</span> Fail-path. Paste your draft OKR + which criteria failed, get a manager-friendly candidate OKR + 5-line 1:1 agenda.</div>
+      <div class="out"><span class="lbl">Out:</span> Diagnose · Reframe (1-3 candidates) · Lineage · 1:1 agenda.</div>
+      <button class="prompt-toggle" onclick="togglePrompt('p1b')">▸ Show full prompt text</button>
+      <pre id="prompt-p1b" class="prompt-full">You are an OKR rewrite coach. The goal is for the team member to walk into a 1:1 with their line manager carrying your output, and walk out with an OKR that passes the readiness check. Your output IS the working document for that 1:1.
+
+[Manager-friendly mandate]
+Output must be readable by the line manager in 5 minutes. Forbidden to use jargon, internal acronyms, insider language. Under each suggestion write one line "why this change" so the manager doesn't need to ask.
+
+[Inputs]
+I will give you three things:
+1. My current OKR / work description
+2. The specific items I failed in the readiness checklist
+3. (Optional) What I already wrote in the checklist
+
+[Task — output 4 sections in order a/b/c/d, each its own ## heading]
+
+## Step a · Diagnose
+Map my description to the failed criterion / anti-pattern. State the root cause.
+- Each fail item, no more than 3 sentences.
+- Don't repeat the criterion text — say where I went wrong.
+
+## Step b · Reframe
+Give 1-3 candidate management questions. Each candidate must label:
+- Which stakeholder's decision it serves
+- Its metric grain (top-line / breakdown / drill-down)
+- One-line "why this question, not another"
+
+## Step c · Lineage
+For each candidate, list:
+- Required field names (specific names, not "relevant data")
+- Where those fields likely live (system / sheet)
+- Which fields might not exist / need to be created
+
+## Step d · 1:1 agenda
+A 5-line agenda, exactly 5 lines:
+1. [Problem statement] My current OKR fails on ___.
+2. [Candidate plan] Of N candidates I'm choosing ___.
+3. [What I need manager to approve] ___ (e.g., data-owner collaboration)
+4. [What I need manager to provide] ___ (e.g., stakeholder priority)
+5. [Decision deadline] ___
+
+[Constraint]
+If my input is insufficient (missing key info), first list "you need to tell me first:" then start the 4 steps. Don't guess.
+
+[Output format]
+4 sections (Diagnose / Reframe / Lineage / 1:1 agenda) in order, each its own ## heading. Under each suggestion add one "why this change".</pre>
+    </div>
+    <div class="card">
+      <span class="pid">P2</span>
+      <div class="title">HTML Draft Generator</div>
+      <div class="when"><span style="color:#8B7BB5;">When:</span> After OKR check 5/5 ✓. Paste filled checklist + audience, get a self-contained HTML you open in browser.</div>
+      <div class="out"><span class="lbl">Out:</span> 5-section HTML (inline CSS, dummy data) you iterate before Lark.</div>
+      <button class="prompt-toggle" onclick="togglePrompt('p2')">▸ Show full prompt text</button>
+      <pre id="prompt-p2" class="prompt-full">You are a dashboard layout designer. Based on the team member's filled OKR readiness checklist, generate an HTML draft. The draft helps the team member think through layout before implementing in Lark — they will open it in a browser and iterate.
+
+[Mandatory 5-section layout]
+The HTML must have exactly 5 &lt;section&gt; blocks, in order, each with an &lt;h2&gt; title:
+1. ① Top-line Health (3-5 KPI cards)
+2. ② Trend over Time (1-2 time-series charts)
+3. ③ Breakdown / Comparison (1-2 category-comparison charts)
+4. ④ Drill-down / Detail (1 detail table)
+5. ⑤ Decision-support / Filters (filter dropdowns + decision linkage notes)
+Missing any section is not acceptable.
+
+[Tech stack lock-down]
+- Pure HTML + inline CSS. NO chart.js / d3 / any JS library / external resources / &lt;script&gt; tag.
+- Bar charts: &lt;div&gt; + width: %; background-color. Line charts: &lt;div&gt; + arranged bars. Tables: &lt;table&gt;.
+- All CSS inline in &lt;style&gt;, no external stylesheet.
+- HTML must be self-contained, openable by double-click.
+
+[Per-block annotation mandate]
+Every block must have a &lt;p class="annotation"&gt; with:
+- The management question it answers (criterion 1)
+- The data field source (criterion 3)
+- The decision linkage (criterion 2: "when X, Y should Z")
+
+[Dummy data rule]
+- Use plausible dummy data (sensible magnitudes).
+- Add this comment in &lt;head&gt;: &lt;!-- DUMMY DATA · real data lives in team member's Lark base --&gt;
+
+[Output format]
+Output the complete self-contained HTML, from &lt;!DOCTYPE html&gt; to &lt;/html&gt;. Save as .html, open in browser. NO code-fence wrapping, no extra explanation, only HTML.
+
+[Anti-bloat constraint]
+Stay lean. Each section 1-3 blocks. Total HTML body under 200 lines. Layout clarity, not visual flourish.
+
+Now wait for the team member to paste their filled checklist.</pre>
+    </div>
+    <div class="card">
+      <span class="pid">P3</span>
+      <div class="title">Lark Element Advisor</div>
+      <div class="when"><span style="color:#8B7BB5;">When:</span> After HTML passes Standard self-check. Paste HTML + data lineage, get a Lark deploy plan + Input Quality Gap List.</div>
+      <div class="out"><span class="lbl">Out:</span> Element mapping · Slicer plan · Build order · Gap List (Deliverable B).</div>
+      <button class="prompt-toggle" onclick="togglePrompt('p3')">▸ Show full prompt text</button>
+      <pre id="prompt-p3" class="prompt-full">You are a Lark dashboard implementation advisor. Translate the team member's HTML draft into a Lark deployment checklist + Input Quality Gap List.
+
+I'll give you two inputs:
+1. An HTML dashboard draft (passed the good-dashboard checklist, 6/6 ✓ + 0 anti-pattern)
+2. The team member's data lineage description (criterion 3 source + criterion 4 field status)
+
+==== Rules ====
+
+[1. Per-block element mapping]
+For every block in the HTML, recommend:
+- 1 primary element + 1 alternative
+- Element names from the 5 groups:
+  - Group 1: Metrics / Progress / Goals / Countdown / NPS
+  - Group 2: Line / Area / Combo
+  - Group 3: Bar-Column / Pie-Donut / Funnel / Scatter / Word cloud / Radar / Regional
+  - Group 4: Pivot table / Grid / Ranking / Gallery / Kanban
+  - Group 5: Slicer / Text / Layout / Button / Calendar-Gantt / Milestones
+
+[2. Slicer mandate]
+You MUST recommend Slicer/Filter dimensions (time / channel / role / urgency etc.). A dashboard without slicers isn't acceptable.
+
+[3. Data prep checklist]
+List every needed field. For each:
+- Already present per criterion 4? Note yes/no.
+- If no → add to Gap List.
+- If yes but wrong format / nobody fills it → also add to Gap List.
+
+[4. Build order]
+Fixed sequence:
+1. Lark base helper fields (ALL Gap List items resolved before step 2)
+2. Build Layout (5-section blocks)
+3. Fill ① Top-line · 4. ② Trend · 5. ③ Breakdown · 6. ④ Drill-down · 7. ⑤ Decision-support
+
+[5. Dual-deliverable framing]
+IMPORTANT: when the team member discovers fields that are missing / inconsistent / unfilled — this IS Deliverable B (Input Quality Gap List), it's NOT a bug. This activity produces 2 co-equal deliverables. Do NOT call Deliverable B "side effect" or "by-product" or any subordinating term.
+
+==== Output: 5 sections ====
+
+### 1. Element Mapping
+markdown table: HTML block / Primary Lark element (with group) / Alternative / Reason
+
+### 2. Slicer plan
+≥1 dimension + field name + purpose
+
+### 3. Data Prep Checklist
+table: field / status / needs fix?
+
+### 4. Build Order
+7-step numbered list, note the group used at each step
+
+### 5. Deliverable B · Input Quality Gap List
+table 5 columns: field name / status / which dashboard block affected / suggested fix / owner
+
+==== My input ====
+
+[HTML draft]
+&lt;paste HTML&gt;
+
+[Data lineage]
+- Criterion 3 source: &lt;paste&gt;
+- Criterion 4 field status: &lt;paste&gt;</pre>
+    </div>
+  </div>
+
+  <div class="custom-tip">
+    <div class="lbl">Adapting prompts for your role / team</div>
+    <ul>
+      <li><strong>Different department?</strong> Replace any role-specific example (e.g., "Onboarding Coordinator", "FCR rate", "tickets") with terms from your day-to-day work. Sales: deals / close rate. Operations: orders / shipments. HR: teacher cases / capability gaps.</li>
+      <li><strong>Keep the 5-criterion structure unchanged</strong> — those criteria are discipline-agnostic. What changes per role is the example phrasing in your filled checklist, not the prompt scaffold.</li>
+      <li><strong>Different data unit?</strong> If your work uses "deals" instead of "tickets", "orders" instead of "students" — substitute throughout. The prompt logic still works.</li>
+      <li><strong>Audience swap</strong>: when filling P2 input, change "audience: me" to "my line manager" / "SLT" / "ops team" depending on who actually reads the dashboard. The HTML layout shifts accordingly.</li>
+      <li><strong>Click any "Show full prompt" above</strong> to inspect the full text. Adapt only the example phrases — never weaken the hard rules (no soft judgement, hard-gate verdicts, etc.).</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================== Slide 4 · OKR Readiness · 5+3 + speaker script ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Stage ① · OKR Readiness</span></div>
+  <h2><span class="num">03</span>5 Pass Criteria + 3 Anti-patterns</h2>
+  <div class="gold-divider"></div>
+
+  <p style="font-size: 13px; color: #D4C8F0; max-width: 1300px; margin-bottom: 14px; line-height: 1.55; padding: 10px 14px; background: rgba(212, 175, 55, 0.08); border-left: 2px solid #D4AF37; border-radius: 4px;"><strong style="color:#FFFFFF;">PR rule · One team member = one dashboard.</strong> Every team member builds <strong>one</strong> dashboard covering their <strong>full OKR</strong> (all Os, all KRs). Audience = you. Your line manager extracts upward signal by viewing your dashboard — no separate manager view. Below 5 criteria + 3 anti-patterns are read under this rule: management question is a <em>composite</em> driver question; reality check covers <em>all</em> KRs' source coverage; anti-pattern C only triggers when audience spans multiple <em>roles</em>, not multiple Os.</p>
+
+  <table class="criteria-table">
+    <thead>
+      <tr><th>#</th><th>Criterion</th><th>Description</th><th>What you write out</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="n">01</td>
+        <td class="crit-name">Management question</td>
+        <td class="crit-desc">Must drive a specific decision — not "let me have a look"</td>
+        <td class="crit-write">"My dashboard answers: ______"</td>
+      </tr>
+      <tr>
+        <td class="n">02</td>
+        <td class="crit-name">Action owner</td>
+        <td class="crit-desc">Who does what concrete action when numbers move — verb must be executable (not "monitor closely")</td>
+        <td class="crit-write">"When ___ , ___ should ___"</td>
+      </tr>
+      <tr>
+        <td class="n">03</td>
+        <td class="crit-name">Input lineage</td>
+        <td class="crit-desc">Where data comes from, who owns it, where it currently lives</td>
+        <td class="crit-write">"From ___ + owner ___"</td>
+      </tr>
+      <tr>
+        <td class="n">04</td>
+        <td class="crit-name">Reality check</td>
+        <td class="crit-desc">For 70%+ of your KRs, you can name a concrete data source (system/sheet + owner). "Don't know where data lives" = fail; "exists but messy" = pass (caveats → Gap List)</td>
+        <td class="crit-write">"KR1 data: ___ · owner ___. KR2 data: ___ · owner ___. ..."</td>
+      </tr>
+      <tr>
+        <td class="n">05</td>
+        <td class="crit-name">Diagnostic, not reporting</td>
+        <td class="crit-desc">At least one metric answers <em>why</em>, not just <em>what</em></td>
+        <td class="crit-write">"My why-metric: ___"</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>3 Anti-patterns · any one triggered = fail</h3>
+  <div class="anti-row">
+    <div class="cell">
+      <div class="label">A</div>
+      <div class="name">Activity counter</div>
+      <div class="desc">Whole dashboard only counts "how much I did", with no "why this happens / how to reduce it".</div>
+    </div>
+    <div class="cell">
+      <div class="label">B</div>
+      <div class="name">Dataset-first</div>
+      <div class="desc">Starting point is "I have this data", not "I need to answer this question".</div>
+    </div>
+    <div class="cell">
+      <div class="label">C</div>
+      <div class="name">All-in-one</div>
+      <div class="desc">Serves multiple <strong>roles</strong> (boss + me + team + external). Single role covering multiple Os is fine — that's the PR rule, not all-in-one.</div>
+    </div>
+  </div>
+
+  <div class="decision-rule">
+    <strong>Pass rule</strong> · 5/5 ✓ AND 0/3 anti-pattern → <strong>PASS</strong> · proceed to P2 HTML draft.
+    Any ✗ → schedule a 15-min 1:1 with your line manager within 1 week (bring filled checklist + P1b output).
+  </div>
+
+  <h3 style="margin-top: 3vh;">What each criterion really means · read this on your own</h3>
+  <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 1400px;">
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">01 · MANAGEMENT QUESTION</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">A dashboard exists to <strong style="color:#FFFFFF;">drive a decision</strong>. Write the question in one sentence. <strong style="color:#10B981;">Pass</strong>: "Which student onboarding is behind so I know who to call this week?" <strong style="color:#FCA5A5;">Fail</strong>: "Track team productivity" — that's a topic, not a question.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">02 · ACTION OWNER</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">When a number changes, <strong style="color:#FFFFFF;">someone must do something concrete</strong>. The verb has to be executable. <strong style="color:#10B981;">Pass</strong>: "When FCR drops below 60%, ops lead reviews routing rules." <strong style="color:#FCA5A5;">Fail</strong>: "Monitor closely" / "Stay informed" — these aren't actions.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">03 · INPUT LINEAGE</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">You must name <strong style="color:#FFFFFF;">where the data lives + who owns it</strong>. <strong style="color:#10B981;">Pass</strong>: "From Lark base <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">support-tickets</code>, owner Kamohelo." <strong style="color:#FCA5A5;">Fail</strong>: "From our systems" / "I'll figure it out" — that's not lineage, that's a hope.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">04 · REALITY CHECK</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">The strictest one. For <strong style="color:#FFFFFF;">70%+ of your KRs you can name a concrete data source</strong> — system / sheet + owner. <strong style="color:#10B981;">Pass</strong>: "KR1 from <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">support-tickets</code> base · owner Kamohelo. KR2 from same · owner Kamohelo. KR3 from <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">leave-log</code> · owner HR." <strong style="color:#FCA5A5;">Fail</strong>: "I don't know where most of this data lives" — that's data-source-survey work, not dashboard work.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">05 · DIAGNOSTIC, NOT REPORTING</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">At least one metric must answer <strong style="color:#FFFFFF;">"why"</strong>, not just "what". <strong style="color:#10B981;">Pass</strong>: "% of tickets with incomplete student-id" — answers <em>why</em> rework happens. <strong style="color:#FCA5A5;">Fail</strong>: "tickets resolved" / "calls handled" — these only count what happened.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(220, 38, 38, 0.08); border: 1px solid rgba(220, 38, 38, 0.3); border-radius: 6px;">
+      <div style="font-size: 11px; color: #FCA5A5; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">3 ANTI-PATTERNS · IF YOU TRIGGER ANY, YOU FAIL</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;"><strong style="color:#FFFFFF;">A · Activity counter</strong>: dashboard only counts what you did, no "why". <strong style="color:#FFFFFF;">B · Dataset-first</strong>: built around the data you happen to have, not the question. <strong style="color:#FFFFFF;">C · All-in-one</strong>: serves multiple <em>roles</em> (boss + me + team + external) — pick one role. Single role covering multiple Os is the PR rule, not all-in-one.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 5 · Kamohelo case ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Method walkthrough</span></div>
+  <h2><span class="num">04</span>Kamohelo case · OKR → Component chain</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead">0423 PPT slide 4 already showed the chain itself. Today we focus on <strong>the trade-off at each step</strong> — "why this, not that".</p>
+
+  <div class="chain">
+    <div class="step">
+      <div class="n">STEP 1</div>
+      <div class="name">OKR</div>
+      <div class="ex">"Reduce repeat-bounce in support tickets"</div>
+    </div>
+    <div class="step">
+      <div class="n">STEP 2</div>
+      <div class="name">Decision question</div>
+      <div class="ex">"Why are tickets bouncing? Which channel + issue type?"</div>
+    </div>
+    <div class="step">
+      <div class="n">STEP 3</div>
+      <div class="name">I/O chain</div>
+      <div class="ex">Input: ops fills the ticket / Output: Kamohelo adjusts the process</div>
+    </div>
+    <div class="step">
+      <div class="n">STEP 4</div>
+      <div class="name">Source data</div>
+      <div class="ex">Lark base <code>support-tickets</code> · channel, issue_type, status…</div>
+    </div>
+    <div class="step">
+      <div class="n">STEP 5</div>
+      <div class="name">Helper fields</div>
+      <div class="ex"><code>bounce_count</code>, <code>time_to_first_response</code>, <code>resolved_in_one_touch</code></div>
+    </div>
+    <div class="step">
+      <div class="n">STEP 6</div>
+      <div class="name">Components</div>
+      <div class="ex">FCR rate KPI + bar by issue_type + drill-down table</div>
+    </div>
+  </div>
+
+  <div class="decision-rule">
+    <strong>Key insight</strong> · Components are the <strong>last</strong> step, derived from the OKR. If you fall in love with a chart type and reverse-engineer the data — that's anti-pattern B (dataset-first).
+  </div>
+
+  <h3 style="margin-top: 3vh;">What each step really means · read this on your own</h3>
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; max-width: 1500px;">
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">STEP 1 · OKR</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">Anchors everything — the strategic outcome the team is trying to move. Without a clear OKR upstream, every downstream step becomes guesswork. <strong style="color:#10B981;">Pass</strong>: "Reduce repeat-bounce in support tickets". <strong style="color:#FCA5A5;">Fail</strong>: "Improve support quality" — too vague to derive components from.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">STEP 2 · DECISION QUESTION</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">Translates the OKR into a single specific question the dashboard must answer. The question must drive a decision, not satisfy curiosity. <strong style="color:#10B981;">Pass</strong>: "Why are tickets bouncing? Which channel + issue type?" <strong style="color:#FCA5A5;">Fail</strong>: "Show me support stats" — generic, won't shape the dashboard.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">STEP 3 · I/O CHAIN</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">Names who feeds the data in (input owner) and who acts on the output (action owner). When these are different teams, the dashboard becomes a coordination contract — both sides commit. <strong style="color:#10B981;">Pass</strong>: input = ops fills the ticket; output = Kamohelo adjusts routing rules. <strong style="color:#FCA5A5;">Fail</strong>: "everyone's data, no one's action".</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">STEP 4 · SOURCE DATA</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">Inventory of <strong style="color:#FFFFFF;">data sources</strong> for each KR — system / sheet + owner. This is your reality check (criterion 4). If you can't name 70%+ of sources, the project is data-source-survey work first, not dashboard work. <strong style="color:#10B981;">Pass</strong>: KR1 from Lark base <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">support-tickets</code> · owner Kamohelo; channel, issue_type, status, created_at all in.</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">STEP 5 · HELPER FIELDS</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">Raw fields rarely answer the management question directly. Helper fields are <strong style="color:#FFFFFF;">derived</strong> (computed, flagged, joined). Examples: <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">bounce_count</code>, <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">time_to_first_response</code>, <code style="background:rgba(139,92,246,0.2);padding:1px 4px;border-radius:2px;color:#C4B5FD;">resolved_in_one_touch</code>. P3 produces this list — and the missing helpers feed Deliverable B (Gap List).</p>
+    </div>
+    <div style="padding: 14px 18px; background: rgba(45, 22, 84, 0.5); border: 1px solid #3B1F6A; border-radius: 6px;">
+      <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">STEP 6 · COMPONENTS</div>
+      <p style="font-size: 13px; color: #D4C8F0; line-height: 1.55;">The visible dashboard — KPIs, charts, tables, filters. <strong style="color:#FFFFFF;">This is the LAST step, not the first.</strong> <strong style="color:#10B981;">Pass</strong>: FCR rate top-line + bar by issue_type + drill-down table — each component tied back to step 2's question. <strong style="color:#FCA5A5;">Fail</strong>: opening Lark and picking pretty chart types — anti-pattern B (dataset-first).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 6 · Group 1 + Group 2 ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Live demo · Lark element catalog</span></div>
+  <h2><span class="num">05</span>Group 1 · Top-line <span style="color:#4A3878;font-weight:400;">+</span> Group 2 · Trend</h2>
+  <div class="gold-divider"></div>
+
+  <p class="anchor-line">Anchor question: when you see a chart → which step of the user's visual path does it serve → which Group is it?</p>
+
+  <div class="group-header"><span class="num">①</span><span class="name">Top-line Health</span><span class="desc">Define success per case — then show distance from it</span></div>
+  <p style="font-size: 13px; color: #D4C8F0; max-width: 1300px; margin-bottom: 10px; line-height: 1.55;">Top-line is <strong>not</strong> a vague "how is the team doing overall". It's the answer to: <strong style="color:#FFFFFF;">for each specific customer type / case / event, what counts as success — and how far am I from it right now?</strong> The point is to define success per case, not in aggregate.</p>
+  <p style="font-size: 13px; color: #D4C8F0; max-width: 1300px; margin-bottom: 14px; line-height: 1.55; padding: 10px 14px; background: rgba(212, 175, 55, 0.08); border-left: 2px solid #D4AF37; border-radius: 4px;"><strong style="color:#FFFFFF;">Example</strong>: a salesperson hits £500k revenue this quarter — looks like success. But if half came from a large-enterprise client placing only small orders (where the actual win is the anchor account placing big orders), <strong style="color:#FCA5A5;">that's failure</strong> dressed up as success. The dashboard top-line should define success <em>per customer segment</em> and surface that mismatch. Defining success per case is how you reshape thinking and culture.</p>
+
+  <div class="element-grid-5">
+    <div class="element-card">
+      <div class="mock-box"><div style="text-align:center;"><div class="m-bignum">64%</div><div class="m-tiny">FCR rate</div><div class="m-tiny m-up">↑ 3% vs lw</div></div></div>
+      <div class="name">Metrics</div>
+      <div class="use">Current value + baseline · 3-5 cards in a row</div>
+      <div class="anti">A bare number with no baseline</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><div style="width:100%;"><div style="font-size:10px;margin-bottom:4px;color:#D4C8F0;">73% to target</div><div style="height:8px;background:#3B1F6A;border-radius:4px;overflow:hidden;"><div style="width:73%;height:100%;background:#8B5CF6;"></div></div></div></div>
+      <div class="name">Progress</div>
+      <div class="use">Vs-target progress bar (OKR / quota)</div>
+      <div class="anti">A metric where progress doesn't matter</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="none" stroke="#3B1F6A" stroke-width="6"/><circle cx="30" cy="30" r="22" fill="none" stroke="#8B5CF6" stroke-width="6" stroke-dasharray="94 44" transform="rotate(-90 30 30)"/><text x="30" y="35" text-anchor="middle" font-size="14" font-weight="700" fill="#FFFFFF">68%</text></svg></div>
+      <div class="name">Goals</div>
+      <div class="use">OKR-style goal pack</div>
+      <div class="anti">Non-OKR-tracking dashboard</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:#FCA5A5;font-variant-numeric:tabular-nums;">07:23</div><div class="m-tiny">until launch</div></div></div>
+      <div class="name">Countdown</div>
+      <div class="use">Time until a deadline</div>
+      <div class="anti">Non-deadline-driven work</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="100" height="56" viewBox="0 0 100 56"><path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="#3B1F6A" stroke-width="6"/><path d="M 10 50 A 40 40 0 0 1 70 17" fill="none" stroke="#8B5CF6" stroke-width="6"/><text x="50" y="46" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">+42</text></svg></div>
+      <div class="name">NPS</div>
+      <div class="use">Customer sentiment, dedicated</div>
+      <div class="anti">No survey data · don't fake it</div>
+    </div>
+  </div>
+
+  <div class="group-header" style="margin-top: 2vh;"><span class="num">②</span><span class="name">Trend over Time</span><span class="desc">Time series, anomalies, periodicity · X-axis must be time</span></div>
+  <div class="element-grid-3">
+    <div class="element-card">
+      <div class="mock-box"><svg width="140" height="60" viewBox="0 0 140 60"><polyline fill="none" stroke="#C4B5FD" stroke-width="2" points="5,42 25,30 45,36 65,18 85,26 105,12 125,20"/><line x1="0" y1="56" x2="140" y2="56" stroke="#3B1F6A"/></svg></div>
+      <div class="name">Line</div>
+      <div class="use">1-3 series · time-series trend (the classic)</div>
+      <div class="anti">Category comparison (X is not time)</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="140" height="60" viewBox="0 0 140 60"><polygon fill="#8B5CF6" fill-opacity="0.4" stroke="#C4B5FD" stroke-width="1.5" points="5,42 25,30 45,36 65,18 85,26 105,12 125,20 125,56 5,56"/></svg></div>
+      <div class="name">Area</div>
+      <div class="use">Use when <strong>total + composition</strong> both matter. E.g. monthly active students stacked by year cohort — see total (the filled area) AND each cohort's contribution. Pick Area over Line specifically when "the sum is the story".</div>
+      <div class="anti">Single series — use Line (cleaner, less ink)</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="140" height="60" viewBox="0 0 140 60"><rect x="10" y="35" width="14" height="20" fill="#8B5CF6" opacity="0.7"/><rect x="32" y="25" width="14" height="30" fill="#8B5CF6" opacity="0.7"/><rect x="54" y="30" width="14" height="25" fill="#8B5CF6" opacity="0.7"/><rect x="76" y="20" width="14" height="35" fill="#8B5CF6" opacity="0.7"/><rect x="98" y="28" width="14" height="27" fill="#8B5CF6" opacity="0.7"/><rect x="120" y="22" width="14" height="33" fill="#8B5CF6" opacity="0.7"/><polyline fill="none" stroke="#FCA5A5" stroke-width="1.8" points="17,15 39,28 61,18 83,24 105,10 127,16"/></svg></div>
+      <div class="name">Combo</div>
+      <div class="use">Dual-axis (volume + ratio) · two related series</div>
+      <div class="anti">Cramming two unrelated charts</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 7 · Group 3 ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Live demo · Lark element catalog</span></div>
+  <h2><span class="num">06</span>Group 3 · Breakdown — the actual health diagnosis</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead">This group does the real diagnosis work. <strong>Top-line tells you the score; breakdown tells you why.</strong> Once you slice the data by category — by client size, by region, by issue type — comparison reveals where to act next. <em>"All large clients categorised — why does this one have 3× the revenue of that one? That's your next investigation."</em></p>
+
+  <p style="font-size: 13px; color: #C4B5FD; max-width: 1100px; margin-bottom: 14px;">Default choice: <strong>Bar</strong>. Pie / Donut only when ≤5 categories AND total = 100%.</p>
+
+  <div class="element-grid-4">
+    <div class="element-card">
+      <div class="mock-box"><svg width="120" height="60" viewBox="0 0 120 60"><rect x="10" y="20" width="14" height="35" fill="#C4B5FD"/><rect x="30" y="10" width="14" height="45" fill="#C4B5FD"/><rect x="50" y="30" width="14" height="25" fill="#C4B5FD"/><rect x="70" y="22" width="14" height="33" fill="#C4B5FD"/><rect x="90" y="18" width="14" height="37" fill="#C4B5FD"/></svg></div>
+      <div class="name">Bar / Column</div>
+      <div class="use">Category comparison · <strong>default choice</strong></div>
+      <div class="anti">Almost no anti-case</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="22" fill="#8B5CF6" opacity="0.4"/><path d="M 30 30 L 30 8 A 22 22 0 0 1 51 38 Z" fill="#C4B5FD"/><path d="M 30 30 L 51 38 A 22 22 0 0 1 14 44 Z" fill="#8B5CF6" opacity="0.7"/></svg></div>
+      <div class="name">Pie / Donut</div>
+      <div class="use">≤5 categories + total 100% + emphasising share</div>
+      <div class="anti">6+ categories → <strong>switch to Bar</strong></div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="80" height="60" viewBox="0 0 80 60"><path d="M 5 5 L 75 5 L 60 25 L 60 38 L 50 50 L 30 50 L 20 38 L 20 25 Z" fill="#8B5CF6" opacity="0.5" stroke="#C4B5FD" stroke-width="1.5"/></svg></div>
+      <div class="name">Funnel</div>
+      <div class="use">Conversion drop-off (5+ stages)</div>
+      <div class="anti">Non-funnel structure</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="100" height="60" viewBox="0 0 100 60"><line x1="5" y1="55" x2="95" y2="55" stroke="#3B1F6A"/><line x1="5" y1="5" x2="5" y2="55" stroke="#3B1F6A"/><circle cx="20" cy="40" r="3" fill="#C4B5FD"/><circle cx="35" cy="30" r="3" fill="#C4B5FD"/><circle cx="50" cy="35" r="3" fill="#C4B5FD"/><circle cx="60" cy="20" r="3" fill="#C4B5FD"/><circle cx="75" cy="25" r="3" fill="#C4B5FD"/><circle cx="85" cy="15" r="3" fill="#C4B5FD"/><circle cx="40" cy="45" r="3" fill="#C4B5FD"/></svg></div>
+      <div class="name">Scatter</div>
+      <div class="use">Correlation between two variables</div>
+      <div class="anti">No correlation hypothesis</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><div style="text-align:center;line-height:1.1;font-weight:700;color:#C4B5FD;"><span style="font-size:20px;">SEND</span> <span style="font-size:13px;color:#8B7BB5;">tutoring</span> <span style="font-size:16px;">EHCP</span><br><span style="font-size:11px;color:#8B7BB5;">cohort</span> <span style="font-size:14px;">parent</span> <span style="font-size:10px;color:#4A3878;">school</span></div></div>
+      <div class="name">Word cloud</div>
+      <div class="use">Text frequency (weakly quantitative)</div>
+      <div class="anti">Precise comparison</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="80" height="78" viewBox="0 0 80 78"><polygon points="40,8 68,28 60,62 20,62 12,28" fill="none" stroke="#3B1F6A"/><polygon points="40,18 58,32 52,55 28,55 22,32" fill="none" stroke="#3B1F6A"/><polygon points="40,28 50,38 46,50 34,50 30,38" fill="#8B5CF6" opacity="0.4" stroke="#C4B5FD" stroke-width="1.5"/></svg></div>
+      <div class="name">Radar</div>
+      <div class="use"><strong>Multi-dimensional profile comparison</strong>. Show one entity scored across N dimensions on N axes; another entity overlaid as a second shape. E.g., teacher capability matrix — axes = subject knowledge, classroom delivery, parent communication, prep efficiency, SEND awareness. Two teachers compared = two overlapping pentagons. Useful when comparing a few entities across the SAME dimensions.</div>
+      <div class="anti"><strong>Do not use for non-analytical audiences</strong> — the read takes 5+ seconds and most viewers misread the area as importance</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="100" height="60" viewBox="0 0 100 60"><rect x="10" y="10" width="20" height="20" fill="#C4B5FD" opacity="0.85"/><rect x="35" y="15" width="18" height="22" fill="#8B5CF6" opacity="0.5"/><rect x="58" y="8" width="22" height="26" fill="#FFFFFF" opacity="0.95"/><rect x="15" y="35" width="25" height="18" fill="#8B5CF6" opacity="0.6"/><rect x="45" y="40" width="18" height="13" fill="#8B5CF6" opacity="0.4"/><rect x="68" y="38" width="20" height="15" fill="#C4B5FD" opacity="0.7"/></svg></div>
+      <div class="name">Regional</div>
+      <div class="use">Geographic distribution</div>
+      <div class="anti">Geography isn't core</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 8 · Group 4 ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Live demo · Lark element catalog</span></div>
+  <h2><span class="num">07</span>Group 4 · Drill-down / Detail</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead">When a top-line metric or a breakdown bar looks off, this is where you go to find the actual record. <strong>Two distinct uses</strong>: see specific details, OR operate on the table directly as a filter / trigger.</p>
+
+  <div class="element-grid-4" style="grid-template-columns: 1.5fr 1.8fr 1fr 1fr 1fr;">
+    <div class="element-card">
+      <div class="mock-box"><table style="border-collapse:collapse;font-size:9px;color:#D4C8F0;"><tr style="background:#3B1F6A;"><td style="border:1px solid #4A3878;padding:2px 4px;"></td><td style="border:1px solid #4A3878;padding:2px 4px;">Q1</td><td style="border:1px solid #4A3878;padding:2px 4px;">Q2</td></tr><tr><td style="border:1px solid #4A3878;padding:2px 4px;background:#1F0A3A;">A</td><td style="border:1px solid #4A3878;padding:2px 4px;">42</td><td style="border:1px solid #4A3878;padding:2px 4px;">67</td></tr><tr><td style="border:1px solid #4A3878;padding:2px 4px;background:#1F0A3A;">B</td><td style="border:1px solid #4A3878;padding:2px 4px;">28</td><td style="border:1px solid #4A3878;padding:2px 4px;">51</td></tr></table></div>
+      <div class="name">Pivot table</div>
+      <div class="use"><strong>Multi-dimension cross-tab</strong>: rows are one dim (e.g. issue type), columns are another (e.g. channel). Each cell shows the intersection. <strong style="color:#C4B5FD;">Good use example</strong>: issue_type (rows) × channel (cols) — each cell = ticket count from this issue type via this channel. In one glance you spot "most missing-info incidents come via email, not chat" — a comparison that would take 7 separate bar charts otherwise. Pivot earns its place when you genuinely have 2 dimensions to cross.</div>
+      <div class="anti">Top-line area — too much info at once</div>
+    </div>
+    <div class="element-card featured" style="grid-column: span 1;">
+      <div class="mock-box"><table style="border-collapse:collapse;font-size:10px;color:#D4C8F0;"><tr style="background:#3B1F6A;"><td style="border:1px solid #4A3878;padding:3px 6px;">id</td><td style="border:1px solid #4A3878;padding:3px 6px;">name</td><td style="border:1px solid #4A3878;padding:3px 6px;">val</td><td style="border:1px solid #4A3878;padding:3px 6px;">flag</td></tr><tr><td style="border:1px solid #4A3878;padding:3px 6px;">1</td><td style="border:1px solid #4A3878;padding:3px 6px;">Alice</td><td style="border:1px solid #4A3878;padding:3px 6px;">72</td><td style="border:1px solid #4A3878;padding:3px 6px;">☑</td></tr><tr><td style="border:1px solid #4A3878;padding:3px 6px;">2</td><td style="border:1px solid #4A3878;padding:3px 6px;">Bob</td><td style="border:1px solid #4A3878;padding:3px 6px;">45</td><td style="border:1px solid #4A3878;padding:3px 6px;">☐</td></tr><tr><td style="border:1px solid #4A3878;padding:3px 6px;">3</td><td style="border:1px solid #4A3878;padding:3px 6px;">Cara</td><td style="border:1px solid #4A3878;padding:3px 6px;">63</td><td style="border:1px solid #4A3878;padding:3px 6px;">☑</td></tr></table></div>
+      <div class="name">Grid</div>
+      <div class="use">Detail rows · sortable, filterable. <strong>Two uses:</strong> (a) display specific records; (b) act as direct input — pick rows, tick checkboxes to <strong>trigger downstream events</strong> (assign owner, mark resolved, escalate).</div>
+      <div class="anti">Top-line area — too many rows for at-a-glance</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><div style="font-size:11px;line-height:1.7;color:#D4C8F0;"><div><span style="color:#C4B5FD;font-weight:700;">#1</span> Alpha · 92%</div><div><span style="color:#C4B5FD;font-weight:700;">#2</span> Beta · 78%</div><div><span style="color:#C4B5FD;font-weight:700;">#3</span> Gamma · 64%</div></div></div>
+      <div class="name">Ranking</div>
+      <div class="use">Top-N (worst / best 5)</div>
+      <div class="anti">Order isn't a decision dimension</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;"><div style="background:#3B1F6A;height:22px;border-radius:2px;"></div><div style="background:#3B1F6A;height:22px;border-radius:2px;"></div><div style="background:#3B1F6A;height:22px;border-radius:2px;"></div><div style="background:#3B1F6A;height:22px;border-radius:2px;"></div><div style="background:#3B1F6A;height:22px;border-radius:2px;"></div><div style="background:#3B1F6A;height:22px;border-radius:2px;"></div></div></div>
+      <div class="name">Gallery</div>
+      <div class="use">Card view (rich content)</div>
+      <div class="anti">Records aren't "object"-like</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px;font-size:7px;width:100%;color:#D4C8F0;"><div style="background:#1F0A3A;padding:3px;border-radius:2px;border:1px solid #3B1F6A;"><div style="font-weight:600;color:#8B7BB5;">TODO</div><div style="background:#3B1F6A;padding:1px 2px;margin-top:2px;border-radius:1px;">A</div><div style="background:#3B1F6A;padding:1px 2px;margin-top:1px;border-radius:1px;">B</div></div><div style="background:#1F0A3A;padding:3px;border-radius:2px;border:1px solid #3B1F6A;"><div style="font-weight:600;color:#C4B5FD;">DOING</div><div style="background:#3B1F6A;padding:1px 2px;margin-top:2px;border-radius:1px;">C</div></div><div style="background:#1F0A3A;padding:3px;border-radius:2px;border:1px solid #3B1F6A;"><div style="font-weight:600;color:#10B981;">DONE</div><div style="background:#3B1F6A;padding:1px 2px;margin-top:2px;border-radius:1px;">D</div></div></div></div>
+      <div class="name">Kanban</div>
+      <div class="use">By status (workflow movement)</div>
+      <div class="anti">Not the dashboard's main body</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 9 · Group 5 ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Live demo · Lark element catalog</span></div>
+  <h2><span class="num">08</span>Group 5 · Decision-support / Interaction</h2>
+  <div class="gold-divider"></div>
+
+  <div class="decision-rule" style="margin-bottom: 3vh;">
+    <strong>Skeleton trio · all required</strong> · Slicer + Text + Layout — missing any one means the dashboard isn't really finished.
+  </div>
+
+  <div class="element-grid-3">
+    <div class="element-card must-have">
+      <div class="mock-box"><div style="font-size:10px;width:100%;color:#D4C8F0;"><div style="background:#1F0A3A;border:1px solid #4A3878;padding:3px 6px;border-radius:3px;margin-bottom:3px;">▼ Channel: All</div><div style="background:#1F0A3A;border:1px solid #4A3878;padding:3px 6px;border-radius:3px;margin-bottom:3px;">▼ Date: Last 4 weeks</div><div style="background:#1F0A3A;border:1px solid #4A3878;padding:3px 6px;border-radius:3px;">▼ Type: All</div></div></div>
+      <div class="name">Slicer / Filter <span class="req">required</span></div>
+      <div class="use">Multi-dimension filtering (time / channel / role / urgency)</div>
+      <div class="anti">Default opened all — set sane defaults</div>
+    </div>
+    <div class="element-card must-have">
+      <div class="mock-box"><div style="font-size:9px;padding:6px;background:#1F0A3A;border-left:3px solid #FCA5A5;line-height:1.4;width:100%;color:#FCA5A5;">⚠ <strong>Risk</strong>: 3 students > 5d no login — escalation likely if not contacted by Mon.</div></div>
+      <div class="name">Text <span class="req">required</span></div>
+      <div class="use"><strong>Risks &amp; issues callout</strong> — flag what could go wrong, where attention is needed. Each block gets a "what's worrying about this view" note.</div>
+      <div class="anti">Long paragraphs (a dashboard isn't a doc)</div>
+    </div>
+    <div class="element-card must-have">
+      <div class="mock-box"><svg width="120" height="80" viewBox="0 0 120 80"><rect x="2" y="2" width="116" height="14" fill="#3B1F6A"/><rect x="2" y="20" width="56" height="22" fill="#8B5CF6" opacity="0.4"/><rect x="62" y="20" width="56" height="22" fill="#8B5CF6" opacity="0.4"/><rect x="2" y="46" width="116" height="32" fill="#3B1F6A"/></svg></div>
+      <div class="name">Layout <span class="req">required</span></div>
+      <div class="use">Sectional organisation (5 groups visible)</div>
+      <div class="anti">Flat layout, no sections</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><button style="background:#8B5CF6;color:white;border:none;padding:6px 14px;border-radius:4px;font-size:11px;cursor:pointer;">View Detail →</button></div>
+      <div class="name">Button</div>
+      <div class="use">Trigger action / jump to detail link</div>
+      <div class="anti">"Decoration" use</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="120" height="56" viewBox="0 0 120 56"><rect x="2" y="8" width="40" height="8" fill="#8B5CF6" opacity="0.7"/><rect x="35" y="20" width="50" height="8" fill="#8B5CF6" opacity="0.7"/><rect x="60" y="32" width="55" height="8" fill="#8B5CF6" opacity="0.7"/><rect x="80" y="44" width="35" height="8" fill="#8B5CF6" opacity="0.7"/></svg></div>
+      <div class="name">Calendar / Gantt</div>
+      <div class="use">Schedule, project plan</div>
+      <div class="anti">Replacing trend</div>
+    </div>
+    <div class="element-card">
+      <div class="mock-box"><svg width="120" height="40" viewBox="0 0 120 40"><line x1="5" y1="20" x2="115" y2="20" stroke="#3B1F6A" stroke-width="2"/><circle cx="20" cy="20" r="5" fill="#8B5CF6"/><circle cx="50" cy="20" r="5" fill="#8B5CF6"/><circle cx="80" cy="20" r="5" fill="#1F0A3A" stroke="#8B5CF6" stroke-width="2"/><circle cx="110" cy="20" r="5" fill="#1F0A3A" stroke="#3B1F6A" stroke-width="2"/></svg></div>
+      <div class="name">Milestones</div>
+      <div class="use">Milestone nodes</div>
+      <div class="anti">Non-milestone-driven KR</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 10 · P2 HTML draft (with full prompt + render mock) ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Stage ② · P2</span></div>
+  <h2><span class="num">09</span>P2 · HTML Draft Generator</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead"><strong>What is P2?</strong> A Claude prompt. Paste your filled OKR readiness checklist + audience description into Claude on the web, send. Claude returns a complete self-contained HTML file (inline CSS, no JS, dummy data). Save as <code style="background:rgba(139,92,246,0.2);padding:1px 6px;border-radius:3px;color:#C4B5FD;">.html</code>, double-click to open in browser, iterate the layout before going to Lark. Why HTML first? Lark has a learning curve; HTML lets you settle the layout and questions cheaply.</p>
+
+  <div class="prompt-block">
+    <div class="col">
+      <h3>P2 prompt — full text</h3>
+      <div class="meta-line"><strong>Input</strong> · filled OKR readiness checklist + audience<br><strong>Output</strong> · self-contained HTML file (5 sections, inline CSS, dummy data)</div>
+      <pre>You are a dashboard layout designer. Based on the team member's filled OKR readiness checklist, generate an HTML draft. The draft helps the team member think through layout before implementing in Lark — the team member will open it in a browser and iterate.
+
+[Mandatory 5-section layout]
+The HTML must have exactly 5 &lt;section&gt; blocks, in order, each with an &lt;h2&gt; title:
+1. ① Top-line Health (3-5 KPI cards)
+2. ② Trend over Time (1-2 time-series charts)
+3. ③ Breakdown / Comparison (1-2 category-comparison charts)
+4. ④ Drill-down / Detail (1 detail table)
+5. ⑤ Decision-support / Filters (filter dropdowns + decision linkage notes)
+Missing any section is not acceptable.
+
+[Tech stack lock-down]
+- Pure HTML + inline CSS. NO chart.js / d3 / any JS library / external resources / &lt;script&gt; tag.
+- Bar charts: &lt;div&gt; + width: %; background-color. Line charts: &lt;div&gt; + arranged bars. Tables: &lt;table&gt;.
+- All CSS inline in &lt;style&gt;, no external stylesheet.
+- HTML must be self-contained, openable by double-click.
+
+[Per-block annotation mandate]
+Every block (KPI card / trend chart / breakdown / table / filter) must have a &lt;p class="annotation"&gt; with:
+- The management question it answers (from criterion 1)
+- The data field source (from criterion 3)
+- The decision linkage (from criterion 2: "when X, Y should Z")
+
+[Dummy data rule]
+- Use plausible dummy data (sensible magnitudes).
+- Add this comment in &lt;head&gt;: &lt;!-- DUMMY DATA · real data lives in team member's Lark base --&gt;
+
+[Output format]
+Output the complete self-contained HTML, from &lt;!DOCTYPE html&gt; to &lt;/html&gt;. Save as .html, open in browser. NO code-fence wrapping, no extra explanation, only HTML.
+
+[Anti-bloat constraint]
+Stay lean. Each section 1-3 blocks. Total HTML body under 200 lines. Layout clarity, not visual flourish.
+
+Now wait for the team member to paste their filled checklist.</pre>
+    </div>
+    <div class="col">
+      <h3>What the rendered HTML looks like</h3>
+      <div class="meta-line">A real Onboarding Coordinator example — the team member opens this in their browser and iterates.</div>
+      <div class="html-mini-render">
+        <div class="header">DUMMY DATA · Onboarding Coordinator dashboard</div>
+        <h4>① Top-line Health</h4>
+        <div class="kpi-row-mini">
+          <div class="kpi-mini"><div>FCR rate</div><div class="v">64%</div><div style="color:#059669;">↑ 3% vs lw</div></div>
+          <div class="kpi-mini"><div>Avg handle</div><div class="v">28m</div><div style="color:#059669;">↓ 4m</div></div>
+          <div class="kpi-mini"><div>Bounce rate</div><div class="v">22%</div><div style="color:#dc2626;">↑ 2%</div></div>
+        </div>
+        <div class="ann">Q: which students are behind onboarding this week? · Source: Lark new-students base · Decision: when FCR &lt; 60%, I call the parents on Monday morning.</div>
+        <h4>② Trend over Time</h4>
+        <div class="bar-mini"><span class="lbl">Week 1</span><span class="b" style="width:50%;"></span> 50%</div>
+        <div class="bar-mini"><span class="lbl">Week 2</span><span class="b" style="width:62%;"></span> 62%</div>
+        <div class="bar-mini"><span class="lbl">Week 3</span><span class="b" style="width:64%;"></span> 64%</div>
+        <h4>③ Breakdown</h4>
+        <div class="bar-mini"><span class="lbl">Class 2 (Li)</span><span class="b" style="width:62%;background:#dc2626;"></span> 62%</div>
+        <div class="bar-mini"><span class="lbl">Class 4 (Zhang)</span><span class="b" style="width:58%;background:#dc2626;"></span> 58%</div>
+        <div class="bar-mini"><span class="lbl">Class 3 (Chen)</span><span class="b" style="width:81%;"></span> 81%</div>
+        <h4>④ Drill-down</h4>
+        <table class="mini-tbl"><tr><th>Student</th><th>%</th><th>Last login</th></tr><tr style="background:#fde6e6;"><td>Zhang Xiaoming</td><td>32</td><td>3d ago</td></tr><tr style="background:#fde6e6;"><td>Wang Xiaohong</td><td>45</td><td>5d ago</td></tr></table>
+        <div class="ann">Decision: red rows (&lt;60%) — call parents Monday morning first.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 11 · Good-Dashboard Standard ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Stage ③ · Standard self-check</span></div>
+  <h2><span class="num">10</span>Good-Dashboard Standard · 6 + 3</h2>
+  <div class="gold-divider"></div>
+
+  <table class="criteria-table">
+    <thead><tr><th>#</th><th>Standard</th><th>Concrete observable</th></tr></thead>
+    <tbody>
+      <tr><td class="n">01</td><td class="crit-name">Management question prominent</td><td class="crit-desc">Visible in the top of the dashboard within 5 seconds of opening</td></tr>
+      <tr><td class="n">02</td><td class="crit-name">Top-line readable in 5 seconds</td><td class="crit-desc">3-5 KPI cards · each with current value + baseline (vs last week / target)</td></tr>
+      <tr><td class="n">03</td><td class="crit-name">Each block serves a specific decision</td><td class="crit-desc">Every block has a decision-linkage note ("when X, Y should Z")</td></tr>
+      <tr><td class="n">04</td><td class="crit-name">At least 1 why-metric</td><td class="crit-desc">Beyond counting what happened (FCR rate / info completeness / preventable urgency)</td></tr>
+      <tr><td class="n">05</td><td class="crit-name">Drill-down path is explicit</td><td class="crit-desc">A top-line anomaly leads to a detail table / pivot / filter that finds the record</td></tr>
+      <tr><td class="n">06</td><td class="crit-name">Single audience-role + reachable data</td><td class="crit-desc">Audience = single role (you yourself; multi-O OK per PR rule) · 70%+ of KRs have a named data source (system + owner)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>3 Anti-patterns</h3>
+  <div class="anti-row">
+    <div class="cell">
+      <div class="label">A</div>
+      <div class="name">Decoration chart</div>
+      <div class="desc"><strong>Heuristic</strong>: "If I removed this block, would the dashboard be worse?" If no, remove it.</div>
+    </div>
+    <div class="cell">
+      <div class="label">B</div>
+      <div class="name">All-categories pie</div>
+      <div class="desc">Pie / Donut showing 6+ categories — switch to Bar.</div>
+    </div>
+    <div class="cell">
+      <div class="label">C</div>
+      <div class="name">No-baseline KPI</div>
+      <div class="desc">KPI cards showing only current value · no vs-last-week / vs-target.</div>
+    </div>
+  </div>
+
+  <div class="decision-rule">
+    <strong>Pass rule</strong> · 6/6 ✓ AND 0/3 anti-pattern → proceed to P3 Lark Element Advisor.
+    Any ✗ → <strong>fix the HTML, re-run the check</strong> (P2 internal loop, not a manager 1:1).
+  </div>
+</section>
+
+<!-- ================== Slide 12 · P3 + Gap List ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Stage ④ · P3 + Deliverable B</span></div>
+  <h2><span class="num">11</span>P3 · Lark Element Advisor + Gap List</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead"><strong>What is P3?</strong> A Claude prompt that takes your HTML draft (the one that passed the standard check) and your data lineage, and outputs a complete Lark deploy plan plus an Input Quality Gap List. The Gap List is <strong>Deliverable B</strong> — equally important to the dashboard itself.</p>
+
+  <div class="prompt-block">
+    <div class="col">
+      <h3>P3 prompt — full text</h3>
+      <div class="meta-line"><strong>Input</strong> · HTML draft + data lineage<br><strong>Output</strong> · Element mapping · Slicer plan · Data prep · Build order · Gap List</div>
+      <pre>You are a Lark dashboard implementation advisor. Translate the team member's HTML draft into a Lark deployment checklist. You don't drag-and-drop for them (that's their job) — you produce a printable execution checklist.
+
+I'll give you two inputs:
+1. An HTML dashboard draft (passed the good-dashboard checklist, 6/6 ✓ + 0 anti-pattern)
+2. The team member's data lineage description (criterion 3 source + criterion 4 field status)
+
+Your task: produce a complete Lark deploy plan + Input Quality Gap List.
+
+==== Rules ====
+
+[1. Per-block element mapping]
+For every block in the HTML, recommend:
+- 1 primary element + 1 alternative
+- Element names from the 5 groups:
+  - Group 1: Metrics / Progress / Goals / Countdown / NPS
+  - Group 2: Line / Area / Combo
+  - Group 3: Bar-Column / Pie-Donut / Funnel / Scatter / Word cloud / Radar / Regional
+  - Group 4: Pivot table / Grid / Ranking / Gallery / Kanban
+  - Group 5: Slicer / Text / Layout / Button / Calendar-Gantt / Milestones
+
+[2. Slicer mandate]
+You MUST recommend Slicer/Filter dimensions (time / channel / role / urgency etc.). A dashboard without slicers isn't acceptable.
+
+[3. Data prep checklist]
+List every needed field. For each:
+- Already present per criterion 4? Note yes/no.
+- If no → add to Gap List.
+- If yes but wrong format / nobody fills it → also add to Gap List.
+
+[4. Build order]
+Fixed sequence:
+1. Lark base helper fields (ALL Gap List items resolved before step 2)
+2. Build Layout (5-section blocks)
+3. Fill ① Top-line · 4. ② Trend · 5. ③ Breakdown · 6. ④ Drill-down · 7. ⑤ Decision-support
+
+[5. Dual-deliverable framing]
+IMPORTANT: when the team member discovers fields that are missing / inconsistent / unfilled — this IS Deliverable B (Input Quality Gap List), it's NOT a bug. This activity produces 2 co-equal deliverables. Do NOT call Deliverable B "side effect" or "by-product" or any subordinating term.
+
+==== Output: 5 sections ====
+
+### 1. Element Mapping
+markdown table: HTML block / Primary Lark element (with group) / Alternative / Reason
+
+### 2. Slicer plan
+≥1 dimension + field name + purpose
+
+### 3. Data Prep Checklist
+table: field / status / needs fix?
+
+### 4. Build Order
+7-step numbered list, note the group used at each step
+
+### 5. Deliverable B · Input Quality Gap List
+table 5 columns: field name / status / which dashboard block affected / suggested fix / owner
+
+==== My input ====
+
+[HTML draft]
+&lt;paste HTML&gt;
+
+[Data lineage]
+- Criterion 3 source: &lt;paste&gt;
+- Criterion 4 field status: &lt;paste&gt;</pre>
+    </div>
+    <div class="col">
+      <h3>Deliverable B · Gap List output</h3>
+      <div class="meta-line">The Gap List is the second deliverable. It feeds the KR2 information-quality improvement list. Equal weight to the dashboard itself.</div>
+      <table class="gaplist-table">
+        <thead><tr><th>Field</th><th>Status</th><th>Block affected</th><th>Suggested fix</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr class="example">
+            <td><code>is_first_contact_resolved</code></td>
+            <td>Field doesn't exist</td>
+            <td>Top-line FCR rate metric</td>
+            <td>Add boolean to Lark base + fill rule</td>
+            <td>Kamohelo / Ops lead</td>
+          </tr>
+          <tr class="example">
+            <td><code>bounce_count</code></td>
+            <td>Field doesn't exist</td>
+            <td>Top-line bounce rate metric</td>
+            <td>Add integer to Lark base + ticket reopen trigger</td>
+            <td>Ops lead</td>
+          </tr>
+          <tr class="example">
+            <td><code>first_response_at</code></td>
+            <td>Filled ~60%</td>
+            <td>Median first-response KPI · drill-down filter</td>
+            <td>Make required + backfill historical</td>
+            <td>Coordinator team lead</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top: 16px; padding: 12px 16px; background: rgba(139, 92, 246, 0.1); border-radius: 6px; border: 1px solid #3B1F6A;">
+        <div style="font-size: 11px; color: #C4B5FD; font-weight: 700; letter-spacing: .12em; margin-bottom: 6px;">DUAL DELIVERABLE</div>
+        <div style="font-size: 13px; color: #FFFFFF; line-height: 1.5;"><strong>Deliverable A</strong> · your Lark dashboard<br><strong>Deliverable B</strong> · this Gap List → KR2 info-quality improvement</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 13 · Live experiment · P1a on a real Ano OKR ================== -->
+<section class="slide">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Live experiment · P1a in action</span></div>
+  <h2><span class="num">12</span>P1a applied to a real Ano OKR</h2>
+  <div class="gold-divider"></div>
+
+  <p class="lead">We took Ano's draft O1 + O2 OKR and pasted it into Claude with the <strong>P1a prompt</strong>. The verdict below is exactly what your team gets when they paste their own OKR. Notice — no "looks good", no soft judgement. Empty fields auto-fail. Anti-patterns trigger explicitly.</p>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; max-width: 1700px;">
+    <div>
+      <h3>Input · Ano's OKR (condensed)</h3>
+      <div style="font-size: 11px; color: #C4B5FD; margin-bottom: 8px;">Stripped of MJ's commentary. The prompt sees only the OKR text.</div>
+      <pre style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 9.5px; line-height: 1.5; color: #D4C8F0; white-space: pre-wrap; padding: 12px; background: rgba(15, 4, 30, 0.7); border: 1px solid #3B1F6A; border-radius: 6px; max-height: 55vh; overflow-y: auto;">O1 — Build a reliable, low-friction allocation and reallocation operating system
+
+KR1 — Allocation turnaround
+  Reduce the average time from confirmed intake to successful teacher allocation from [baseline] to ≤ [target] working days by [date].
+  Successful = teacher assigned, availability confirmed, schedule checked, no clash, data complete, risk escalated.
+
+KR2 — Allocation quality and risk control
+  Reduce allocation-related session clashes from [baseline] to ≤ [target] per month by [date].
+  Maintain a live allocation-quality dashboard showing status, clash risk, match quality, timetable compatibility, escalation status, unresolved risk.
+
+KR3 — High-potential teacher allocation pathway
+  Work with HR / Teacher Management to define ≥3 practical timetable models for prioritising high-potential teachers by [date].
+
+KR4 — Allocation effort and rejection feedback loop
+  Create a live allocation-effort dashboard by [date] showing attempts, rejected/failed allocations, rejection reasons, availability gaps, capability gaps, recurring data-quality issues, unresolved Teacher Management dependencies.
+
+O2 — Build operational visibility and escalation discipline
+
+KR1 — Standard vs non-standard classification visibility
+  Classify 100% of new non-standard requests in a live dashboard during [start]–[end].
+
+KR2 — Effort, revenue, user-behaviour visibility for Cat B/C/D
+  Build a live view linking client requests to allocation effort, course hours, revenue potential, scheduling complexity, category fit by [date].
+
+KR3 — Teacher supply and allocation dashboard
+  Create a live dashboard view for teacher supply, allocation effort, allocation quality, input quality by [date].
+
+KR4 — AI and automation readiness
+  Create a live input-quality dashboard identifying which fields are complete / missing / inconsistent / unsuitable for Lark automation by [date].</pre>
+    </div>
+    <div>
+      <h3>Output · P1a verdict</h3>
+      <div style="font-size: 11px; color: #C4B5FD; margin-bottom: 8px;">Five criteria + three anti-patterns + summary. Each ⚠ / ✗ comes with a specific counter-question.</div>
+      <pre style="font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 9.5px; line-height: 1.5; color: #D4C8F0; white-space: pre-wrap; padding: 12px; background: rgba(15, 4, 30, 0.7); border: 1px solid #3B1F6A; border-radius: 6px; max-height: 55vh; overflow-y: auto;"><span style="color:#10B981;">PR rule applied</span>: This is ONE dashboard for Ano covering O1+O2 (8 KRs). Audience = Ano herself. MJ extracts upward signal by viewing the same dashboard. Verdicts below are read under that rule.
+
+<span style="color:#FBBF24;">Criterion 1 · Management question → ⚠</span>
+Counter-question: With 8 KRs across 2 Os you need a COMPOSITE driver question that spans them — not 8 separate questions. Try: "Where are my biggest leverage points across non-standard classification + allocation + supply this week?" One question, one decision (which area to focus on next). Articulate this composite question explicitly before P2.
+
+<span style="color:#FBBF24;">Criterion 2 · Action owner → ⚠</span>
+Counter-question: Per PR rule, the dashboard's action owner is YOU (Ano) — you read it daily and decide where to escalate. Downstream actors per KR (HR / Teacher Mgmt / Sales / Systems) act on your signals; they don't watch the dashboard. Make this explicit per KR: "When O1 KR4 shows X, I escalate to Sales / I rewrite input rule / I flag to MJ."
+
+<span style="color:#FCA5A5;">Criterion 3 · Input lineage → ✗</span>
+Counter-question: Per KR, where does the data live? Which Lark base? Allocation system? Manual sheet? You list 6+ data dimensions but no per-KR source. Who owns "rejection reasons" data? Who owns "capability gaps"? Without per-KR lineage the dashboard is a wishlist.
+
+<span style="color:#FCA5A5;">Criterion 4 · Reality check → ✗</span>
+Counter-question: For each of 8 KRs, can you name a concrete data source (system + owner)? "Allocation-related session clashes", "rejection reasons with tags", "teacher capability gaps", "AI readiness scores" — most sound like fields that need to be DEFINED first. Estimate: probably <40% of KRs have a nameable source today. Threshold is ≥70%. Do data-source survey + 1:1 before P2.
+
+<span style="color:#FBBF24;">Criterion 5 · Diagnostic, not reporting → ⚠</span>
+Counter-question: Some KRs aim diagnostic (O1 KR4 "which rejection reasons drive most avoidable effort"); most are reporting ("classify 100%", "create live view"). Identify ≥1 why-metric per O. For O1 the why-metric could be "% of avoidable effort traceable to top-3 rejection reasons". For O2 it's similar — name it.
+
+<span style="color:#FBBF24;">Anti-pattern A · Activity counter → ⚠</span>
+Counter-question: O1 KR4 lists "allocation attempts, rejected/failed, recurring issues" — these are counts. Without a paired why-metric they slide into activity counter. Pair every count with a why-metric.
+
+<span style="color:#FBBF24;">Anti-pattern B · Dataset-first → ⚠</span>
+Counter-question: The OKR lists data dimensions ("attempts, rejected, reasons, gaps, dependencies") and asks for a dashboard built on them. Borderline dataset-first. Reframe each KR question-first: what decision does it drive?
+
+<span style="color:#10B981;">Anti-pattern C · All-in-one → not triggered</span>
+Single audience-role: Ano herself. Per PR rule, multi-O coverage is fine. (Pre-PR-rule frameworks would have flagged this — under PR rule it passes.)
+
+<span style="color:#10B981;">Summary</span>: Hard blockers are Criterion 3 + 4 (data lineage / source). The OKR's structure is OK for a single Ano-dashboard once data sources are surveyed. Recommended path:
+1. 1:1 with line manager, bringing this verdict + 8-KR data-source survey (per KR: system + owner + can-it-be-named?).
+2. Of 8 KRs, expect 5-6 chartable, 1-2 progress-tracker (e.g., O1 KR3 "define 3 timetable models" is one-off → tracker block), 0-2 deferred. ALL go in the same Ano dashboard.
+3. Articulate composite Criterion 1 question + per-KR Criterion 2 action linkage.
+4. KRs without nameable sources → Deliverable B Gap List rows (KR2 information-quality input).</pre>
+    </div>
+  </div>
+
+  <div class="custom-tip" style="margin-top: 2vh;">
+    <div class="lbl">What this experiment shows</div>
+    <ul>
+      <li><strong>P1a refuses to soft-judge.</strong> A strategic OKR that <em>looks</em> ambitious gets surfaced as not-yet-dashboard-ready. The hard gate works.</li>
+      <li><strong>Big OKRs stay as one dashboard.</strong> Per PR rule, all KRs live in a single team-member dashboard. P1a's hard blockers surface as data-lineage gaps + composite-question articulation, not as "pick one KR".</li>
+      <li><strong>Counter-questions are usable in 1:1.</strong> Ano can take this output to her line-manager 1:1 and walk through each ✗ — exactly the workflow this training designs for.</li>
+    </ul>
+  </div>
+
+  <div class="custom-tip" style="margin-top: 1vh; background: rgba(91, 139, 239, 0.08); border-left-color: #5b8def;">
+    <div class="lbl" style="color: #5b8def;">FAQ · Whole OKR or KR by KR? How does P1a handle a multi-KR OKR?</div>
+    <ul>
+      <li><strong>PR rule: one dashboard per team member, covering the whole OKR.</strong> P1a evaluates the OKR as a single composite dashboard. Don't split the OKR before P1a.</li>
+      <li><strong>Per-KR fate is decided AFTER P1a passes overall.</strong> Some KRs become chart elements; some become progress trackers; some become Gap List rows; some get deferred. All within ONE dashboard. The "is this KR chartable?" question runs at P2/P3, not P1a.</li>
+      <li><strong>Per-KR signals it's NOT chartable:</strong> <strong>(a)</strong> one-off deliverable (e.g., "define 3 timetable models" — once done, nothing to monitor → progress tracker block); <strong>(b)</strong> no quantifiable signal ("build culture") → narrative section or doc; <strong>(c)</strong> data doesn't exist and won't be built → defer or do data-prep first; <strong>(d)</strong> annual / strategic decisions → review doc, not dashboard.</li>
+      <li><strong>For Ano's 8 KRs</strong>: ALL go into one Ano dashboard. Likely 5-6 become chart elements; <strong>O1 KR3</strong> (define 3 timetable models) becomes a progress tracker block; KRs without nameable sources become Gap List rows feeding KR2 information-quality work. Single dashboard, mixed element types.</li>
+    </ul>
+  </div>
+
+  <div class="custom-tip" style="margin-top: 1vh; background: rgba(192, 132, 252, 0.08); border-left-color: #C084FC;">
+    <div class="lbl" style="color: #C084FC;">FAQ · A KR isn't chartable — what's its place in your single dashboard?</div>
+    <p style="font-size: 12px; color: #D4C8F0; line-height: 1.5; margin-bottom: 10px;">Map your <strong>per-KR</strong> situation to the signal that triggered "not chartable", then pick a response. The KR still lives in your single dashboard — just as a different element type (progress tracker / gap list row / narrative) or gets deferred.</p>
+
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+      <div style="padding: 10px 14px; background: rgba(15, 4, 30, 0.5); border-radius: 4px;">
+        <div style="font-size: 12px; color: #FFFFFF; font-weight: 700; margin-bottom: 6px;">Signal (a) · One-off deliverable</div>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Reframe as progress tracker</strong> — not diagnostic; use Lark Goals / Progress / Milestones. Short-lived, archive when done.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Reframe as ongoing</strong> — "define 3 models" → "models adopted / refined ongoing". Risk: force-fit.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Use a doc / status update instead</strong> — honest project-management work, not a dashboard.</li>
+        </ul>
+      </div>
+      <div style="padding: 10px 14px; background: rgba(15, 4, 30, 0.5); border-radius: 4px;">
+        <div style="font-size: 12px; color: #FFFFFF; font-weight: 700; margin-bottom: 6px;">Signal (b) · No quantifiable signal</div>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Find proxy metrics</strong> — team NPS / response time / retention / referral. Warning: proxies get gamed; choose carefully.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Sharpen the question</strong> — not "build culture" but "where do we lose people / what's the friction" → naturally converts into a retention / friction dashboard.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Use narrative / qualitative tools</strong> — town hall feedback, sentiment analysis. Not a dashboard.</li>
+        </ul>
+      </div>
+      <div style="padding: 10px 14px; background: rgba(15, 4, 30, 0.5); border-radius: 4px;">
+        <div style="font-size: 12px; color: #FFFFFF; font-weight: 700; margin-bottom: 6px;">Signal (c) · Data doesn't exist + won't be built</div>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Data prep first</strong> — do Deliverable B (input-quality) work, then build the dashboard. This is the KR2 input-quality strategy at heart.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Manual / sample-based</strong> — 5 cases per week, hand-filled. Small but real, validates whether the question deserves later automation.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Defer 3 weeks</strong> — wait until the data is in place before building.</li>
+        </ul>
+      </div>
+      <div style="padding: 10px 14px; background: rgba(15, 4, 30, 0.5); border-radius: 4px;">
+        <div style="font-size: 12px; color: #FFFFFF; font-weight: 700; margin-bottom: 6px;">Signal (d) · Strategic / annual decisions</div>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Track only operational sub-signals in your dashboard</strong> — strategic KRs anchor multiple operational sub-signals; chart those in your single dashboard; the strategic decision review lives in a doc, not a separate dashboard.</li>
+          <li style="font-size: 12px; color: #D4C8F0; padding: 3px 0 3px 16px; position: relative; line-height: 1.5;"><span style="position: absolute; left: 0; color: #C084FC;">▸</span> <strong>Doc + dashboard side by side</strong> — your single dashboard for daily operational; quarterly / annual review goes to a doc. Two tools, not interchangeable.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top: 12px; padding: 10px 14px; background: rgba(212, 175, 55, 0.08); border-left: 2px solid #D4AF37; border-radius: 4px;">
+      <div style="font-size: 11px; color: #D4AF37; font-weight: 700; letter-spacing: .12em; margin-bottom: 4px;">UNIVERSAL FALLBACK</div>
+      <p style="font-size: 12px; color: #D4C8F0; line-height: 1.5;">If still stuck, run <strong style="color:#FFFFFF;">P1b · OKR Rewrite Coach</strong> — Claude rewrites the OKR into 1-3 candidate <em>composite framings</em> for your single dashboard. Then take it to your line-manager 1:1. Sometimes the answer is: <strong style="color:#FFFFFF;">change the KR, not the dashboard</strong>.</p>
+    </div>
+
+    <div style="margin-top: 8px; padding: 10px 14px; background: rgba(220, 38, 38, 0.06); border-left: 2px solid #DC2626; border-radius: 4px;">
+      <div style="font-size: 11px; color: #FCA5A5; font-weight: 700; letter-spacing: .12em; margin-bottom: 4px;">GUIDING PRINCIPLE</div>
+      <p style="font-size: 12px; color: #D4C8F0; line-height: 1.5;">A dashboard's value is <strong style="color:#FFFFFF;">ongoing diagnostic + decision support</strong>. If the KR doesn't need ongoing diagnostic, a dashboard isn't the right tool. Forcing it = wasted time + a fake dashboard polluting team thinking.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================== Slide 14 · Q&A finale ================== -->
+<section class="slide qa">
+  <div class="meta"><span class="brand">Purple Ruler · Internal Training</span><span class="section-name">Closing</span></div>
+  <h1>Q &amp; A</h1>
+  <div class="gold-divider"></div>
+  <p class="subtitle">This activity produces <strong style="color:#C4B5FD;">2 co-equal deliverables</strong> · neither is primary, neither is secondary.</p>
+
+  <div class="deliverables-pair">
+    <div class="d">
+      <div class="label">DELIVERABLE A</div>
+      <div class="name">Your Lark Dashboard</div>
+      <div class="desc">Your own diagnostic dashboard. Reviewed 1:1 with MJ at the end of T+2 alongside the Gap List.</div>
+    </div>
+    <div class="d">
+      <div class="label">DELIVERABLE B</div>
+      <div class="name">Your Input Quality Gap List</div>
+      <div class="desc">Field gaps surfaced while running P3. Feeds the KR2 information-quality improvement list. Equal weight to the dashboard.</div>
+    </div>
+  </div>
+
+  <h3>Timeline</h3>
+  <div class="timeline-strip">
+    <div class="stop"><div class="when">T0 · TODAY</div><div class="what">90-min session + self-serve package</div></div>
+    <div class="stop"><div class="when">T+1 WEEK</div><div class="what">Pass → HTML draft submitted · Fail → line manager 1:1</div></div>
+    <div class="stop"><div class="when">T+2 WEEK</div><div class="what">Lark deploy · Gap List filled</div></div>
+    <div class="stop"><div class="when">END OF T+2</div><div class="what">MJ × each person · 1:1 review of A + B</div></div>
+  </div>
+
+  <p style="font-size: 12px; color: #8B7BB5; margin-top: 2vh;">Office hour: ad-hoc 1:1, on demand · Claude code users: see <code style="background:rgba(139,92,246,0.2);padding:2px 6px;border-radius:3px;color:#C4B5FD;">skills/dashboard-builder/SKILL.md</code></p>
+</section>
+
+</div>
+
+<div class="hud">
+  <span class="progress" id="progress">1 / 14</span>
+  <span class="hint">← → switch · F fullscreen · Home/End jump · click screen also works</span>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  let i = 0;
+
+  function show(n) {
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    slides[i].classList.remove('active');
+    slides[n].classList.add('active');
+    slides[n].scrollTop = 0;
+    i = n;
+    progress.textContent = (i + 1) + ' / ' + slides.length;
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); show(i + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); show(i - 1); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+    else if (e.key === 'f' || e.key === 'F') {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    }
+  });
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('a, button, input, pre, code, select, table')) return;
+    if (e.clientX > window.innerWidth / 2) show(i + 1);
+    else show(i - 1);
+  });
+
+  function togglePrompt(id) {
+    const el = document.getElementById('prompt-' + id);
+    if (el) el.classList.toggle('show');
+  }
+</script>
+</body>
+</html>
