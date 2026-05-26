@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude 为什么烧 Token — 3 分钟搞懂</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+    background: #0f0f0f;
+    color: #eee;
+    line-height: 1.8;
+  }
+
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* Page 1 */
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #fff, #e94560);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle {
+    color: #777;
+    font-size: 1rem;
+    margin-bottom: 2.5rem;
+  }
+
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e94560;
+    margin: 2.5rem 0 1rem;
+  }
+
+  p { color: #ccc; margin-bottom: 1rem; font-size: 1.05rem; }
+
+  /* Core diagram */
+  .diagram {
+    background: #1a1a2e;
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.5rem 0;
+    font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+    font-size: 0.92rem;
+    line-height: 2;
+    color: #aaa;
+    overflow-x: auto;
+  }
+  .diagram .you { color: #4ecca3; font-weight: 600; }
+  .diagram .sys { color: #e94560; font-weight: 600; }
+  .diagram .dim { color: #555; }
+  .diagram .hi { color: #fff; font-weight: 700; }
+
+  /* Analogy */
+  .analogy {
+    background: linear-gradient(135deg, #1a1a2e, #0f3460);
+    border: 1px solid rgba(79,172,254,0.2);
+    border-radius: 14px;
+    padding: 1.8rem;
+    margin: 1.5rem 0;
+  }
+  .analogy p { color: #ddd; font-size: 1.05rem; }
+
+  /* Cost comparison */
+  .vs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  @media (max-width: 500px) { .vs { grid-template-columns: 1fr; } }
+  .vs-card {
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .vs-card.bad { background: #2a1020; border: 2px solid #e94560; }
+  .vs-card.good { background: #0f2a20; border: 2px solid #4ecca3; }
+  .vs-card .label { font-size: 0.85rem; color: #999; }
+  .vs-card .num { font-size: 2.5rem; font-weight: 800; margin: 0.3rem 0; }
+  .vs-card.bad .num { color: #e94560; }
+  .vs-card.good .num { color: #4ecca3; }
+  .vs-card .desc { font-size: 0.9rem; color: #bbb; }
+
+  /* Page break visual */
+  .page-break {
+    border-top: 1px solid #333;
+    margin: 3rem 0;
+  }
+
+  /* Tips */
+  .tip {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .tip:last-child { border-bottom: none; }
+  .tip-num {
+    min-width: 36px;
+    height: 36px;
+    background: #e94560;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #fff;
+  }
+  .tip-body h4 {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.3rem;
+  }
+  .tip-body .wrong { color: #e94560; font-size: 0.9rem; }
+  .tip-body .right { color: #4ecca3; font-size: 0.9rem; }
+
+  /* Golden rule */
+  .golden {
+    background: linear-gradient(135deg, #1a1a2e, #2d1b4e);
+    border: 2px solid #f5a623;
+    border-radius: 14px;
+    padding: 2rem;
+    text-align: center;
+    margin: 2rem 0;
+  }
+  .golden p {
+    font-size: 1.3rem;
+    color: #fff;
+    font-weight: 700;
+    line-height: 1.8;
+  }
+
+  .footer {
+    text-align: center;
+    color: #555;
+    font-size: 0.8rem;
+    padding: 2rem 0 1rem;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 第一页：为什么贵 ===== -->
+<div class="page">
+
+  <h1>Claude 为什么烧 Token</h1>
+  <div class="subtitle">3 分钟搞懂 &middot; Purple Ruler 团队内部培训</div>
+
+  <h2>核心事实：Claude 没有记忆</h2>
+  <p>Claude 不是一个"一直在那里"的人。<strong>每次你发新消息，它会从头重读整个对话。</strong></p>
+
+  <div class="diagram">
+    <span class="you">第 1 轮</span>&nbsp; 你发 100 字 → Claude 读 <span class="hi">100 字</span> → 回复 200 字<br>
+    <span class="you">第 2 轮</span>&nbsp; 你发 50 字 &nbsp;→ Claude 读 <span class="hi">350 字</span>（100+200+50）→ 回复 200 字<br>
+    <span class="you">第 3 轮</span>&nbsp; 你发 30 字 &nbsp;→ Claude 读 <span class="hi">580 字</span>（全部历史）→ 回复 200 字<br>
+    <span class="dim">...</span><br>
+    <span class="you">第 20 轮</span> 你发 30 字 → Claude 读 <span class="sys">5,800 字</span>（全部历史）→ 回复 200 字
+  </div>
+
+  <div class="analogy">
+    <p>&#129504; <strong>类比：失忆的天才顾问</strong></p>
+    <p>Claude 就像一个极聪明但每隔 5 秒就失忆的顾问。每次你问他问题，助理必须把之前<strong>所有对话记录</strong>从头念给他听，他才能回答。对话越长，念的越多，花的越多。</p>
+  </div>
+
+  <h2>同样 20 轮对话，拆开聊 vs 一路聊</h2>
+
+  <div class="vs">
+    <div class="vs-card bad">
+      <div class="label">&#10060; 1 个长对话 &middot; 20 轮</div>
+      <div class="num">63,000</div>
+      <div class="desc">tokens 总消耗</div>
+    </div>
+    <div class="vs-card good">
+      <div class="label">&#9989; 4 个短对话 &middot; 各 5 轮</div>
+      <div class="num">18,000</div>
+      <div class="desc">tokens 总消耗 &mdash; <strong>省 3.5 倍</strong></div>
+    </div>
+  </div>
+
+  <p style="text-align:center; color:#f5a623; font-weight:600; font-size:1.1rem;">对话越长，每条消息越贵。总成本按轮数的平方增长。</p>
+
+  <h2>粘贴代码 vs 放进 Project：天壤之别</h2>
+
+  <p>很多人把整个文件的代码直接粘到聊天框里。这和把文件放进 Project 的成本差距巨大：</p>
+
+  <div class="diagram">
+    <span class="sys">&#10060; 粘贴到聊天框（1000 行代码）</span><br>
+    <span class="dim">第 1 轮：</span> Claude 读 <span class="hi">1000 行</span> + 你的问题<br>
+    <span class="dim">第 2 轮：</span> Claude 读 <span class="hi">1000 行</span> + 之前的问答 + 你的新问题<br>
+    <span class="dim">第 3 轮：</span> Claude 读 <span class="hi">1000 行</span> + 所有历史 + 新问题<br>
+    <span class="dim">...</span><br>
+    <span class="sys">→ 那 1000 行代码被重读了 N 遍，每轮都收费</span><br>
+    <br>
+    <span class="you">&#9989; 放进 Project Knowledge</span><br>
+    <span class="dim">第 1 轮：</span> Claude 读 <span class="hi">1000 行</span>（缓存生效）+ 你的问题<br>
+    <span class="dim">第 2 轮：</span> 1000 行<span class="you">已缓存，不重复计费</span> + 新问题<br>
+    <span class="dim">第 3 轮：</span> 1000 行<span class="you">已缓存，不重复计费</span> + 新问题<br>
+    <span class="dim">...</span><br>
+    <span class="you">→ 文件只收一次费，后面每轮只算你的新问题</span>
+  </div>
+
+  <div class="vs">
+    <div class="vs-card bad">
+      <div class="label">&#10060; 粘在聊天里 &middot; 聊 10 轮</div>
+      <div class="num">10x</div>
+      <div class="desc">那份代码被读了 10 遍，每遍都收费</div>
+    </div>
+    <div class="vs-card good">
+      <div class="label">&#9989; 放 Project Knowledge &middot; 聊 10 轮</div>
+      <div class="num">1x</div>
+      <div class="desc">缓存生效后只算一次，后续免费</div>
+    </div>
+  </div>
+
+  <div class="analogy">
+    <p>&#128218; <strong>类比：复印 vs 原件</strong></p>
+    <p>粘在聊天里 = 每次开会都把整份文件重新复印一遍给所有人。<br>放进 Project = 会议室里有一本<strong>永久参考手册</strong>，所有人随时翻，不用重印。</p>
+  </div>
+
+  <p><strong>结论：</strong>任何你需要 Claude 反复参考的内容（公司文档、代码文件、SOP、模板）→ 放 Project Knowledge，不要粘到聊天里。</p>
+
+  <!-- ===== 第二页：怎么省 ===== -->
+  <div class="page-break"></div>
+
+  <h2>6 个省 Token 的习惯</h2>
+
+  <div class="tip">
+    <div class="tip-num">1</div>
+    <div class="tip-body">
+      <h4>做完一件事就开新对话</h4>
+      <p class="wrong">&#10060; 一个对话从周一用到周五</p>
+      <p class="right">&#9989; 每个任务一个对话，做完就开新的</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-num">2</div>
+    <div class="tip-body">
+      <h4>只粘相关段落，不粘整篇文档</h4>
+      <p class="wrong">&#10060; 把 5 页邮件全部粘进去</p>
+      <p class="right">&#9989; 只粘你需要 Claude 处理的那一段</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-num">3</div>
+    <div class="tip-body">
+      <h4>第一条消息就说清格式要求</h4>
+      <p class="wrong">&#10060; "写个总结" → "改表格" → "加标题" → "换英文" → "还是中文"</p>
+      <p class="right">&#9989; "写个中文总结，表格形式，200 字以内，重点加粗"</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-num">4</div>
+    <div class="tip-body">
+      <h4>问题要具体，避免来回澄清</h4>
+      <p class="wrong">&#10060; "帮我写个东西" → "什么东西？" → "培训的" → "哪个培训？"</p>
+      <p class="right">&#9989; "帮我写上周三 ESL 培训的会议总结，重点是教材反馈，200 字"</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-num">5</div>
+    <div class="tip-body">
+      <h4>先要大纲，别直接要长文</h4>
+      <p class="wrong">&#10060; "写一份完整培训手册" → 输出 3000 字，你只用了 2 段</p>
+      <p class="right">&#9989; "先给 5 个要点的大纲" → 确认方向 → 再展开</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <div class="tip-num">6</div>
+    <div class="tip-body">
+      <h4>用 Projects 存公司背景，不用每次重说</h4>
+      <p class="wrong">&#10060; 每次新对话："我是 Purple Ruler 的，我们做 SEND tutoring…"</p>
+      <p class="right">&#9989; 左侧创建 Project → 把背景写进 Instructions → 以后自动带</p>
+    </div>
+  </div>
+
+  <div class="golden">
+    <p>一句话原则：<br><br>
+    把 Claude 当<strong>按字收费</strong>的顾问<br>
+    给的背景越精准、要求越具体、对话越短<br>
+    花的越少</p>
+  </div>
+
+  <div class="footer">Purple Ruler &middot; Claude 使用指南 &middot; 2026 年 5 月</div>
+
+</div>
+</body>
+</html>
