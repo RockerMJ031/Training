@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Closed-Loop Playbook · Purple Ruler Internal Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Styled with the same tokens as assets/pr-design.css — self-demonstrating. */
+  :root {
+    --p900:#2c1a52; --p800:#3a2266; --p700:#4b2e83; --p600:#5a3a9e; --p500:#6b4ab8;
+    --p300:#a98fd8; --p100:#ece6f8; --p50:#f6f2fc;
+    --ink:#191324; --muted:#615c70; --faint:#8a8693;
+    --bg:#fbfafd; --card:#ffffff; --line:#e8e6ef; --line2:#efedf5;
+    --green:#1f9d62; --amber:#c2710a; --red:#cf2e25;
+    --radius:18px; --radius-sm:10px;
+    --shadow:0 1px 2px rgba(28,18,55,.05),0 22px 48px -28px rgba(44,26,82,.30);
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior:auto; }
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+  }
+  body { background:var(--bg); color:var(--ink); font-family:var(--font);
+    letter-spacing:-.011em; -webkit-font-smoothing:antialiased; line-height:1.6; }
+  a { color:var(--p600); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  a:focus-visible { outline:2px solid var(--p500); outline-offset:2px; border-radius:4px; }
+  code { font-family:var(--mono); font-size:.86em; background:var(--p50); border:1px solid var(--line);
+    padding:1px 6px; border-radius:6px; color:var(--p700); white-space:nowrap; }
+
+  /* ---------- app shell ---------- */
+  .app { display:flex; min-height:100vh; }
+  .side { width:264px; flex:none; background:linear-gradient(185deg,var(--p700),var(--p900));
+    color:#fff; padding:22px 14px 18px; position:sticky; top:0; height:100vh; overflow-y:auto;
+    display:flex; flex-direction:column; scrollbar-width:thin; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:15.5px;
+    letter-spacing:-.02em; padding:4px 8px 16px; }
+  .brand .m { width:30px; height:30px; border-radius:8px; background:#fff; display:grid;
+    place-items:center; color:var(--p700); font-weight:800; font-size:15px; flex:none; }
+  .grp { font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:rgba(255,255,255,.48); padding:16px 10px 6px; }
+  .nav { display:flex; align-items:baseline; gap:10px; padding:6px 11px; border-radius:10px;
+    color:rgba(255,255,255,.74); font-weight:600; font-size:13px; transition:.13s; }
+  .nav:hover { background:rgba(255,255,255,.10); color:#fff; text-decoration:none; }
+  .nav.on { background:rgba(255,255,255,.17); color:#fff; font-weight:700;
+    box-shadow:inset 3px 0 0 var(--p300); }
+  .nav .n { font-family:var(--mono); font-size:10.5px; color:rgba(255,255,255,.45); width:20px; flex:none; }
+  .side-foot { margin-top:auto; padding:14px 10px 4px; border-top:1px solid rgba(255,255,255,.16);
+    font-size:11px; color:rgba(255,255,255,.55); line-height:1.5; }
+  .side-foot b { color:rgba(255,255,255,.85); }
+  .main { flex:1; min-width:0; }
+  .wrap { max-width:940px; margin:0 auto; padding:0 44px 120px; }
+  .topbar { display:none; }
+  @media (max-width: 920px) {
+    .side { display:none; }
+    .topbar { display:flex; position:sticky; top:0; z-index:20; align-items:center; gap:12px;
+      background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff; padding:12px 18px; }
+    .topbar .m { width:26px; height:26px; border-radius:7px; background:#fff; display:grid;
+      place-items:center; color:var(--p700); font-weight:800; font-size:13px; }
+    .topbar .t { font-weight:800; font-size:14px; }
+    .wrap { padding:0 18px 90px; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding:66px 0 44px; border-bottom:1px solid var(--line); position:relative; }
+  .eyebrow { font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(38px,5.4vw,58px); font-weight:800; letter-spacing:-.035em;
+    line-height:1.04; margin-bottom:18px; }
+  .hero h1 .dim { color:var(--p300); }
+  .hero .thesis { font-size:18px; color:var(--muted); max-width:640px; margin-bottom:30px; }
+  .hero .thesis b { color:var(--ink); }
+  .loopmark { position:absolute; right:0; top:60px; width:130px; height:130px; }
+  @media (max-width:720px){ .loopmark { display:none; } }
+  .loopmark .ring { transform-origin:50% 50%; animation:spin 28s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .threeq { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width:720px){ .threeq { grid-template-columns:1fr; } }
+  .threeq .q { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px 14px; box-shadow:var(--shadow); }
+  .threeq .q .k { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.14em;
+    color:var(--p500); text-transform:uppercase; margin-bottom:8px; }
+  .threeq .q p { font-size:14px; font-weight:600; line-height:1.5; margin:0; }
+
+  /* ---------- sections ---------- */
+  section { padding-top:60px; }
+  .act { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--p500); display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .act::after { content:''; height:1px; flex:1; background:var(--line); }
+  h2 { font-size:clamp(25px,3.2vw,32px); font-weight:800; letter-spacing:-.028em;
+    line-height:1.15; margin-bottom:14px; }
+  h3 { font-size:18px; font-weight:700; letter-spacing:-.015em; margin:30px 0 10px; }
+  p { margin-bottom:12px; max-width:72ch; }
+  .lead { font-size:16.5px; color:var(--muted); }
+  .lead b { color:var(--ink); }
+  .cap { font-size:12.5px; color:var(--faint); margin-top:-4px; }
+
+  .insight { display:flex; gap:16px; background:var(--p50); border:1px solid var(--p100);
+    border-radius:var(--radius); padding:18px 20px; margin:24px 0; max-width:780px; }
+  .insight .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:#fff; background:var(--p700); border-radius:7px; padding:5px 9px; height:fit-content;
+    flex:none; margin-top:2px; }
+  .insight p { margin:0; font-size:16px; font-weight:700; letter-spacing:-.015em; line-height:1.5; color:var(--p900); }
+  .insight p .sub { display:block; font-weight:500; font-size:13px; color:var(--muted); margin-top:5px; }
+
+  .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); background:var(--card); }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
+  th { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--p600); text-align:left; padding:10px 14px;
+    background:var(--p50); border-bottom:2px solid var(--p100); white-space:nowrap; }
+  td { padding:10px 14px; border-bottom:1px solid var(--line2); vertical-align:top; line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  td.strong { font-weight:700; }
+  .mono { font-family:var(--mono); font-size:.92em; }
+
+  /* ===== SDLC scars strip ===== */
+  .sdlc { display:flex; flex-wrap:wrap; margin:22px 0 4px; }
+  .stage { flex:1 1 118px; min-width:116px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:11px 10px 9px; position:relative; margin-right:17px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .stage:last-child { margin-right:0; }
+  .stage::after { content:'→'; position:absolute; right:-15px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:13px; }
+  .stage:last-child::after { content:''; }
+  .stage .k { font-family:var(--mono); font-size:9.5px; font-weight:700; color:var(--p500);
+    letter-spacing:.08em; margin-bottom:4px; text-transform:uppercase; }
+  .stage .t { font-size:13.5px; font-weight:800; line-height:1.25; margin-bottom:7px; }
+  .stage .scar { font-size:11px; line-height:1.4; color:var(--red); background:rgba(207,46,37,.05);
+    border:1px solid rgba(207,46,37,.18); border-radius:7px; padding:5px 8px; }
+  .stage .scar b { font-family:var(--mono); font-size:9px; letter-spacing:.08em; display:block; color:var(--red); opacity:.75; }
+
+  /* ===== era timeline ===== */
+  .eras { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:22px 0 6px; position:relative; }
+  @media (max-width:840px){ .eras { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .eras { grid-template-columns:1fr; } }
+  .era { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 16px 14px; box-shadow:var(--shadow); }
+  .era.now { border:1.5px solid var(--p500); background:var(--p50); }
+  .era .yr { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    color:var(--faint); text-transform:uppercase; margin-bottom:6px; }
+  .era .t { font-weight:800; font-size:15.5px; margin-bottom:6px; }
+  .era .d { font-size:12px; color:var(--muted); line-height:1.45; margin-bottom:12px; }
+  .era .loop { font-family:var(--mono); font-size:10px; color:var(--faint); letter-spacing:.06em; }
+  .era .loop b { display:block; font-size:19px; letter-spacing:-.02em; color:var(--p700); margin-top:2px; }
+  .era.now .loop b { color:var(--green); }
+
+  /* ===== vocab cards ===== */
+  .vocab { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:22px 0 6px; }
+  @media (max-width:840px){ .vocab { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .vocab { grid-template-columns:1fr; } }
+  .vcard { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:13px 15px 11px; box-shadow:var(--shadow); }
+  .vcard .vterm { display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .vcard .vterm .w { font-family:var(--mono); font-weight:700; font-size:14px; color:var(--ink); }
+  .vcard .vterm .st { font-family:var(--mono); font-size:9px; font-weight:700; color:#fff;
+    background:var(--p500); border-radius:5px; padding:2px 6px; margin-left:auto; flex:none; }
+  .vcard .def { font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:7px; }
+  .vcard .here { font-size:11.5px; line-height:1.45; color:var(--p700); background:var(--p50);
+    border:1px solid var(--p100); border-radius:7px; padding:5px 9px; font-weight:600; }
+  .vcard .here b { font-family:var(--mono); font-size:9px; letter-spacing:.08em; display:block;
+    color:var(--p500); margin-bottom:1px; }
+
+  /* ===== test pyramid & shifts ===== */
+  .pyrcap { text-align:center; font-family:var(--mono); font-size:10px; color:var(--faint);
+    letter-spacing:.06em; margin:12px 0 0; }
+  .pyr { display:flex; flex-direction:column; align-items:center; gap:7px; margin:10px 0 0; }
+  .pyr .lv { border-radius:9px; padding:9px 14px; text-align:center; font-size:12.5px;
+    border:1px solid var(--line); background:var(--card); min-width:270px; box-shadow:var(--shadow); }
+  .pyr .lv b { font-size:13px; }
+  .pyr .lv span { display:block; font-family:var(--mono); font-size:10px; color:var(--p600); margin-top:3px; }
+  .pyr .lv.l2 { background:var(--p50); border-color:var(--p100); }
+  .pyr .lv.l3 { background:var(--p100); border-color:var(--p300); }
+  .pyr .lv.l4 { background:rgba(31,157,98,.07); border-color:rgba(31,157,98,.35); }
+  .pyr .lv.l4 span { color:var(--green); }
+  .shifts { display:flex; flex-direction:column; gap:10px; margin:20px 0; max-width:820px; }
+  .shift { display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:14px 16px 12px; box-shadow:var(--shadow); }
+  .shift .n { font-family:var(--mono); font-weight:700; font-size:21px; color:var(--p300); flex:none; width:30px; line-height:1.2; }
+  .shift .t { font-weight:800; font-size:14.5px; margin-bottom:3px; }
+  .shift .d { font-size:13px; color:var(--muted); line-height:1.5; }
+  .shift .d b { color:var(--ink); }
+
+  /* ===== persona cards ===== */
+  .personas { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0; }
+  @media (max-width:720px){ .personas { grid-template-columns:1fr; } }
+  .persona { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 22px 18px; box-shadow:var(--shadow); }
+  .persona .who { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .persona .av { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,var(--p600),var(--p900));
+    color:#fff; display:grid; place-items:center; font-weight:800; font-size:15px; flex:none; }
+  .persona .who .nm { font-weight:800; font-size:16.5px; line-height:1.2; }
+  .persona .who .rl { font-size:12px; color:var(--muted); }
+  .bignum { display:flex; align-items:baseline; gap:8px; margin-bottom:10px; }
+  .bignum .v { font-family:var(--mono); font-weight:700; font-size:32px; color:var(--p700); letter-spacing:-.03em; }
+  .bignum .l { font-size:12.5px; color:var(--muted); line-height:1.3; }
+  .persona .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .chip { font-family:var(--mono); font-size:10.5px; font-weight:600; color:var(--p700);
+    background:var(--p50); border:1px solid var(--p100); border-radius:999px; padding:4px 10px; }
+  .chip.g { color:var(--green); background:rgba(31,157,98,.07); border-color:rgba(31,157,98,.25); }
+
+  /* ===== collapse stats ===== */
+  .collapse { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+  @media (max-width:760px){ .collapse { grid-template-columns:1fr; } }
+  .col-c { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px 14px; box-shadow:var(--shadow); }
+  .col-c .t { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:10px; }
+  .col-c .flow { display:flex; align-items:center; gap:9px; font-weight:800; font-size:14.5px; flex-wrap:wrap; }
+  .col-c .flow .old { color:var(--faint); text-decoration:line-through; text-decoration-thickness:1.5px; }
+  .col-c .flow .arr { color:var(--p300); }
+  .col-c .flow .new { color:var(--green); }
+  .col-c .d { font-size:12px; color:var(--muted); line-height:1.45; margin-top:8px; }
+
+  /* ===== absorb flow (Lark-board composition: old pipeline → absorbers → gates) ===== */
+  .absorb2 { display:grid; grid-template-columns:215px 26px 1fr; gap:0; margin:24px 0 6px; align-items:stretch; }
+  @media (max-width:760px){ .absorb2 { grid-template-columns:1fr; } .absorb2 .flowcol { display:none; } }
+  .oldstack { display:flex; flex-direction:column; gap:7px; }
+  .oldstack .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--faint); margin-bottom:2px; }
+  .oldchip { background:var(--line2); border:1px solid var(--line); border-radius:8px; padding:7px 10px;
+    font-size:12px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .oldchip .n { font-family:var(--mono); font-size:9.5px; color:var(--faint); flex:none; }
+  .oldchip .dot { width:9px; height:9px; border-radius:50%; flex:none; margin-left:auto; }
+  .dot.ctx { background:var(--amber); } .dot.hrn { background:var(--p500); } .dot.keep { background:var(--green); }
+  .flowcol { display:flex; align-items:center; justify-content:center; color:var(--p300); font-weight:700; }
+  .sinks { display:flex; flex-direction:column; gap:12px; }
+  .abox { border-radius:var(--radius); padding:14px 18px 12px; border:1px solid; }
+  .abox .t { font-weight:800; font-size:14.5px; display:flex; align-items:center; gap:8px; }
+  .abox .t i { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .abox .s { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; margin:2px 0 8px; }
+  .abox.ctx { background:rgba(194,113,10,.05); border-color:rgba(194,113,10,.3); }
+  .abox.ctx .t, .abox.ctx .s { color:var(--amber); }
+  .abox.hrn { background:var(--p50); border-color:var(--p300); }
+  .abox.hrn .t, .abox.hrn .s { color:var(--p700); }
+  .abox .items { display:flex; flex-wrap:wrap; gap:6px; }
+  .aitem { background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:5px 10px; font-size:11.5px; font-weight:600; color:var(--ink); }
+  .keepbar { background:var(--card); border:1.5px solid var(--green); border-radius:var(--radius);
+    padding:14px 18px 10px; box-shadow:var(--shadow); }
+  .keepbar .t { font-weight:800; font-size:14.5px; color:var(--green); display:flex; align-items:center; gap:8px; }
+  .keepbar .t i { width:10px; height:10px; border-radius:50%; background:var(--green); display:inline-block; }
+  .keepbar .s { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--green); margin:2px 0 8px; }
+  .keepbar .items { display:flex; flex-wrap:wrap; gap:7px; }
+  .keepbar .aitem { border-color:rgba(31,157,98,.35); background:rgba(31,157,98,.05); font-weight:700; }
+
+  /* ===== unchanged trio ===== */
+  .trio { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+  @media (max-width:760px){ .trio { grid-template-columns:1fr; } }
+  .trio .c { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px 14px; box-shadow:var(--shadow); }
+  .trio .c .ic { font-size:19px; margin-bottom:8px; }
+  .trio .c .t { font-weight:800; font-size:14.5px; margin-bottom:5px; }
+  .trio .c .d { font-size:12.5px; color:var(--muted); line-height:1.5; }
+
+  /* ===== lanes ===== */
+  .lanes { margin:22px 0 8px; }
+  .lane { display:flex; align-items:center; flex-wrap:wrap; background:var(--card);
+    border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px 8px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .lane .lt { flex:0 0 100%; margin-bottom:10px; display:flex; align-items:baseline; gap:10px; }
+  .lane .lt .nm { font-weight:800; font-size:15px; }
+  .lane .lt .ds { font-family:var(--mono); font-size:9.5px; color:var(--muted); letter-spacing:.05em; }
+  .stop { position:relative; background:var(--p50); border:1px solid var(--p100); border-radius:9px;
+    padding:7px 10px; font-size:12px; font-weight:600; margin-right:20px; margin-bottom:8px; }
+  .stop::after { content:'→'; position:absolute; right:-17px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:13px; }
+  .stop:last-child { margin-right:0; }
+  .stop:last-child::after { content:''; }
+  .stop .sub { display:block; font-size:10px; font-family:var(--mono); color:var(--muted); font-weight:500; }
+  .stop.live { background:rgba(31,157,98,.08); border-color:rgba(31,157,98,.35); color:var(--green); }
+  .stop.inert { background:var(--line2); border-color:var(--line); color:var(--faint); }
+  .stop.human { background:#fff; border:1.5px solid var(--p500); color:var(--p900); }
+
+  /* ===== onion ===== */
+  .onion-wrap { display:grid; grid-template-columns:minmax(300px,430px) 1fr; gap:26px; align-items:center; margin:20px 0; }
+  @media (max-width:800px){ .onion-wrap { grid-template-columns:1fr; } }
+  .onion { border-radius:var(--radius); padding:14px; border:1.5px dashed var(--p300); background:var(--p50); }
+  .onion .lbl { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--p600); padding:2px 4px 8px; }
+  .onion .o2 { border-radius:14px; padding:12px; border:1.5px dashed var(--p500); background:#f1eafb; }
+  .onion .o3 { border-radius:12px; padding:12px; border:1.5px solid var(--p500); background:var(--p100); }
+  .onion .o4 { border-radius:10px; padding:14px; border:1.5px solid var(--p700); background:#fff; text-align:center; }
+  .onion .agent { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--p600),var(--p900));
+    color:#fff; font-weight:800; border-radius:10px; padding:10px 18px; font-size:14px; }
+  .onion .o4 .d { font-size:11px; color:var(--muted); margin-top:8px; }
+
+  /* ===== anatomy + pipeline ===== */
+  .anatomy { display:grid; grid-template-columns:340px 1fr; gap:26px; align-items:center; margin:20px 0; }
+  @media (max-width:760px){ .anatomy { grid-template-columns:1fr; } }
+  .openloop { background:var(--card); border:1px dashed var(--line); border-radius:var(--radius); padding:18px 20px; }
+  .openloop .t { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; margin-bottom:10px; color:var(--red); }
+  .openloop .row { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; flex-wrap:wrap; }
+  .openloop .row .gap { color:var(--red); font-family:var(--mono); font-size:12px; }
+  .openloop .d { font-size:12.5px; color:var(--muted); margin-top:8px; }
+  .pipeline { display:flex; align-items:stretch; margin:24px 0 6px; flex-wrap:wrap; }
+  .pipe-step { flex:1 1 128px; min-width:126px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:12px 12px 10px; position:relative; margin-right:26px; margin-bottom:14px; }
+  .pipe-step:last-child { margin-right:0; }
+  .pipe-step::after { content:'→'; position:absolute; right:-21px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:15px; }
+  .pipe-step:last-child::after { content:''; }
+  .pipe-step.meta { border-style:dashed; border-color:var(--p300); background:var(--p50); }
+  .pipe-step .k { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p500);
+    letter-spacing:.1em; margin-bottom:4px; }
+  .pipe-step .t { font-size:13px; font-weight:700; line-height:1.3; margin-bottom:4px; }
+  .pipe-step .e { font-size:11px; color:var(--muted); line-height:1.35; }
+
+  /* ===== loop cards ===== */
+  .loopcard { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--p500);
+    border-radius:var(--radius-sm); padding:18px 22px 6px; margin:18px 0; box-shadow:var(--shadow); }
+  .loopcard .head { display:flex; align-items:baseline; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .loopcard .num { font-family:var(--mono); font-weight:700; font-size:13px; color:#fff;
+    background:var(--p700); border-radius:8px; padding:4px 10px; }
+  .loopcard .head h3 { margin:0; font-size:19px; }
+  .loopcard .exit { font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600;
+    background:rgba(31,157,98,.08); border:1px solid rgba(31,157,98,.25); border-radius:7px; padding:3px 9px; }
+  .loopcard p { font-size:14px; }
+  .loopcard .was { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-bottom:8px; }
+  .rules { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px; }
+  .rule { background:var(--p50); border:1px solid var(--p100); border-radius:9px; padding:8px 12px;
+    font-size:12.5px; font-weight:600; color:var(--p900); max-width:340px; line-height:1.4; }
+  .rule b { color:var(--p700); }
+  .rule.red { background:rgba(207,46,37,.05); border-color:rgba(207,46,37,.25); }
+  .rule.red b { color:var(--red); }
+
+  /* ===== design radial ===== */
+  .radial { display:grid; grid-template-columns:minmax(220px,300px) 1fr; gap:0; align-items:center; margin:22px 0 8px; }
+  @media (max-width:720px){ .radial { grid-template-columns:1fr; } }
+  .src { background:linear-gradient(135deg,var(--p700),var(--p900)); color:#fff; border-radius:var(--radius);
+    padding:20px 22px; box-shadow:var(--shadow); position:relative; z-index:2; }
+  .src .f { font-family:var(--mono); font-weight:700; font-size:14px; margin-bottom:6px; }
+  .src .d { font-size:12px; color:var(--p300); line-height:1.5; }
+  .rooms { display:flex; flex-direction:column; gap:10px; padding-left:34px; }
+  @media (max-width:720px){ .rooms { padding-left:0; margin-top:14px; } }
+  .room { position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:10px 14px; font-size:13px; font-weight:600; box-shadow:var(--shadow); }
+  .room .im { font-family:var(--mono); font-size:9.5px; color:var(--amber); display:block; font-weight:600; }
+  .room::before { content:''; position:absolute; left:-34px; top:50%; width:34px; height:1.5px; background:var(--p300); }
+  @media (max-width:720px){ .room::before { display:none; } }
+  .swatches { display:flex; border-radius:9px; overflow:hidden; margin:18px 0 4px; max-width:640px; border:1px solid var(--line); }
+  .sw { flex:1; height:44px; position:relative; }
+  .sw span { position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:8.5px; color:#fff; opacity:.85; }
+  .sw.light span { color:var(--p900); }
+  .status-sw { display:flex; gap:8px; align-items:center; margin:8px 0 14px; flex-wrap:wrap; }
+  .ssw { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10.5px; color:var(--muted); }
+  .ssw i { width:14px; height:14px; border-radius:4px; display:inline-block; }
+
+  /* ===== timeline ===== */
+  .tl { border-left:2.5px solid #d5c8ee; margin:20px 0 20px 8px; padding-left:24px; max-width:720px; }
+  .tl-i { position:relative; padding-bottom:18px; }
+  .tl-i:last-child { padding-bottom:4px; }
+  .tl-i::before { content:''; position:absolute; left:-31.5px; top:5px; width:12px; height:12px;
+    border-radius:50%; background:var(--p500); border:2.5px solid var(--bg); }
+  .tl-i.bad::before { background:var(--red); }
+  .tl-i.good::before { background:var(--green); }
+  .tl-i .h { font-weight:800; font-size:14.5px; }
+  .tl-i .h .tag2 { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--muted);
+    background:var(--line2); padding:2px 7px; border-radius:6px; margin-left:8px; }
+  .tl-i .b { font-size:13.5px; color:var(--muted); line-height:1.5; max-width:64ch; }
+  .tl-i .b b { color:var(--ink); }
+
+  .golden { background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff;
+    border-radius:var(--radius); padding:28px 30px; margin:26px 0; box-shadow:var(--shadow); max-width:800px; }
+  .golden .q { font-size:18.5px; font-weight:700; letter-spacing:-.015em; line-height:1.55; }
+  .golden .q em { color:var(--p300); font-style:normal; }
+  .golden .orig { margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.18);
+    font-size:12px; color:rgba(255,255,255,.66); line-height:1.7; }
+  blockquote.prop { border-left:4px solid var(--p500); background:var(--p50); border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    padding:16px 20px; margin:20px 0; max-width:780px; }
+  blockquote.prop p { margin-bottom:8px; font-weight:600; color:var(--p900); font-size:15px; }
+  blockquote.prop p:last-child { margin-bottom:0; }
+  .warn { display:flex; gap:14px; background:rgba(207,46,37,.05); border:1px solid rgba(207,46,37,.28);
+    border-radius:var(--radius-sm); padding:14px 16px; margin:16px 0; max-width:780px; }
+  .warn .ic { color:var(--red); font-weight:800; font-size:16px; flex:none; }
+  .warn p { margin:0; font-size:13.5px; }
+
+  /* ===== dual loop ===== */
+  .dual { display:grid; grid-template-columns:1fr 200px 1fr; gap:16px; margin:24px 0; align-items:stretch; }
+  @media (max-width:840px){ .dual { grid-template-columns:1fr; } }
+  .loop-panel { border-radius:var(--radius); padding:18px 20px 14px; border:1px solid; }
+  .loop-panel.bad { background:rgba(207,46,37,.045); border-color:rgba(207,46,37,.25); }
+  .loop-panel.good { background:rgba(31,157,98,.05); border-color:rgba(31,157,98,.3); }
+  .loop-panel .t { font-weight:800; font-size:16px; }
+  .loop-panel.bad .t { color:var(--red); }
+  .loop-panel.good .t { color:var(--green); }
+  .loop-panel .s { font-size:12px; color:var(--muted); margin-bottom:12px; }
+  .loop-panel ol { margin-left:18px; font-size:13.5px; }
+  .loop-panel ol li { margin-bottom:6px; line-height:1.45; }
+  .loop-panel .cycle { font-family:var(--mono); font-size:11px; margin-top:10px; font-weight:600; }
+  .loop-panel.bad .cycle { color:var(--red); }
+  .loop-panel.good .cycle { color:var(--green); }
+  .switch { display:flex; flex-direction:column; justify-content:center; text-align:center;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 14px; box-shadow:var(--shadow); }
+  .switch .q { font-weight:800; font-size:14px; line-height:1.35; margin-bottom:10px; }
+  .switch .opt { font-family:var(--mono); font-size:10.5px; line-height:1.5; margin-bottom:8px; }
+  .switch .opt.l { color:var(--red); } .switch .opt.r { color:var(--green); }
+  .switch .note { font-size:11px; color:var(--faint); line-height:1.45; }
+
+  /* ===== quadrants ===== */
+  .quad { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0; }
+  @media (max-width:720px){ .quad { grid-template-columns:1fr; } }
+  .quad .cell { background:var(--card); border:1px solid var(--line); border-top:4px solid var(--p500);
+    border-radius:var(--radius-sm); padding:16px 18px 10px; box-shadow:var(--shadow); }
+  .quad .cell.a { border-top-color:var(--amber); }
+  .quad .cell.c { border-top-color:var(--faint); }
+  .quad .cell.d { border-top-color:var(--red); }
+  .quad .cell .t { font-weight:800; font-size:15px; }
+  .quad .cell .s { font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.06em; margin-bottom:10px; text-transform:uppercase; }
+  .quad .cell ul { margin-left:16px; font-size:13px; }
+  .quad .cell ul li { margin-bottom:6px; line-height:1.45; }
+  .quad-core { text-align:center; margin:0 0 2px; }
+  .quad-core span { display:inline-block; background:var(--p700); color:#fff; font-weight:700;
+    font-size:13.5px; border-radius:999px; padding:9px 22px; box-shadow:var(--shadow); }
+
+  /* ===== boris two-layer (Lark-board composition) ===== */
+  .bcycle { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px 14px; margin:20px 0 14px; box-shadow:var(--shadow); }
+  .bcycle .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:12px; }
+  .brow { display:flex; flex-wrap:wrap; }
+  .bstep { flex:1 1 138px; min-width:134px; background:var(--p50); border:1px solid var(--p100);
+    border-radius:var(--radius-sm); padding:12px 12px 10px; position:relative; margin-right:21px; margin-bottom:10px; }
+  .bstep:last-child { margin-right:0; }
+  .bstep::after { content:'→'; position:absolute; right:-18px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:14px; }
+  .bstep:last-child::after { content:''; }
+  .bstep .ic { font-size:18px; margin-bottom:5px; }
+  .bstep .t { font-size:13px; font-weight:800; line-height:1.3; margin-bottom:4px; }
+  .bstep .d { font-size:11px; color:var(--muted); line-height:1.4; margin-bottom:7px; }
+  .bstep .map { font-family:var(--mono); font-size:9px; font-weight:700; color:var(--p600);
+    background:#fff; border:1px solid var(--p100); border-radius:6px; padding:2px 7px; display:inline-block; }
+  .bstep.star { border:1.5px solid var(--amber); background:rgba(194,113,10,.05); }
+  .bstep.star .t { color:var(--amber); }
+  .breturn { display:flex; align-items:center; gap:10px; border:1.5px dashed var(--amber);
+    border-radius:var(--radius-sm); padding:9px 14px; font-size:12px; font-weight:600; color:var(--amber);
+    background:rgba(194,113,10,.04); }
+  .breturn .arr { font-size:15px; font-weight:800; }
+  .bpar { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px 14px; margin:0 0 8px; box-shadow:var(--shadow); }
+  .bpar .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:12px; }
+  .bpar-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; }
+  @media (max-width:760px){ .bpar-grid { grid-template-columns:1fr; } }
+  .terms { display:flex; flex-wrap:wrap; gap:7px; }
+  .term { background:#221737; border-radius:8px; padding:8px 10px 7px; width:74px; }
+  .term .bar { display:flex; gap:3px; margin-bottom:6px; }
+  .term .bar i { width:5px; height:5px; border-radius:50%; display:inline-block; }
+  .term .bar i:nth-child(1){ background:#ff5f57; } .term .bar i:nth-child(2){ background:#febc2e; } .term .bar i:nth-child(3){ background:#28c840; }
+  .term .bar .num { margin-left:auto; font-family:var(--mono); font-size:8.5px; color:#a98fd8; }
+  .term .ln { font-family:var(--mono); font-size:9px; color:#c9b8ec; }
+  .terms-cap, .webs-cap { font-family:var(--mono); font-size:9.5px; color:var(--faint); margin-top:7px; }
+  .dispatcher { text-align:center; }
+  .dispatcher .fig { width:52px; height:52px; margin:0 auto 6px; border-radius:50%;
+    background:linear-gradient(135deg,var(--p600),var(--p900)); color:#fff; display:grid; place-items:center; font-size:22px; }
+  .dispatcher .t { font-weight:800; font-size:13px; }
+  .dispatcher .d { font-size:10.5px; color:var(--muted); line-height:1.4; max-width:150px; margin:2px auto 8px; }
+  .prbadge { display:inline-block; font-family:var(--mono); font-size:10.5px; font-weight:700; color:#fff;
+    background:var(--amber); border-radius:999px; padding:5px 12px; }
+  .webs { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+  @media (max-width:760px){ .webs { justify-content:flex-start; } }
+  .web { width:56px; height:38px; background:#fff; border:1px solid var(--p100); border-radius:7px;
+    box-shadow:var(--shadow); position:relative; }
+  .web::before { content:''; position:absolute; top:5px; left:6px; right:6px; height:4px; border-radius:2px; background:var(--p100); }
+  .web::after { content:''; position:absolute; top:13px; left:6px; width:60%; height:3px; border-radius:2px; background:var(--line2); }
+
+  /* ===== team topology ===== */
+  .topo { margin:22px 0 10px; }
+  .trow { display:flex; justify-content:center; }
+  .tnode { background:var(--card); border:1.5px solid var(--p500); border-radius:var(--radius);
+    padding:13px 22px; box-shadow:var(--shadow); text-align:center; max-width:640px; }
+  .tnode .who { font-weight:800; font-size:15px; }
+  .tnode .d { font-size:12px; color:var(--muted); line-height:1.5; margin-top:3px; }
+  .tnode .d b { color:var(--red); }
+  .tnode.mj { background:linear-gradient(135deg,var(--p700),var(--p900)); border-color:var(--p700); }
+  .tnode.mj .who { color:#fff; } .tnode.mj .d { color:var(--p300); }
+  .tlink { position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; padding:14px 0; }
+  .tlink::before { content:''; position:absolute; top:0; bottom:0; left:50%; width:2.5px;
+    transform:translateX(-50%); background:var(--p500); }
+  .tlink.dashed::before { background:repeating-linear-gradient(180deg,var(--p300) 0 5px,transparent 5px 10px); }
+  .tlink .lab { position:relative; z-index:1; background:var(--bg); border:1px solid var(--p100);
+    border-radius:999px; padding:4px 12px; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.08em; color:var(--p600); text-transform:uppercase; text-align:center; max-width:92%; }
+  .tlink .lab.soft { color:var(--muted); text-transform:none; letter-spacing:0; font-family:var(--font);
+    font-weight:600; font-size:11px; }
+  .mesh { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; }
+  .mesh .ag { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:9px 13px; font-size:12.5px; font-weight:700; box-shadow:var(--shadow); text-align:center; }
+  .mesh .ag .on { display:block; font-family:var(--mono); font-size:8.5px; font-weight:600;
+    color:var(--amber); letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+  .mesh .mm { color:var(--p500); font-weight:800; font-size:15px; }
+  .meshlab { text-align:center; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.08em; color:var(--p600); text-transform:uppercase; margin:8px 0 0; }
+  .artifact { margin-top:16px; background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff;
+    border-radius:var(--radius); padding:14px 20px 12px; box-shadow:var(--shadow); text-align:center; }
+  .artifact .t { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p300); margin-bottom:6px; }
+  .artifact .items { font-size:13px; font-weight:700; }
+  .artifact .d { font-size:11px; color:var(--p300); margin-top:4px; }
+
+  /* ===== stack diagram ===== */
+  .stackwrap { display:grid; grid-template-columns:1fr 212px; gap:22px; align-items:center; margin:22px 0; }
+  @media (max-width:760px){ .stackwrap { grid-template-columns:1fr; } }
+  .stk { display:flex; flex-direction:column; gap:9px; }
+  .slayer { border-radius:var(--radius-sm); padding:13px 18px; border:1.5px solid; }
+  .slayer .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:2px; }
+  .slayer .t { font-weight:800; font-size:15px; }
+  .slayer .d { font-size:11.5px; margin-top:2px; line-height:1.45; }
+  .slayer.loop { border-style:dashed; border-color:var(--p300); background:var(--p50); }
+  .slayer.loop .k, .slayer.loop .d { color:var(--p600); }
+  .slayer.harn { border-color:var(--p500); background:var(--p100); }
+  .slayer.harn .k, .slayer.harn .d { color:var(--p700); }
+  .slayer.ctx { border-color:var(--p900); background:linear-gradient(135deg,var(--p700),var(--p900)); color:#fff; }
+  .slayer.ctx .k, .slayer.ctx .d { color:var(--p300); }
+  .po { text-align:center; background:var(--card); border:1.5px solid var(--p500); border-radius:var(--radius); padding:16px 12px; box-shadow:var(--shadow); }
+  .po .fig { width:50px; height:50px; margin:0 auto 6px; border-radius:50%; background:linear-gradient(135deg,var(--p600),var(--p900)); color:#fff; display:grid; place-items:center; font-size:21px; }
+  .po .t { font-weight:800; font-size:13.5px; margin-bottom:8px; }
+  .po .chips { display:flex; flex-direction:column; gap:5px; }
+  .po .chip2 { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p700); background:var(--p50); border:1px solid var(--p100); border-radius:999px; padding:4px 8px; }
+
+  /* ===== guard gallery ===== */
+  .gpair { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; margin-bottom:12px; box-shadow:var(--shadow); }
+  @media (max-width:720px){ .gpair { grid-template-columns:1fr; } }
+  .gpair .half { padding:14px 16px 12px; }
+  .gpair .half.fail { background:rgba(207,46,37,.05); border-right:1px solid var(--line); }
+  @media (max-width:720px){ .gpair .half.fail { border-right:none; border-bottom:1px solid var(--line); } }
+  .gpair .half.mach { background:var(--p50); }
+  .gpair .hd { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:5px; }
+  .gpair .fail .hd { color:var(--red); } .gpair .mach .hd { color:var(--p600); }
+  .gpair .tt { font-weight:800; font-size:14px; margin-bottom:4px; }
+  .gpair p { font-size:12.5px; color:var(--muted); margin:0; line-height:1.5; }
+  .gpair p b { color:var(--ink); }
+  .gpair .res { display:inline-block; margin-top:8px; font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--green); background:rgba(31,157,98,.08); border:1px solid rgba(31,157,98,.25); border-radius:6px; padding:2px 7px; }
+
+  /* ===== context shelves ===== */
+  .shelf { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--amber); border-radius:var(--radius-sm); padding:15px 18px 12px; margin:12px 0; box-shadow:var(--shadow); }
+  .shelf .tt { font-weight:800; font-size:15px; }
+  .shelf .tt .mono2 { font-family:var(--mono); font-size:10.5px; color:var(--amber); font-weight:600; margin-left:6px; }
+  .shelf p { font-size:13px; color:var(--muted); margin:5px 0 0; max-width:none; }
+  .shelf p b { color:var(--ink); }
+
+  /* ===== letter ===== */
+  .letter { position:relative; background:#221737; border-radius:var(--radius); padding:22px 24px; margin:20px 0; box-shadow:var(--shadow); }
+  .letter pre { font-family:var(--mono); font-size:11.5px; line-height:1.7; color:#d9cdf3; white-space:pre-wrap; margin:0; }
+  .copybtn { position:absolute; top:14px; right:14px; font-family:var(--mono); font-size:10.5px; font-weight:700; color:#fff; background:var(--p500); border:none; border-radius:8px; padding:7px 12px; cursor:pointer; }
+  .copybtn:hover { background:var(--p600); }
+  .copybtn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+
+  /* ===== gates / checklist ===== */
+  .gates { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
+  @media (max-width:840px){ .gates { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .gates { grid-template-columns:1fr; } }
+  .gate { background:var(--card); border:1.5px solid var(--p500); border-radius:var(--radius);
+    padding:16px 14px; text-align:center; box-shadow:var(--shadow); }
+  .gate .ic { font-size:20px; margin-bottom:8px; }
+  .gate .t { font-weight:800; font-size:14px; margin-bottom:4px; }
+  .gate .d { font-size:11.5px; color:var(--muted); line-height:1.45; }
+  .check { list-style:none; margin:16px 0 8px; max-width:780px; }
+  .check li { display:block; position:relative; padding:10px 14px 10px 46px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); margin-bottom:7px; background:var(--card); font-size:13.5px; }
+  .check li::before { content:'✓'; font-family:var(--mono); color:#fff; background:var(--p500);
+    border-radius:6px; width:20px; height:20px; display:grid; place-items:center; font-size:11px;
+    font-weight:700; position:absolute; left:14px; top:11px; }
+  .check li b { font-weight:700; }
+  .check li .lp { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p600);
+    background:var(--p50); border-radius:5px; padding:1px 6px; margin-right:2px; }
+  .foot { margin-top:70px; padding-top:24px; border-top:1px solid var(--line);
+    font-size:12px; color:var(--faint); line-height:1.8; }
+  .foot b { color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="m">PR</div><div class="t">The Closed-Loop Playbook</div></div>
+
+<div class="app">
+  <aside class="side" aria-label="Contents">
+    <div class="brand"><div class="m">PR</div>Closed-Loop Playbook</div>
+    <div class="grp">Prologue · The claim</div>
+    <a class="nav" href="#personas"><span class="n">01</span>Two people, zero typing</a>
+    <a class="nav" href="#thesis"><span class="n">02</span>The three-layer thesis</a>
+    <div class="grp">Part I · Foundations</div>
+    <a class="nav" href="#scars"><span class="n">03</span>Every ceremony is a scar</a>
+    <a class="nav" href="#eras"><span class="n">04</span>Shrinking the loop</a>
+    <a class="nav" href="#vocab"><span class="n">05</span>The vocabulary</a>
+    <a class="nav" href="#testmap"><span class="n">06</span>The testing map</a>
+    <a class="nav" href="#absorption"><span class="n">07</span>The great absorption</a>
+    <a class="nav" href="#shifts"><span class="n">08</span>Verification: five shifts</a>
+    <a class="nav" href="#unchanged"><span class="n">09</span>What didn't change</a>
+    <div class="grp">Part II · Layer 1: Context</div>
+    <a class="nav" href="#ctx"><span class="n">10</span>The context stack</a>
+    <a class="nav" href="#design"><span class="n">11</span>Rulebooks as context</a>
+    <div class="grp">Part III · Layer 2: Harness</div>
+    <a class="nav" href="#battlefield"><span class="n">12</span>The battlefield: Wix</a>
+    <a class="nav" href="#harness"><span class="n">13</span>The harness</a>
+    <a class="nav" href="#sixloops"><span class="n">14</span>Our six loops</a>
+    <a class="nav" href="#guards"><span class="n">15</span>The guard gallery</a>
+    <div class="grp">Part IV · Fire drills</div>
+    <a class="nav" href="#case1"><span class="n">16</span>Case 1: require()</a>
+    <a class="nav" href="#case2"><span class="n">17</span>Case 2: locked doors</a>
+    <a class="nav" href="#narrative"><span class="n">18</span>Narrative generators</a>
+    <a class="nav" href="#playbook"><span class="n">19</span>The harness playbook</a>
+    <div class="grp">Part V · Layer 3: Loop</div>
+    <a class="nav" href="#sentinels"><span class="n">20</span>The three sentinels</a>
+    <a class="nav" href="#desk"><span class="n">21</span>Desk &amp; happy path</a>
+    <div class="grp">Closing · The synthesis</div>
+    <a class="nav" href="#boris"><span class="n">22</span>Boris's workflow</a>
+    <a class="nav" href="#team"><span class="n">23</span>The team topology</a>
+    <a class="nav" href="#synthesis"><span class="n">24</span>Full stack &amp; first day</a>
+    <a class="nav" href="#daniel"><span class="n">25</span>Letter to Daniel's AI</a>
+    <div class="side-foot">Purple Ruler · Internal training<br>
+      <b>This page is styled with the same pr-design tokens it teaches.</b></div>
+  </aside>
+
+  <main class="main">
+    <div class="wrap">
+
+      <!-- HERO -->
+      <header class="hero">
+        <svg class="loopmark" viewBox="0 0 120 120" aria-hidden="true">
+          <g class="ring">
+            <circle cx="60" cy="60" r="46" fill="none" stroke="#ece6f8" stroke-width="10"/>
+            <path d="M60 14 A46 46 0 1 1 18 40" fill="none" stroke="#4b2e83" stroke-width="10" stroke-linecap="round"/>
+            <path d="M10 46 L18 40 L26 48" fill="none" stroke="#4b2e83" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+          </g>
+          <text x="60" y="66" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="13" font-weight="700" fill="#4b2e83">LOOP</text>
+        </svg>
+        <div class="eyebrow">Purple Ruler · Internal Training · The AI-Native Series</div>
+        <h1>The Closed-Loop<br>Playbook <span class="dim">/ shipping<br>without typing</span></h1>
+        <p class="thesis">How a non-coder runs production systems on three layers: <b>context</b> makes the agents think right, <b>the harness</b> makes them unable to break things, <b>the loop</b> makes them run unwatched — and the human appears only at <b>goal · spec · acceptance</b>.</p>
+        <div class="threeq">
+          <div class="q"><div class="k">Foundations</div><p>What did 70 years of software engineering learn — and which parts still apply?</p></div>
+          <div class="q"><div class="k">Three layers</div><p>Context → harness → loop: what does each layer solve, and which real incident forced it?</p></div>
+          <div class="q"><div class="k">The human</div><p>Where exactly does a person still stand — and why only at goal, spec and acceptance?</p></div>
+        </div>
+      </header>
+
+      <!-- ============ ACT I ============ -->
+      <section id="personas">
+        <div class="act">Prologue · The claim</div>
+        <h2>Two people who stopped typing</h2>
+        <div class="personas">
+          <div class="persona">
+            <div class="who"><div class="av">BC</div><div><div class="nm">Boris Cherny</div><div class="rl">Built Claude Code · Anthropic</div></div></div>
+            <div class="bignum"><span class="v">0</span><span class="l">lines hand-written or hand-edited<br>since Nov 2025</span></div>
+            <div class="bignum"><span class="v">10–30</span><span class="l">pull requests shipped per day</span></div>
+            <div class="bignum"><span class="v">~15</span><span class="l">parallel AI sessions at peak</span></div>
+            <div class="chips"><span class="chip">dispatches from phone at night</span><span class="chip">reviews over morning coffee</span></div>
+          </div>
+          <div class="persona">
+            <div class="who"><div class="av">MJ</div><div><div class="nm">MJ</div><div class="rl">Product owner · Purple Ruler</div></div></div>
+            <div class="bignum"><span class="v">0</span><span class="l">lines of code written — or read</span></div>
+            <div class="bignum"><span class="v">114</span><span class="l">PRs merged in the last 7 days<br>(13–20 Jul 2026 · both repos)</span></div>
+            <div class="bignum"><span class="v">+27.6k</span><span class="l">lines shipped, −3.0k removed —<br><b style="color:var(--green)">44% of new lines are tests</b></span></div>
+            <div class="chips"><span class="chip">4+1 actions: goals · spec · plan · acceptance + Publish</span><span class="chip g">8/8 days active — the loop doesn't sleep</span><span class="chip g">school portal · parent accounts · student dashboard — live</span></div>
+          </div>
+        </div>
+        <p>What collapsed to make this possible — three costs, all at once:</p>
+        <div class="collapse">
+          <div class="col-c"><div class="t">Cost of building</div><div class="flow"><span class="old">weeks</span><span class="arr">→</span><span class="new">hours</span></div><div class="d">A feature is an afternoon, not a sprint. Heavy scheduling becomes "what ships today."</div></div>
+          <div class="col-c"><div class="t">Cost of knowledge transfer</div><div class="flow"><span class="old">docs + meetings</span><span class="arr">→</span><span class="new">context</span></div><div class="d">Conventions, decisions and lessons live in the AI's working context. Every agent starts pre-briefed. Nobody "didn't read the doc."</div></div>
+          <div class="col-c"><div class="t">Cost of verification labor</div><div class="flow"><span class="old">QA cycles</span><span class="arr">→</span><span class="new">every push</span></div><div class="d">Machines re-check everything on every change — more diligently than any human checklist.</div></div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 01</span>
+          <p>AI collapsed the cost of building. It did not collapse the cost of being wrong.
+          <span class="sub">A wrong feature, a broken production push, a bad diagnosis — these cost what they always cost. That asymmetry is why Layers 2 and 3 exist.</span></p>
+        </div>
+      </section>
+      <section id="thesis">
+        <h2>The thesis: three layers, three sentences</h2>
+        <p class="lead">Everything in this playbook hangs on three claims. The rest is evidence.</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">The human gate moved to the spec end.</div><div class="d">Review can check whether a thing was <b>built right</b> — never whether the <b>right thing</b> was built. So the product owner stands where correction is free: before the build, in plain words. And nowhere else.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">Prose doesn't change the odds. Machines do.</div><div class="d">A failure that repeats is never fixed by another "please remember" in a brief. It is fixed by a machine that makes the failure <b>structurally impossible</b>. Every guard in this playbook was born this way.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">Three layers, one system.</div><div class="d"><b>Context</b> makes the agents think right. <b>The harness</b> makes them unable to break things. <b>The loop</b> makes them run unwatched. Stacked, they leave the human exactly three jobs: goal, spec, acceptance.</div></div></div>
+        </div>
+        <div class="golden">
+          <div class="q">"Adding prose does not change the order of magnitude of failure. Adding a machine does. <em>Make the failure mode structurally impossible.</em>"</div>
+          <div class="orig">原文：加散文不改失败概率的量级，加机器才改；要让失败模式结构上不可能。</div>
+        </div>
+        <div class="stackwrap">
+          <div class="stk">
+            <div class="slayer loop"><div class="k">Layer 3 · Loop</div><div class="t">Runs unwatched</div><div class="d">sentinels · decision desk · happy-path merge policy</div></div>
+            <div class="slayer harn"><div class="k">Layer 2 · Harness</div><div class="t">Can't break things</div><div class="d">two lanes · six loops · guard gallery · CI physics</div></div>
+            <div class="slayer ctx"><div class="k">Layer 1 · Context</div><div class="t">Thinks right</div><div class="d">CLAUDE.md · memory · skills · rulebooks · the spec gate</div></div>
+          </div>
+          <div class="po">
+            <div class="fig">🙋</div>
+            <div class="t">Product owner</div>
+            <div class="chips"><span class="chip2">sets the GOAL</span><span class="chip2">approves the SPEC</span><span class="chip2">ACCEPTS by using</span></div>
+          </div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 02</span>
+          <p>Every repeated failure is an unbuilt machine.
+          <span class="sub">If you catch yourself writing the same warning twice, you are procrastinating on building the guard.</span></p>
+        </div>
+      </section>
+
+      <section id="scars">
+        <div class="act">Part I · Foundations — what the textbook learned</div>
+        <h2>Every ceremony is a scar</h2>
+        <p class="lead">Software engineering wasn't invented in a classroom. Every step of the classical process exists because <b>a project once died without it</b>. The textbook lifecycle — and the disaster each stage prevents:</p>
+        <div class="sdlc">
+          <div class="stage"><div class="k">Stage 1</div><div class="t">Requirements</div><div class="scar"><b>THE SCAR</b>"We built the wrong thing entirely."</div></div>
+          <div class="stage"><div class="k">Stage 2</div><div class="t">Design</div><div class="scar"><b>THE SCAR</b>"The pieces didn't fit together."</div></div>
+          <div class="stage"><div class="k">Stage 3</div><div class="t">Implementation</div><div class="scar"><b>THE SCAR</b>"We overwrote each other's work."</div></div>
+          <div class="stage"><div class="k">Stage 4</div><div class="t">Testing</div><div class="scar"><b>THE SCAR</b>"The fix broke three other things."</div></div>
+          <div class="stage"><div class="k">Stage 5</div><div class="t">Release</div><div class="scar"><b>THE SCAR</b>"It worked on my machine."</div></div>
+          <div class="stage"><div class="k">Stage 6</div><div class="t">Maintenance</div><div class="scar"><b>THE SCAR</b>"We made the same mistake twice."</div></div>
+        </div>
+        <p>Strip away the jargon and every one of those ceremonies guards just <b>two risks</b>: <b>information decaying as it passes between humans</b> (requirements docs, design docs, review meetings, sign-offs) and <b>manual hands slipping</b> (test cycles, regression checklists, release checklists). Hold onto that pair — you will watch AI absorb both, a few chapters on.</p>
+      </section>
+      <section id="eras">
+        <h2>Fifty years of one idea: shrink the feedback loop</h2>
+        <p class="lead">Each generation of methodology is remembered for one thing: <b>making the gap between "we did something" and "we know if it works" shorter.</b></p>
+        <div class="eras">
+          <div class="era"><div class="yr">1970s · Waterfall</div><div class="t">Finish, then hand over</div><div class="d">Each stage completes fully before the next begins. Discipline over chaos — but you learn the truth at delivery.</div><div class="loop">FEEDBACK ARRIVES IN<b>months–years</b></div></div>
+          <div class="era"><div class="yr">2001 · Agile</div><div class="t">Ship small slices</div><div class="d">Working software every sprint, demoed to real users. Wrong turns caught in weeks, not at the end.</div><div class="loop">FEEDBACK ARRIVES IN<b>weeks</b></div></div>
+          <div class="era"><div class="yr">2010s · DevOps &amp; CI/CD</div><div class="t">Machines verify every push</div><div class="d">Every change auto-built, auto-tested, deployable on demand. Verification stops being an event.</div><div class="loop">FEEDBACK ARRIVES IN<b>hours</b></div></div>
+          <div class="era now"><div class="yr">Now · AI-native</div><div class="t">Agents build, loops verify</div><div class="d">AI writes the code; a chain of closed loops — and an AI that can test itself — verifies everything.</div><div class="loop">FEEDBACK ARRIVES IN<b>minutes</b></div></div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 03</span>
+          <p>The whole history of software engineering is one long campaign to shrink the feedback loop.
+          <span class="sub">Waterfall → Agile → CI/CD → AI-native isn't a fashion cycle. It's the same idea, compounding. Keep this lens: it explains every layer ahead.</span></p>
+        </div>
+      </section>
+      <section id="vocab">
+        <h2>The vocabulary: twelve words the scars invented</h2>
+        <p class="lead">You will hear these words all day. Every one of them is a cure for a Stage-1-to-6 scar — git itself exists because teams kept overwriting each other's work. One mental model unlocks all twelve: <b>a shared project folder whose entire history is saved</b>. The numbered cards trace the life of one change, in order:</p>
+        <div class="vocab">
+          <div class="vcard"><div class="vterm"><span class="w">repo</span></div><div class="def">The project's shared folder — every file, plus every version ever saved.</div><div class="here"><b>IN OUR SHOP</b>Two repos: <span class="mono">purple-ruler</span> (back end) · <span class="mono">pages-V2</span> (front end)</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">worktree</span><span class="st">STEP 1</span></div><div class="def">A physically separate desk for each worker — same repo, own copy of the files.</div><div class="here"><b>IN OUR SHOP</b>One agent, one worktree — parallel agents can't overwrite each other</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">branch</span><span class="st">STEP 2</span></div><div class="def">Your own draft copy inside the repo. Drafts never touch the official copy.</div><div class="here"><b>IN OUR SHOP</b>One feature = one branch (<span class="mono">feat/page-name</span>)</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">commit</span><span class="st">STEP 3</span></div><div class="def">A named snapshot: what changed, and why. The unit of history — you can always go back.</div><div class="here"><b>IN OUR SHOP</b>Case 2's decisive exhibit was replaying an old commit</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">rebase</span><span class="st">STEP 4</span></div><div class="def">Catch your draft up with the latest official copy before submitting it.</div><div class="here"><b>IN OUR SHOP</b>Mandatory before every PR — a stale draft poisons the review diff</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">push</span><span class="st">STEP 5</span></div><div class="def">Upload your snapshots from your desk to the shared server (GitHub).</div><div class="here"><b>IN OUR SHOP</b>On <span class="mono">pages-V2 main</span>, push = live to real users in seconds</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">PR · pull request</span><span class="st">STEP 6</span></div><div class="def">"Please take my draft into the official copy" — the request card where review happens.</div><div class="here"><b>IN OUR SHOP</b>The unit of delivery; the description carries the spec summary</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">CI</span><span class="st">STEP 7</span></div><div class="def">Robots that automatically check every PR — tests, screenshots, guards — on every update.</div><div class="here"><b>IN OUR SHOP</b>Loop ③: viewports · claude-review · guard-test &amp; co.</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">merge</span><span class="st">STEP 8</span></div><div class="def">The draft is accepted into the official copy. The change is now part of the truth.</div><div class="here"><b>IN OUR SHOP</b>Only the orchestrator merges — gate and merge stay bound</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">main</span><span class="st">STEP 9</span></div><div class="def">The official copy everyone trusts — protected: red checks physically can't merge in.</div><div class="here"><b>IN OUR SHOP</b>CE lane: main <em>is</em> production · Velo lane: main waits for Publish</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">diff</span></div><div class="def">The "what changed" view between any two versions — reviews read diffs, not whole files.</div><div class="here"><b>IN OUR SHOP</b>Gate rule: two-dot diff, never three (83 lines once became 1,546)</div></div>
+          <div class="vcard"><div class="vterm"><span class="w">GitHub Pages</span></div><div class="def">Free hosting that serves files straight out of the repo, updated on every push.</div><div class="here"><b>IN OUR SHOP</b>Why the CE lane has no second gate: the repo <em>is</em> the website</div></div>
+        </div>
+        <p class="cap">Everything else in this playbook — loops, gates, guards — is built on top of these twelve. If a sentence later feels foggy, come back here.</p>
+      </section>
+      <section id="testmap">
+        <h2>The testing map: one pyramid, three axes</h2>
+        <p class="lead">"How many kinds of testing are there?" The textbook (ISTQB) answers: four families, twenty-odd named kinds. The useful mental model is <b>three axes</b> — which layer, which quality, when. Every test you will ever meet is one point in that space.</p>
+        <h3>Axis 1 · Which layer — the test pyramid</h3>
+        <div class="pyrcap">↑ FEWER · SLOWER · CLOSER TO A REAL USER</div>
+        <div class="pyr">
+          <div class="lv l4" style="width:46%"><b>Acceptance</b> — is it what we asked for?<span>ours: MJ uses the feature</span></div>
+          <div class="lv l3" style="width:64%"><b>End-to-end</b> — click through like a human<span>ours: Playwright · 3 viewports</span></div>
+          <div class="lv l2" style="width:82%"><b>Integration</b> — do the parts fit &amp; load?<span>ours: wix dev runtime preview</span></div>
+          <div class="lv l1" style="width:100%"><b>Unit</b> — does function X return Y?<span>ours: TDD RED→GREEN</span></div>
+        </div>
+        <div class="pyrcap">↓ MANY · FAST · CHEAP</div>
+        <h3>Axis 2 · Which quality</h3>
+        <div class="rules">
+          <div class="rule"><b>Functional</b> — does it work at all. Most testing lives here.</div>
+          <div class="rule"><b>Compatibility</b> — browsers, devices, screen sizes. Our three-viewport check is this family.</div>
+          <div class="rule"><b>Performance · Security · Usability · Accessibility</b> — the "how well" families, added by risk, not by default.</div>
+        </div>
+        <h3>Axis 3 · When</h3>
+        <div class="lanes"><div class="lane">
+          <div class="stop">static<span class="sub">never runs: lint · types · import-graph guard</span></div>
+          <div class="stop">while coding<span class="sub">self-test, Loop ②</span></div>
+          <div class="stop">before merge<span class="sub">CI · regression, Loop ③</span></div>
+          <div class="stop live">after release<span class="sub">smoke · monitoring, Loop ⑤</span></div>
+        </div></div>
+        <p class="cap" style="margin-top:2px">"Testing in production" (smoke, canary, monitoring) is a real discipline, not laziness — in a push-to-production world it's a formal verification layer.</p>
+        <p>One special family sits outside the axes — <b>tests of tests</b>: regression (still right after a change?), falsification (would this test actually go RED on the bug? — our gate rule; textbooks call the idea mutation testing), and guard-test (are the guards themselves intact?).</p>
+        <p class="cap">Every weapon in the final chapter's checklist is one point on this map. There is no exotic magic below — only points chosen deliberately.</p>
+      </section>
+      <section id="absorption">
+        <h2>The great absorption: tailoring the textbook</h2>
+        <p class="lead">Remember Part I's two risk families? Here is what happened to the classical pipeline. This is <b>process tailoring</b> — a formal PM practice, done with a new ruler: <b>has AI already absorbed what this step was guarding against?</b></p>
+        <div class="absorb2">
+          <div class="oldstack">
+            <div class="hd">The classical pipeline</div>
+            <div class="oldchip"><span class="n">①</span>Requirements spec (30 pages)<span class="dot ctx"></span></div>
+            <div class="oldchip"><span class="n">②</span>Detailed design docs<span class="dot ctx"></span></div>
+            <div class="oldchip"><span class="n">③</span>Estimation &amp; Gantt charts<span class="dot hrn"></span></div>
+            <div class="oldchip"><span class="n">④</span>Hand-written code<span class="dot hrn"></span></div>
+            <div class="oldchip"><span class="n">⑤</span>Code review meetings<span class="dot hrn"></span></div>
+            <div class="oldchip"><span class="n">⑥</span>QA regression cycles<span class="dot hrn"></span></div>
+            <div class="oldchip"><span class="n">⑦</span>Release windows &amp; manager<span class="dot hrn"></span></div>
+            <div class="oldchip"><span class="n">⑧</span>Lessons-learned meetings<span class="dot ctx"></span></div>
+          </div>
+          <div class="flowcol">→</div>
+          <div class="sinks">
+            <div class="abox ctx">
+              <div class="t"><i style="background:var(--amber)"></i>Absorbed into AI context</div>
+              <div class="s">CLAUDE.md · rules · memory — every agent starts pre-briefed</div>
+              <div class="items"><span class="aitem">① → one-page plain spec</span><span class="aitem">② → decision records AI obeys</span><span class="aitem">⑧ → written once, enforced forever</span></div>
+            </div>
+            <div class="abox hrn">
+              <div class="t"><i style="background:var(--p500)"></i>Automated by the harness</div>
+              <div class="s">CI · guards · smoke — runs on every change, never tired</div>
+              <div class="items"><span class="aitem">③ → tasks shrink to hours</span><span class="aitem">④ → agents write the code</span><span class="aitem">⑤ → CI review + gate</span><span class="aitem">⑥ → always-on tests</span><span class="aitem">⑦ → push-to-prod + smoke</span></div>
+            </div>
+            <div class="keepbar">
+              <div class="t"><i></i>Survives tailoring — the four human gates</div>
+              <div class="s">Judgment cannot be absorbed</div>
+              <div class="items"><span class="aitem">📝 Approve the spec</span><span class="aitem">👆 Accept by using it</span><span class="aitem">⚖️ Judge high-risk calls</span><span class="aitem">🚀 Press the launch button</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 04</span>
+          <p>The tailoring ruler: has AI already absorbed what this ritual guarded?
+          <span class="sub">Transfer rituals dissolve into context. Slip-catching rituals dissolve into the harness. Judgment gates survive — all four of them.</span></p>
+        </div>
+      </section>
+      <section id="shifts">
+        <h2>What AI did to verification: five shifts</h2>
+        <p class="lead">AI didn't remove a single kind of test from the map. It took over <b>executing</b> them — and left designing verification, auditing tests, and judging to humans. Plus one brand-new layer the textbook never had.</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">The bottleneck moved: verification is the new writing code.</div><div class="d">Building used to take 70% of the time. Now building is nearly free — <b>verification is the only stage that didn't compress</b>. Your throughput is no longer how fast you can build; it's how fast you can verify. This is why Boris calls self-verification rule #1, and why five of our six loops are verification loops.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">From a phase to always-on.</div><div class="d">The QA cycle dissolved into CI: every push, the full battery, never tired (the great absorption).</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">The referee problem: the same AI writes the code and the tests.</div><div class="d">Player and referee in one body — it can write tests that <b>cannot fail</b>, and self-certify. The cure is our falsification discipline: humans stop asking "is it green?" and start asking <b>"would it go RED when it should?"</b> Re-inject the root cause; watch the guard catch it.</div></div></div>
+          <div class="shift"><div class="n">4</div><div><div class="t">Verification moved left and right at the same time.</div><div class="d"><b>Left:</b> acceptance criteria are written into the spec before any code — "click this, that appears." <b>Right:</b> in a push-to-production world, smoke tests and monitoring got promoted from ops chores to formal verification. The middle — humans walking manual test-case checklists — is what the machines ate.</div></div></div>
+          <div class="shift"><div class="n">5</div><div><div class="t">A new object to verify: the AI's own reasoning.</div><div class="d">Classical testing verifies code. Now every AI <b>conclusion</b> must also pass a test: make a falsifiable prediction, verify it on the spot (Case 2's lesson). A verification layer no textbook has a chapter for — yet.</div></div></div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 05</span>
+          <p>AI took the execution of testing and left the judgment.
+          <span class="sub">No test kind died. Running them became free; deciding what to verify, auditing whether tests can actually fail, and accepting the result — that's what humans still own.</span></p>
+        </div>
+      </section>
+      <section id="unchanged">
+        <h2>What didn't change — and what got worse</h2>
+        <div class="trio">
+          <div class="c"><div class="ic">🎯</div><div class="t">Judgment</div><div class="d">What to build, for whom, what "good" means. No amount of speed answers this.</div></div>
+          <div class="c"><div class="ic">🧾</div><div class="t">Accountability</div><div class="d">A human still answers for what ships. The Publish button stays in human hands.</div></div>
+          <div class="c"><div class="ic">🔬</div><div class="t">The need to verify</div><div class="d">Truth still only comes from checking against reality. AI made checking cheaper — not optional.</div></div>
+        </div>
+        <p>And one thing got <b>more</b> dangerous: AI produces work — and conclusions — <b>faster and more confidently</b> than any human, with the same or less grounding. A fluent wrong answer at machine speed is a new class of hazard. Part IV shows it blowing up a real production day, and the machinery we built so it can't happen twice.</p>
+      </section>
+      <section id="ctx">
+        <div class="act">Part II · Layer 1 — Context engineering</div>
+        <h2>The context stack: make the agent think right</h2>
+        <p class="lead">An agent's first failure happens before any code is written: it <b>misunderstands</b>. Layer 1 is everything loaded into its head before work starts — so the first draft is already aimed right.</p>
+        <div class="shelf"><div class="tt">1 · CLAUDE.md — standing orders <span class="mono2">auto-loaded</span></div>
+          <p>Global + per-project instruction files, loaded the moment an agent starts, and written to explicitly <b>override default behavior</b>: iron rules, lists of canonical sources ("the true version of X lives here"), routing, known traps.</p></div>
+        <div class="shelf"><div class="tt">2 · Memory — facts that outlive the session <span class="mono2">4 kinds · indexed · recalled by relevance</span></div>
+          <p>Four kinds of entries — <b>user</b> (who MJ is), <b>feedback</b> (how he wants things done), <b>project</b> (ongoing state), <b>reference</b> (where things live). The discipline that makes it compound: <b>every correction becomes one entry → applies automatically next session → the same mistake is made once.</b></p></div>
+        <div class="shelf"><div class="tt">3 · Skills — expertise on demand <span class="mono2">progressive loading</span></div>
+          <p>Packaged instruction sets (Lark operations, Wix development, systematic debugging…) pulled in <b>only when the task needs them</b> — deep expertise without stuffing the context window full on day one.</p></div>
+        <div class="rules">
+          <div class="rule"><b>Verify before asserting.</b> Prices, dates, policies, claims — checked against a canonical source before they enter any deliverable. Never from memory vibes.</div>
+          <div class="rule"><b>Read the rulebook before producing.</b> Canonical sources first, output second.</div>
+        </div>
+        <p>And the most important gate of the whole system lives on this layer: <b>the spec gate</b>. Before any build, the agent writes back — in plain words — what it understood, how it will build, and how you'll check it. Correction here costs one sentence. That is Loop ① of the harness, but its <em>substance</em> is context: getting the head right before the hands move.</p>
+        <div class="insight"><span class="tag">INSIGHT 06</span>
+          <p>A memory entry is the cheapest machine you can build.
+          <span class="sub">One correction = one entry = never again. It's the guard gallery's little sibling — same philosophy, one line long.</span></p>
+        </div>
+      </section>
+
+      <section id="design">
+        <h2>Rulebooks as context: the design system</h2>
+        <p class="lead">Layer 1 is not only prose. The strongest context is <b>executable</b> — rulebooks agents load and obey. Ours is the design system:</p>
+        <div class="radial">
+          <div class="src">
+            <div class="f">assets/pr-design.css</div>
+            <div class="d">The single source of truth: colors, type, radius, shadow, 50+ component shells. Change it once, push — every page updates on refresh.</div>
+          </div>
+          <div class="rooms">
+            <div class="room"><span class="im">@import — "follow the HQ manual"</span>course-enrolment.js <span style="color:var(--faint)">· shadow-DOM room</span></div>
+            <div class="room"><span class="im">@import</span>teacher-allocation.js <span style="color:var(--faint)">· shadow-DOM room</span></div>
+            <div class="room"><span class="im">@import</span>teacher-fitness.js <span style="color:var(--faint)">· shadow-DOM room</span></div>
+          </div>
+        </div>
+        <div class="swatches" role="img" aria-label="Royal purple scale p900 to p50">
+          <div class="sw" style="background:#2c1a52"><span>p900</span></div>
+          <div class="sw" style="background:#3a2266"><span>p800</span></div>
+          <div class="sw" style="background:#4b2e83"><span>p700</span></div>
+          <div class="sw" style="background:#5a3a9e"><span>p600</span></div>
+          <div class="sw" style="background:#6b4ab8"><span>p500</span></div>
+          <div class="sw" style="background:#a98fd8"><span>p300</span></div>
+          <div class="sw light" style="background:#ece6f8"><span>p100</span></div>
+          <div class="sw light" style="background:#f6f2fc"><span>p50</span></div>
+        </div>
+        <div class="status-sw">
+          <span class="ssw"><i style="background:#1f9d62"></i>green</span>
+          <span class="ssw"><i style="background:#c2710a"></i>amber</span>
+          <span class="ssw"><i style="background:#cf2e25"></i>red</span>
+          <span style="font-size:11.5px;color:var(--faint)">— reserved strictly for quantified good/bad, never decoration</span>
+        </div>
+        <div class="rules">
+          <div class="rule"><b>Use the name, never the value.</b> <span class="mono">var(--pr-p700)</span>, not a memorized hex — one hardcode secedes from the system.</div>
+          <div class="rule"><b>Interaction law is written.</b> Filter before paginating; paginators only past 25 rows; destructive = modal; phones get full-screen sheets.</div>
+          <div class="rule red"><b>Push = production, for every audience at once.</b> Fix once, all improve; break one character, all break. Confirm before touching the source of truth.</div>
+        </div>
+        <p class="cap">Meta-note: this page is built from those exact tokens — the purple sidebar <em>is</em> <span class="mono">.pr-side</span>. You've been looking at the design system all along.</p>
+      </section>
+      <section id="battlefield">
+        <div class="act">Part III · Layer 2 — Harness engineering</div>
+        <h2>The stakes: two lanes with opposite physics</h2>
+        <p class="cap" style="margin:-4px 0 10px">Layer 2 begins here: everything below is machinery that makes agents <b>unable</b> to break what matters.</p>
+        <p class="lead">Everything runs on Wix, through two lanes. On one of them, <b>a push is production</b> — there is no second chance. Most incidents trace back to forgetting which lane you're standing in.</p>
+        <div class="lanes">
+          <div class="lane">
+            <div class="lt"><div class="nm">CE lane</div><div class="ds">FRONT END · DEFAULT</div></div>
+            <div class="stop">code<span class="sub">UI, dashboards, forms</span></div>
+            <div class="stop">PR + CI<span class="sub">the only gate</span></div>
+            <div class="stop">push to main<span class="sub">pages-V2</span></div>
+            <div class="stop live">● LIVE in seconds<span class="sub">GitHub Pages — push = production</span></div>
+          </div>
+          <div class="lane">
+            <div class="lt"><div class="nm">Velo lane</div><div class="ds">BACK END</div></div>
+            <div class="stop">code<span class="sub">http-functions · CMS</span></div>
+            <div class="stop">merge to main<span class="sub">purple-ruler</span></div>
+            <div class="stop inert">💤 inert<span class="sub">merge ≠ live</span></div>
+            <div class="stop human">🙋 MJ: Editor Publish<span class="sub">the only path</span></div>
+            <div class="stop live">● LIVE<span class="sub">then smoke-test it</span></div>
+          </div>
+        </div>
+        <p class="cap">Quirks worth tattooing: publish works only via the Editor button (no API/CLI); Editor-built pages live outside git; mobile is a separate layout — verify on a real phone.</p>
+      </section>
+      <section id="harness">
+        <h2>The harness: door access, not discipline</h2>
+        <div class="onion-wrap">
+          <div class="onion">
+            <div class="lbl">Layer 4 · CI guards — even the guards are guarded</div>
+            <div class="o2">
+              <div class="lbl">Layer 3 · PreToolUse hooks — commands blocked before they run</div>
+              <div class="o3">
+                <div class="lbl">Layer 2 · Permissions — publish commands denied outright</div>
+                <div class="o4">
+                  <div class="lbl" style="text-align:center">Layer 1 · CLAUDE.md — rules pre-loaded into context</div>
+                  <span class="agent">🤖 DEV AGENT</span>
+                  <div class="d">works in its own worktree, own branch</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p>The harness is the <b>ID badge + door access + SOP</b> issued to every agent. It implements no features; it decides what an agent physically can and cannot do. GitHub enforces the rest: a red required check makes merging <em>impossible</em> — which is everything on a lane where push = production.</p>
+            <div class="insight" style="margin:14px 0 0"><span class="tag">INSIGHT 07</span>
+              <p>"Who can publish" is not a discipline question. It is a physics question.
+              <span class="sub">Rules you announce get broken. Rules built into the doors don't.</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="sixloops">
+        <h2>Our workflow: six closed loops</h2>
+        <div class="anatomy">
+          <svg viewBox="0 0 340 310" role="img" aria-label="Anatomy of a closed loop">
+            <circle cx="170" cy="150" r="92" fill="none" stroke="#ece6f8" stroke-width="13"/>
+            <path d="M170 58 A92 92 0 1 1 84 116" fill="none" stroke="#4b2e83" stroke-width="13" stroke-linecap="round"/>
+            <path d="M72 128 L84 116 L98 126" fill="none" stroke="#4b2e83" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="170" y="145" text-anchor="middle" font-family="Geist,sans-serif" font-weight="800" font-size="17" fill="#191324">A CLOSED</text>
+            <text x="170" y="166" text-anchor="middle" font-family="Geist,sans-serif" font-weight="800" font-size="17" fill="#191324">LOOP</text>
+            <g font-family="Geist,sans-serif" font-size="12.5" font-weight="700">
+              <rect x="102" y="18" rx="8" width="136" height="30" fill="#fff" stroke="#a98fd8"/>
+              <text x="170" y="37" text-anchor="middle" fill="#4b2e83">1 · EXIT STANDARD</text>
+              <rect x="228" y="222" rx="8" width="104" height="44" fill="#fff" stroke="#a98fd8"/>
+              <text x="280" y="240" text-anchor="middle" fill="#4b2e83">2 · VERIFY</text>
+              <text x="280" y="256" text-anchor="middle" font-size="9.5" font-weight="500" fill="#615c70">with evidence</text>
+              <rect x="8" y="222" rx="8" width="110" height="44" fill="#fff" stroke="#a98fd8"/>
+              <text x="63" y="240" text-anchor="middle" fill="#4b2e83">3 · REWORK</text>
+              <text x="63" y="256" text-anchor="middle" font-size="9.5" font-weight="500" fill="#615c70">fail → go back here</text>
+            </g>
+          </svg>
+          <div>
+            <p class="lead">This is where the 50-year campaign of Part I lands. A stage is a <b>closed loop</b> only with all three parts. Miss one, and work "flows" forward unverified:</p>
+            <div class="openloop">
+              <div class="t">The open loop (the default everywhere else)</div>
+              <div class="row"><span>"I finished it"</span><span class="gap">— — ✕ — —</span><span>hope</span></div>
+              <div class="d">No exit standard, no evidence, nowhere to send it back.</div>
+            </div>
+            <div class="insight" style="margin:14px 0 0"><span class="tag">INSIGHT 08</span>
+              <p>Quality is not inspected in — it is looped in.</p>
+            </div>
+          </div>
+        </div>
+        <div class="pipeline">
+          <div class="pipe-step"><div class="k">LOOP ①</div><div class="t">Spec</div><div class="e">MJ approves plain-language spec</div></div>
+          <div class="pipe-step"><div class="k">LOOP ②</div><div class="t">Self-test</div><div class="e">Agent tests itself to green</div></div>
+          <div class="pipe-step"><div class="k">LOOP ③</div><div class="t">CI review</div><div class="e">All required checks green</div></div>
+          <div class="pipe-step"><div class="k">LOOP ④</div><div class="t">Gate</div><div class="e">Second review, issues zeroed</div></div>
+          <div class="pipe-step"><div class="k">LOOP ⑤</div><div class="t">Release + smoke</div><div class="e">Publish, then prove alive</div></div>
+          <div class="pipe-step meta"><div class="k">LOOP ⑥</div><div class="t">Evolution</div><div class="e">Lessons become physical guards</div></div>
+        </div>
+
+        <div class="loopcard">
+          <div class="head"><span class="num">LOOP ①</span><h3>Spec — the most valuable one</h3><span class="exit">EXIT: MJ approves the plain-language spec</span></div>
+          <div class="was">WAS: the requirements spec &amp; sign-off meetings</div>
+          <p>Before any code, the agent writes back: <b>what I understood · how I'll build it · acceptance criteria</b> — as behavior ("click this, that appears"), never as code. One sentence fixes a misunderstanding here; after implementation it costs the whole build.</p>
+          <div class="rules">
+            <div class="rule"><b>Why here?</b> Review can check "built right" — never "the right thing." Words are where correction is free.</div>
+            <div class="rule"><b>Bonus:</b> the write-back is where the agent catches errors in the brief itself.</div>
+          </div>
+        </div>
+
+        <div class="loopcard">
+          <div class="head"><span class="num">LOOP ②</span><h3>Self-test</h3><span class="exit">EXIT: green before the PR opens</span></div>
+          <div class="was">WAS: the developer's local testing duty</div>
+          <p>CE: Playwright across three viewports. Velo: a live runtime preview — static tests <b>cannot prove the platform can even load the module</b> (Case 1 escaped exactly there). Then: rebase → push → PR.</p>
+        </div>
+
+        <div class="loopcard">
+          <div class="head"><span class="num">LOOP ③</span><h3>CI auto-review</h3><span class="exit">EXIT: all required checks green</span></div>
+          <div class="was">WAS: the QA cycle + part of code review</div>
+          <div class="rules">
+            <div class="rule"><b>viewports</b> — 3-screen test; the required check on the push-to-prod lane</div>
+            <div class="rule"><b>claude-review</b> — automatic code review on every push</div>
+            <div class="rule"><b>guard-test</b> — verifies the guards themselves aren't broken</div>
+            <div class="rule"><b>base-freshness · consistency · shared-file flag</b> — stale branches, banned wording, conflict risk</div>
+          </div>
+          <p>Green CI ≠ merge. High-risk changes still face Loop ④.</p>
+        </div>
+
+        <div class="loopcard">
+          <div class="head"><span class="num">LOOP ④</span><h3>Gate — last line before merge</h3><span class="exit">EXIT: real issues zeroed, falsification reproduced</span></div>
+          <div class="was">WAS: the senior engineer's second pair of eyes</div>
+          <p>For PRs touching money, auth or personal data: an independent second review. Four rules, each bought with a real misjudgment:</p>
+          <div class="rules">
+            <div class="rule red"><b>Whole repo, not the diff.</b> A diff-only review once returned 12 blockers — 4 were real.</div>
+            <div class="rule red"><b>Two-dot diff, never three.</b> In plain words: show the reviewer <em>only my changes</em> — not everything everyone else merged since my branch was born. Three dots once inflated 83 lines into 1,546, and the reviewer flagged other people's code.</div>
+            <div class="rule red"><b>Verdicts are leads.</b> Findings go back to the dev agent: confirm, refute, or by-design.</div>
+            <div class="rule red"><b>Fixes must falsify.</b> Re-inject the root cause → guard goes RED, reproduced independently. A test that can't fail is not a test.</div>
+          </div>
+          <p>Merge authority: the orchestrator alone. Human go/no-go reserved for the riskiest merges.</p>
+        </div>
+
+        <div class="loopcard">
+          <div class="head"><span class="num">LOOP ⑤</span><h3>Release + smoke</h3><span class="exit">EXIT: endpoints answer 200, real device verified</span></div>
+          <div class="was">WAS: the release window &amp; release manager</div>
+          <p><b>Merging is not shipping.</b> Velo lies inert until MJ clicks Publish — and publish still isn't the end: every publish is followed <em>immediately</em> by a curl smoke test, one PR at a time (batching lets loading-stage bugs mask each other).</p>
+          <div class="warn"><span class="ic">!</span><p>The CLI publish path is retired: it shipped a stale UI snapshot and twice wiped Editor-built pages into 404s. <b>Editor Publish is the only safe path.</b> Production suddenly 404s? Republish first, debug second.</p></div>
+        </div>
+
+        <div class="loopcard">
+          <div class="head"><span class="num">LOOP ⑥</span><h3>The meta-loop: harness evolution</h3><span class="exit">EXIT: the failure class is physically blocked</span></div>
+          <div class="was">WAS: the lessons-learned meeting nobody re-read</div>
+          <p>Loops ①–⑤ decide whether <em>this</em> delivery passes. Loop ⑥ decides whether the <em>system</em> gets stronger: failure → root cause → <b>harden the lesson into the harness</b> (a hook, a CI check, a guard, an iron rule). Every rule on this page was born this way.</p>
+          <div class="insight" style="margin-top:4px"><span class="tag">INSIGHT 09</span>
+            <p>A lesson is only learned when the mistake becomes physically impossible to repeat.
+            <span class="sub">"We'll be careful next time" is worth nothing. "Next time the door won't open" is worth everything.</span></p>
+          </div>
+        </div>
+      </section>
+      <section id="guards">
+        <h2>The guard gallery: five machines that replaced five warnings</h2>
+        <p class="lead">The same story, five times: a failure recurred → the tempting fix was another warning in a brief → we built a machine instead → <b>the failure class went extinct</b>. This is claim #2 of the thesis, in production.</p>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The recurring failure</div><div class="tt">Agents could reach the publish button</div><p>Briefs said "never publish" — yet a wrong publish path once wiped three dashboard pages into 404s. Twice.</p></div>
+          <div class="half mach"><div class="hd">The machine</div><div class="tt">Publish guard</div><p>A pre-execution hook kills publish commands <b>before they run</b>; the single directory that can publish is locked by a marker file. An agent that <em>wants</em> to publish physically can't.</p><span class="res">RESULT · STRUCTURALLY IMPOSSIBLE</span></div>
+        </div>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The recurring failure</div><div class="tt">Merging safely depended on memory</div><p>Someone had to remember to check three screen sizes, the backend module format, the unit tests — every single time.</p></div>
+          <div class="half mach"><div class="hd">The machine</div><div class="tt">Branch protection + required CI</div><p>Required checks — <b>viewports · ESM check · unit tests</b> — run on every PR. A red check means the merge button does not exist.</p><span class="res">RESULT · STRUCTURALLY IMPOSSIBLE</span></div>
+        </div>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The recurring failure</div><div class="tt">The review gate could silently pass</div><p>Reviewer output drifted, no verdict got parsed — and "no news" quietly read as "good news."</p></div>
+          <div class="half mach"><div class="hd">The machine</div><div class="tt">codex-gate</div><p><b>Three-state exit codes</b> + an anchored verdict regex; anything unparseable ⇒ <b>fail-closed</b>. The gate can pass, block, or demand a human — silence is no longer an outcome.</p><span class="res">RESULT · STRUCTURALLY IMPOSSIBLE</span></div>
+        </div>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The recurring failure</div><div class="tt">Shared behavior drifted, copy by copy</div><p>Each page carried its own copy of shared behavior. One bug class was patched <b>fourteen PRs in a row</b> — one copy at a time.</p></div>
+          <div class="half mach"><div class="hd">The machine</div><div class="tt">Anti-drift static guard</div><p>The behavior was extracted into a <b>single-source library</b>, plus a static assertion: every page must consume the shared module — a local re-implementation fails CI. "Copy the previous page" is extinct.</p><span class="res">RESULT · STRUCTURALLY IMPOSSIBLE</span></div>
+        </div>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The recurring failure</div><div class="tt">Unknown meant welcome</div><p>Role checks kept waving through empty and unknown values — "can't tell who you are" became "come on in." Repeatedly, across different agents.</p></div>
+          <div class="half mach"><div class="hd">The machine</div><div class="tt">Fail-closed permission gate</div><p>Empty, unknown or wrapped values ⇒ <b>deny</b> — and CI tests exactly those cases. Unknown now means locked out.</p><span class="res">RESULT · STRUCTURALLY IMPOSSIBLE</span></div>
+        </div>
+        <p class="cap">Notice what none of these are: reminders. Layer 2's answer to a repeated failure is always a mechanism, never a memo.</p>
+      </section>
+
+      <section id="case1">
+        <h2>Case 1: the require() that killed every endpoint</h2>
+        <p class="lead">One innocent import introduced the first CommonJS <span class="mono">require()</span> into a pure-ESM runtime. Every endpoint: 500, for hours. Static tests stayed green — this wasn't a logic bug, it was <b>"the module cannot load."</b></p>
+        <div class="tl">
+          <div class="tl-i"><div class="h">The seed <span class="tag2">PR #62</span></div><div class="b">CI green, review passed, merged — then batch-published via a path now retired. Three mines armed: no runtime preview, retired publish path, batching.</div></div>
+          <div class="tl-i bad"><div class="h">The explosion</div><div class="b">Module throws at load. <b>All endpoints 500</b> — including trivial ones. Hours of downtime.</div></div>
+          <div class="tl-i"><div class="h">Fix #1 — clean, and not enough <span class="tag2">PR #68</span></div><div class="b">TDD-proven patch + a new guard: "zero <span class="mono">require</span> in reachable modules." Merged, published…</div></div>
+          <div class="tl-i bad"><div class="h">Still 500</div><div class="b">The guard covered only the consumption side. <b>module.exports</b> — the same root cause's other half — sat in 4 more files, hidden behind the louder crash.</div></div>
+          <div class="tl-i good"><div class="h">Hardened <span class="tag2">PR #69 / #70</span></div><div class="b">Guard extended to both sides, proven by falsification (RED on old code → GREEN after). Preview unlocked for agents. One-PR-one-publish becomes law.</div></div>
+        </div>
+        <div class="rules"><div class="rule red"><b>The rule this bought:</b> a guard must cover the whole failure class — not the one instance you happened to see.</div></div>
+      </section>
+      <section id="case2">
+        <h2>Case 2: the day every door locked</h2>
+        <p class="lead">15 July 2026: every production endpoint returns an empty 500, all day. Next morning a fresh agent closes the case in 90 minutes. The fix: <b>two lines</b> <span class="mono">(PR #71)</span>. Production experiments used: <b>zero</b>.</p>
+        <div class="tl">
+          <div class="tl-i bad"><div class="h">Day 1 · Detective #1: four wrong rounds <span class="tag2">the orchestrator</span></div><div class="b">Only log line: "function not found." Sensible theory: <b>the whole module registry burned at load</b>. It explained everything — so four rounds stayed inside it. All four wrong, each for good reasons: <b>correct reasoning inside a wrong frame.</b> Cost: a full day down.</div></div>
+          <div class="tl-i"><div class="h">The hand-off dossier</div><div class="b">The day's most valuable act: admit the dead end; write down hard evidence + four ruled-out paths + two untried techniques; hand over.</div></div>
+          <div class="tl-i good"><div class="h">Day 2 · Detective #2: back to the scene <span class="tag2">fresh agent</span></div><div class="b">Stops reasoning over the dossier; buys an identical building in 2 minutes (preview deployment). Plants a probe — <b>it answers 200.</b> The registry never burned.</div></div>
+          <div class="tl-i bad"><div class="h">The almost-second conviction</div><div class="b">Survivors share one export style, casualties another — "the platform rejects that style!" Timeline fits, logs fit, experiment fits. One step from the final report.</div></div>
+          <div class="tl-i good"><div class="h">Routine saves the day</div><div class="b">Smoke test the fix: build the combination the theory says <em>must live</em> — <b>it dies, 500.</b> Four-probe lineup convicts the real killer: <b>the platform silently tightened its runtime</b> — responses must come from official factory functions; hand-rolled objects now throw.</div></div>
+          <div class="tl-i good"><div class="h">The decisive exhibit</div><div class="b">Redeploy the untouched three-day-old code: it fails too. <b>Not one character changed. The world had.</b> Two-line fix; live at 11:11:59.</div></div>
+        </div>
+      </section>
+      <section id="narrative">
+        <h2>The core insight: LLMs are narrative generators</h2>
+        <div class="golden">
+          <div class="q">"This is the structural weakness of LLMs: we are, at bottom, <em>narrative generators</em>. Faced with an information void, we don't produce a feeling of blankness — we produce fluent filler. Human engineers make the same mistake, but AI makes it faster, more confidently, more self-consistently — <em>hallucination and insight feel identical at the moment of generation.</em>"</div>
+          <div class="orig">原文（本章中心句）：这是 LLM 的结构性弱点：我们本质上是叙事生成器，面对信息空洞，我们不产生"空白感"，我们产生流畅的填充物。人类工程师也犯这个错（编排者四轮就是同类错误），但 AI 犯得更快、更自信、更自洽——幻觉和洞察在生成那一刻手感是一样的。</div>
+        </div>
+        <p>The two detectives were <b>the same class of AI model</b>. Not knowledge. Not intelligence. Environment:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th></th><th>Detective 1 · Orchestrator</th><th>Detective 2 · Bug engineer</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Cost per hypothesis</td><td>Half a day, against production</td><td>2 minutes, in preview</td></tr>
+            <tr><td class="strong">Resulting behavior</td><td>"Think more, try less"</td><td>Every guess slapped by reality</td></tr>
+            <tr><td class="strong">A blind spot becomes</td><td>A day-long wrongful conviction</td><td>A 30-second smoke-test catch</td></tr>
+          </tbody>
+        </table></div>
+        <div class="dual">
+          <div class="loop-panel bad">
+            <div class="t">The Conviction Loop</div>
+            <div class="s">Reasoning against production</div>
+            <ol><li>Empty 500 — zero information</li><li>Read code &amp; logs, reason</li><li>Fluent mechanism story</li><li>Expensive production test</li><li>Fails → back to reasoning…</li></ol>
+            <div class="cycle">⟳ looped 4× · one full day</div>
+          </div>
+          <div class="switch">
+            <div class="q">How much does it cost to test one hypothesis?</div>
+            <div class="opt l">← half a day<br>think more, try less</div>
+            <div class="opt r">2 minutes →<br>reality checks every guess</div>
+            <div class="note">The only variable that decides which loop an AI walks into.</div>
+          </div>
+          <div class="loop-panel good">
+            <div class="t">The Experiment Loop</div>
+            <div class="s">Reality on tap</div>
+            <ol><li>Build preview world (2 min)</li><li>Plant a probe, run it</li><li>Reality confirms or refutes</li><li>Next hypothesis…</li></ol>
+            <div class="cycle">⟳ exit: root cause · 90 min · 0 prod experiments</div>
+          </div>
+        </div>
+        <blockquote class="prop">
+          <p>Blind spots cannot be eliminated — and aren't worth trying to eliminate. Eliminate the <em>combination</em>: blind spot + no reality feedback loop.</p>
+          <p>Cheap experiments + one iron rule — every conclusion makes a falsifiable prediction and verifies it on the spot.</p>
+          <p>Don't ask whether the AI <em>knows</em>. Build an environment where reality talks back, often.</p>
+        </blockquote>
+        <div class="insight"><span class="tag">INSIGHT 10</span>
+          <p>Hallucination and insight feel identical at generation — so govern the verification, not the feeling.</p>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 11</span>
+          <p>Verification you can't afford becomes reasoning you can't trust.
+          <span class="sub">Remember INSIGHT 03: fifty years of shrinking the feedback loop. The cost-of-hypothesis switch is that same campaign, applied to debugging an AI's mind.</span></p>
+        </div>
+      </section>
+      <section id="playbook">
+        <h2>The harness playbook: 13 rules, 4 quadrants</h2>
+        <p>Every rule is tuition already paid by the two cases.</p>
+        <div class="quad-core"><span>Eliminate not the blind spot — the "blind spot + no feedback loop" combination</span></div>
+        <div class="quad">
+          <div class="cell a">
+            <div class="t">Feedback loops</div><div class="s">Highest priority</div>
+            <ul>
+              <li><b>Fix the experiment channel before investigating</b> — hypothesis cost down to minutes.</li>
+              <li><b>Never use production as the test bench.</b></li>
+              <li><b>Liveness monitoring</b> — this outage ran naked for a day.</li>
+            </ul>
+          </div>
+          <div class="cell">
+            <div class="t">Falsification discipline</div><div class="s">Restraining the narrative generator</div>
+            <ul>
+              <li><b>Circuit breaker:</b> 2 static guesses refuted → build the repro environment.</li>
+              <li><b>Every conclusion predicts an unrun experiment</b> — wrong prediction, wrong diagnosis.</li>
+              <li><b>Laundered logs are leads, not evidence.</b></li>
+              <li><b>"Nothing changed but it broke"</b> → redeploy last known-good as the control.</li>
+            </ul>
+          </div>
+          <div class="cell c">
+            <div class="t">Organization &amp; roles</div><div class="s">The harness isn't only code</div>
+            <ul>
+              <li><b>P0 hand-off after 2 stuck rounds</b> — a clean context carries no wrong anchors.</li>
+              <li><b>The dossier is the soul:</b> evidence + ruled-out list + techniques.</li>
+              <li><b>The orchestrator never dives deep</b> — same reason it never writes code.</li>
+              <li><b>Human gates at verification points,</b> not inside reasoning.</li>
+            </ul>
+          </div>
+          <div class="cell d">
+            <div class="t">Guardrail design</div><div class="s">Block by intent, not omission</div>
+            <ul>
+              <li><b>"Touches production" ≠ "local/preview"</b> — kill the first, always allow the second.</li>
+              <li><b>Whitelists must be explicit</b> — one tool was allowed only because a regex forgot it.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <section id="sentinels">
+        <div class="act">Part V · Layer 3 — Loop engineering</div>
+        <h2>The three sentinels: work continues while you sleep</h2>
+        <p class="lead">Once the harness holds, you can stop watching. When MJ says <b>"I'm leaving"</b>, three sentinels arm — zero-token shell loops that poll quietly and wake the orchestrator only on a hit. When he's back, they stand down.</p>
+        <div class="trio">
+          <div class="c"><div class="ic">🗳️</div><div class="t">Decision-desk sentinel</div><div class="d">A new item lands on the desk: finished work filed by an agent, or a task MJ dispatched from his phone.</div></div>
+          <div class="c"><div class="ic">🔀</div><div class="t">Open-PR sentinel</div><div class="d">A pull request opened, or its checks turned green — time to gate and merge.</div></div>
+          <div class="c"><div class="ic">🚀</div><div class="t">Release-desk sentinel</div><div class="d">A publish request or confirmation landed — run the smoke test now.</div></div>
+        </div>
+        <div class="lanes"><div class="lane">
+          <div class="stop">armed 😴<span class="sub">MJ said "I'm leaving"</span></div>
+          <div class="stop">poll<span class="sub">minutes · 0 tokens</span></div>
+          <div class="stop">hit<span class="sub">desk · PR · publish</span></div>
+          <div class="stop human">🔔 wake the orchestrator</div>
+          <div class="stop live">handle<span class="sub">gate · merge · smoke</span></div>
+        </div></div>
+        <div class="breturn"><span class="arr">↩</span>file the outcome to the desk — then back to sleep. The human reads a tidy inbox, not a live feed.</div>
+      </section>
+
+      <section id="desk">
+        <h2>The decision desk &amp; the happy-path policy</h2>
+        <p class="lead">The desk is a <b>two-way mailbox</b>: agents file finished work up; MJ dispatches new work down — asynchronously, from anywhere. The orchestrator is the courier between the desk and the dev agents. What may proceed without a human is decided <b>by class, in advance</b>:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Change class</th><th>Policy</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Front end / anything visual</td><td>A human looks. Always.</td><td>"Does it look right" cannot be asserted by tests — acceptance is a human act</td></tr>
+            <tr><td class="strong">Back end with a backstop<br><span class="mono" style="color:var(--faint)">tests + smoke + easy rollback</span></td><td>Auto-merge, logged to the desk</td><td>The machine can prove correctness end to end; the log preserves auditability</td></tr>
+            <tr><td class="strong">Permissions · payments · the loop machinery itself</td><td>Always to the desk. No autonomy.</td><td>Fail-closed by class — the cost of being wrong is not symmetric</td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules">
+          <div class="rule"><b>Maturing next:</b> auto-smoke after every publish + a version-consistency hard gate.</div>
+          <div class="rule"><b>Sentinels:</b> from session-bound to always-on.</div>
+          <div class="rule"><b>Postmortems:</b> auto-compiled into a weekly journal — the meta-loop, machine-run.</div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 12</span>
+          <p>Machines carry continuity; humans carry judgment.
+          <span class="sub">The loop layer doesn't remove the human — it removes the <em>waiting</em> for the human.</span></p>
+        </div>
+      </section>
+
+      <section id="boris">
+        <div class="act">Closing · The synthesis</div>
+        <h2>Boris's workflow: how the toolmaker uses the tool</h2>
+        <p class="lead">January 2026: Boris publishes his setup — "surprisingly vanilla," barely customized. Two layers, mapping one-to-one onto everything above:</p>
+        <div class="bcycle">
+          <div class="hd">Layer 1 · One session's cycle</div>
+          <div class="brow">
+            <div class="bstep"><div class="ic">📋</div><div class="t">Plan mode first</div><div class="d">Iterate the plan until solid, then auto-execute</div><span class="map">= LOOP ①</span></div>
+            <div class="bstep"><div class="ic">🧠</div><div class="t">Strongest model</div><div class="d">Slower per step, faster on the total bill</div><span class="map">a stance</span></div>
+            <div class="bstep star"><div class="ic">⭐</div><div class="t">Self-verification</div><div class="d">"The single most important rule": AI runs its own tests, opens its own browser</div><span class="map">= LOOPS ② ⑤</span></div>
+            <div class="bstep"><div class="ic">✅</div><div class="t">Merge the PR</div><div class="d">The last gate before the next task</div><span class="map">= LOOPS ③ ④</span></div>
+          </div>
+          <div class="breturn"><span class="arr">↩</span>Made a mistake? Write it into the shared CLAUDE.md — every agent carries the lesson next run. He calls it <b>&nbsp;compound engineering</b>&nbsp;<span style="color:var(--faint);font-family:var(--mono);font-size:10px">= LOOP ⑥</span></div>
+        </div>
+        <div class="bpar">
+          <div class="hd">Layer 2 · Parallel dispatch — many cycles at once</div>
+          <div class="bpar-grid">
+            <div>
+              <div class="terms">
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">1</span></div><div class="ln">$ task-1/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">2</span></div><div class="ln">$ task-2/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">3</span></div><div class="ln">$ task-3/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">4</span></div><div class="ln">$ task-4/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">5</span></div><div class="ln">$ task-5/</div></div>
+              </div>
+              <div class="terms-cap">~5 terminals · one isolated checkout each</div>
+            </div>
+            <div class="dispatcher">
+              <div class="fig">🙋</div>
+              <div class="t">Human = dispatcher</div>
+              <div class="d">a notification rings; answer whichever Claude needs input</div>
+              <span class="prbadge">★ 20–30 merged PRs / day</span>
+            </div>
+            <div>
+              <div class="webs"><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div></div>
+              <div class="webs-cap" style="text-align:right">+ 5–10 web sessions</div>
+            </div>
+          </div>
+        </div>
+        <p>Nobody copied anybody. Teams that put AI to real work converge on the same four ideas: <b>align before acting · machine-verify everything · lessons become assets · humans stand at the gates.</b></p>
+        <div class="rules"><div class="rule"><b>His stack, our labels:</b> shared CLAUDE.md = Layer 1 context · plan-first + self-verification + PR gates = Layer 2 harness · parallel dispatch + notifications = Layer 3 loop.</div></div>
+      </section>
+      <section id="team">
+        <h2>The team topology: two networks, not one tree</h2>
+        <p class="lead">The org-chart instinct says: manager → managers → workers, everything flowing up and down the tree. Wrong topology for AI teams. <b>Every relay hop is slow, piles context into the middleman's window — and gives a narrative generator one more chance to fluently fill in what it didn't hear.</b> The design that works runs two separate networks:</p>
+        <div class="topo">
+          <div class="trow"><div class="tnode mj"><div class="who">🙋 MJ — Program Manager</div><div class="d">goals &amp; constraints · arbitration · the four gates. The only node that can't be spawned — bandwidth goes to judgment, never to relaying.</div></div></div>
+          <div class="tlink"><span class="lab">Accountability tree — the only line a human holds</span><span class="lab soft">📝 spec · 👆 acceptance · ⚖️ high-risk · 🚀 publish travel here. Escalation: agent → orchestrator → MJ, never direct.</span></div>
+          <div class="trow"><div class="tnode"><div class="who">🎛️ Orchestrator — one per project domain</div><div class="d">decomposes · introduces peers · gates contract changes · merges · coordinates smoke.<br><b>Never relays content. Never codes. Never dives deep.</b></div></div></div>
+          <div class="tlink dashed"><span class="lab">Introduce, then step out</span><span class="lab soft">"Your partner is agent B; the contract lives in contracts/x.md; talk directly — contract <em>changes</em> come back to me."</span></div>
+          <div class="mesh">
+            <div class="ag">🧩 CE dev agent</div><span class="mm">⟷</span>
+            <div class="ag">⚙️ Velo dev agent</div><span class="mm">⟷</span>
+            <div class="ag">🔍 Bug engineer<span class="on">on demand · clean context</span></div><span class="mm">⟷</span>
+            <div class="ag">📐 Architect<span class="on">on demand · writes ADRs</span></div>
+          </div>
+          <div class="meshlab">Information mesh — direct agent-to-agent messages (cmux): narrow confirmations &amp; wake-ups, always logged</div>
+          <div class="artifact">
+            <div class="t">The artifact layer — where context actually lives</div>
+            <div class="items">contracts in repo · ADRs · handoff dossiers · task board · CLAUDE.md</div>
+            <div class="d">Files outlive windows. Messages carry pointers, never payloads. Any window can be cleared without losing state.</div>
+          </div>
+        </div>
+        <p>Which content travels on which channel — the protocol layer:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Content</th><th>Channel</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Narrow confirmations, wake-ups ("contract updated — go read it")</td><td>Direct agent message</td><td>Fast; but messages are volatile and eat context — send pointers, not payloads</td></tr>
+            <tr><td class="strong">Contracts, specs, dossiers, ADRs</td><td>Repo files</td><td>Durable, diffable, survives any hand-off — Case 2's dossier proved it</td></tr>
+            <tr><td class="strong">Task board, cross-session state, message log</td><td>Board (Base)</td><td>The orchestrator can clear its window without losing state</td></tr>
+            <tr><td class="strong">Contract changes, conflicts, gate &amp; merge</td><td>Orchestrator</td><td>Judging authority and merge authority stay bound together</td></tr>
+            <tr><td class="strong">The four gates + final arbitration</td><td>MJ</td><td>Judgment cannot be absorbed</td></tr>
+          </tbody>
+        </table></div>
+        <p>Roles are spawned by <b>context shape</b>, not by the org chart: a role deserves its own agent when its context must be <b>clean</b> (the bug engineer — no wrong anchors), <b>accumulating</b> (the architect — but as ADR files + an on-demand agent + CI guards, never a standing approval queue), or <b>parallel</b> (one page, one agent).</p>
+        <p>Direct links need guardrails against one failure mode — <b>collusion drift</b>, two agents quietly agreeing to change a contract with no referee:</p>
+        <div class="rules">
+          <div class="rule red"><b>Contract changes always pass the gate.</b> Peers may discuss anything; shared files change only through the orchestrator.</div>
+          <div class="rule red"><b>Every direct message leaves a trace</b> in the liaison log.</div>
+          <div class="rule red"><b>MJ's single interface never widens.</b> Agents never ping the human directly.</div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 13</span>
+          <p>Accountability walks the tree. Information walks the mesh. Context lives in artifacts.
+          <span class="sub">Shallow hierarchy, thick artifacts. The moment you catch yourself copy-pasting between two windows, you've found a contract that should be a file.</span></p>
+        </div>
+      </section>
+      <section id="synthesis">
+        <h2>The full stack — and where you stand</h2>
+        <div class="stackwrap">
+          <div class="stk">
+            <div class="slayer loop"><div class="k">Layer 3 · Loop — runs unwatched</div><div class="t">Sentinels · desk · happy-path policy</div><div class="d">continuity without presence — you read an inbox, not a feed</div></div>
+            <div class="slayer harn"><div class="k">Layer 2 · Harness — can't break things</div><div class="t">Two lanes · six loops · guard gallery</div><div class="d">every "don't" is a door that won't open, not a memo</div></div>
+            <div class="slayer ctx"><div class="k">Layer 1 · Context — thinks right</div><div class="t">CLAUDE.md · memory · skills · rulebooks</div><div class="d">the spec gate: correction while it still costs one sentence</div></div>
+          </div>
+          <div class="po">
+            <div class="fig">🙋</div>
+            <div class="t">You appear three times</div>
+            <div class="chips"><span class="chip2">GOAL — what matters</span><span class="chip2">SPEC — is this the thing</span><span class="chip2">ACCEPTANCE — use it</span></div>
+          </div>
+        </div>
+        <div class="golden">
+          <div class="q">"Context makes it think right. The harness makes it safe. The loop makes it continuous. <em>The human makes it matter.</em>"</div>
+        </div>
+        <p>Part I opened with <b>"every ceremony is a scar."</b> Close the loop: every guard and every memory entry in this machine is a scar with a name — the permission gate that kept waving through empty values, the bug class patched fourteen PRs in a row before the shared library existed. <b>None of this was designed on a whiteboard. It was extracted from incidents, one machine at a time.</b> That is why it works — and why yours will look different and be right too.</p>
+        <div class="gates">
+          <div class="gate"><div class="ic">📝</div><div class="t">Approve the spec</div><div class="d">Is this the right thing? Words are cheap here; rework isn't.</div></div>
+          <div class="gate"><div class="ic">👆</div><div class="t">Accept by using</div><div class="d">Click the thing. No code reading required.</div></div>
+          <div class="gate"><div class="ic">⚖️</div><div class="t">Judge high risk</div><div class="d">Money, auth, personal data: human go / no-go.</div></div>
+          <div class="gate"><div class="ic">🚀</div><div class="t">Press launch</div><div class="d">The publish button stays human — by design.</div></div>
+        </div>
+        <ul class="check">
+          <li><b>Pre-flight:</b> confirm the guards on main are current; create the worktree; start the agent <b>from inside it</b> — never <span class="mono">cd</span> midway.</li>
+          <li><span class="lp">①</span> Agent writes back the plain spec; MJ approves before any code.</li>
+          <li><span class="lp">②</span> Self-test to green (CE: 3 viewports · Velo: runtime preview); rebase, push, PR.</li>
+          <li><span class="lp">③</span> CI fully green — red means fix, not argue.</li>
+          <li><span class="lp">④</span> High-risk: full-repo second review, two-dot diff, falsification RED reproduced.</li>
+          <li><span class="lp">⑤</span> Orchestrator merges → MJ publishes (one at a time) → curl smoke 200 → real device.</li>
+          <li><span class="lp">⑥</span> Hit a pothole? The postmortem must produce a guard — never "we'll be careful."</li>
+        </ul>
+      </section>
+
+      <section id="daniel">
+        <h2>Appendix · Deploying this elsewhere: a letter to Daniel's AI</h2>
+        <p class="lead">This playbook describes one instance — MJ's, built for code. The pattern is portable: Daniel's world is <b>legal documents</b>, and none of the three layers cares. Below is a bootstrap letter. <b>Daniel: hand it to your AI assistant verbatim</b> — it is written to the AI, not to you — then let it walk you through Stage 1 the same day.</p>
+        <div class="letter">
+          <button class="copybtn" id="copyLetter">Copy letter</button>
+          <pre id="letterText">You are Daniel's AI assistant. Your job is to build, with Daniel, the
+three-layer working structure this playbook describes: context → harness
+→ loop. Build it in this order. Do not skip ahead.
+
+STAGE 1 — CONTEXT (start today)
+1. Create a standing-instructions file (CLAUDE.md or equivalent).
+   Put into it: Daniel's role, domain and output standards; behavioral
+   iron rules (verify before asserting; read the source document before
+   summarizing it); and pointers to canonical sources — where the true
+   version of each document type lives.
+2. Set up a memory discipline: four kinds of entries — user / feedback /
+   project / reference. Every time Daniel corrects you, write ONE entry
+   stating the rule and why. Goal: no correction is ever needed twice.
+3. Never produce a deliverable before writing back, in plain words:
+   what you understood, what you plan to produce, and how Daniel can
+   check it by using it. Wait for approval. This is the spec gate —
+   at the start, it IS the entire quality system.
+
+STAGE 2 — HARNESS (after a week of Stage 1)
+4. List the actions in Daniel's world that are expensive to undo:
+   sending a contract, filing, external emails, anything signed.
+   For each, agree a gate: a check that runs BEFORE the action, and a
+   standing rule that you never take it without explicit approval.
+5. When the same mistake happens twice, do not add a warning note.
+   Build a machine: a checklist that blocks, a template that constrains,
+   a validation step. Ambiguous or missing information ⇒ stop and ask
+   (fail closed). Never guess (fail open).
+
+STAGE 3 — LOOP (only after Stage 2 holds)
+6. Propose a small set of standing checks you can run while Daniel is
+   away: deadlines approaching, documents awaiting signature, threads
+   without replies. Surface findings to ONE inbox; Daniel decides.
+   Never act autonomously on anything Stage 2 marked expensive to undo.
+
+THE THREE RULES ABOVE ALL
+- Daniel is the product owner. He sets goals, approves specs, accepts
+  results by using them. Everything else is yours.
+- Prose does not change the odds of failure; machines do. Every repeated
+  failure becomes a structural block, not a reminder.
+- Hallucination and insight feel identical at the moment of generation.
+  Verify against a source Daniel trusts before asserting anything as fact.</pre>
+        </div>
+        <p class="cap">And when your version hits its first incident: don't write a warning. Build a machine — and send us the scar for the gallery.</p>
+        <div class="foot">
+          <b>Sources.</b> Boris Cherny: Lenny's Podcast "Head of Claude Code" (lennysnewsletter.com/p/head-of-claude-code-what-happens); his workflow post, X, Jan 2026 (x.com/bcherny/status/2007179832300581177). Era timeline: Royce's waterfall paper (1970), the Agile Manifesto (2001), the DevOps/CI-CD movement (2010s) — simplified for training. Case facts (PRs #62–#71, timelines, probes) are first-party incident records from the team's Lark training doc 《不写代码的开发闭环》 ch. 00–15 — this playbook is its restructured English edition. Design-system facts verified against <span class="mono">purple-ruler-pages-V2</span>.<br><br>
+          Purple Ruler · Internal Training · The AI-Native Series · This page is a live demo of <span class="mono">pr-design</span> tokens.
+        </div>
+      </section>
+
+
+    </div>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyLetter');
+    if (btn) btn.addEventListener('click', function () {
+      var t = document.getElementById('letterText').innerText;
+      navigator.clipboard.writeText(t).then(function () {
+        btn.textContent = 'Copied \u2713';
+        setTimeout(function () { btn.textContent = 'Copy letter'; }, 2000);
+      });
+    });
+  })();
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav'));
+    var map = {};
+    links.forEach(function (l) { map[l.getAttribute('href').slice(1)] = l; });
+    var sections = Array.prototype.slice.call(document.querySelectorAll('section[id]'));
+    if (!('IntersectionObserver' in window)) return;
+    var current = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          if (current) current.classList.remove('on');
+          current = map[e.target.id];
+          if (current) current.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+</script>
+</body>
+</html>
