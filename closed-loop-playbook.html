@@ -607,14 +607,15 @@
     <a class="nav" href="#case2"><span class="n">17</span>Case 2: locked doors</a>
     <a class="nav" href="#narrative"><span class="n">18</span>Narrative generators</a>
     <a class="nav" href="#playbook"><span class="n">19</span>The harness playbook</a>
+    <a class="nav" href="#clock"><span class="n">20</span>The evolution clock</a>
     <div class="grp">Part V · Layer 3: Loop</div>
-    <a class="nav" href="#sentinels"><span class="n">20</span>The three sentinels</a>
-    <a class="nav" href="#desk"><span class="n">21</span>Desk &amp; happy path</a>
+    <a class="nav" href="#sentinels"><span class="n">21</span>The three sentinels</a>
+    <a class="nav" href="#desk"><span class="n">22</span>Desk &amp; happy path</a>
     <div class="grp">Closing · The synthesis</div>
-    <a class="nav" href="#boris"><span class="n">22</span>Boris's workflow</a>
-    <a class="nav" href="#team"><span class="n">23</span>The team topology</a>
-    <a class="nav" href="#synthesis"><span class="n">24</span>Full stack &amp; first day</a>
-    <a class="nav" href="#daniel"><span class="n">25</span>Letter to Daniel's AI</a>
+    <a class="nav" href="#boris"><span class="n">23</span>Boris's workflow</a>
+    <a class="nav" href="#team"><span class="n">24</span>The team topology</a>
+    <a class="nav" href="#synthesis"><span class="n">25</span>Full stack &amp; first day</a>
+    <a class="nav" href="#daniel"><span class="n">26</span>Letter to Daniel's AI</a>
     <div class="side-foot">Purple Ruler · Internal training<br>
       <b>This page is styled with the same pr-design tokens it teaches.</b></div>
   </aside>
@@ -1187,6 +1188,76 @@
           </div>
         </div>
       </section>
+      <section id="clock">
+        <div class="act">Layer 2, continued · The living harness</div>
+        <h2>The evolution clock: when to fire Loop ⑥</h2>
+        <p class="lead">Loop ⑥ named the move — failure → root cause → guard. It left the <em>tempo</em> open. A harness you never touch rots; a harness you re-cut after every interaction thrashes. This is where a wall you built becomes an <b>environment you tend</b> — and tending runs on <b>two clocks, not one</b>.</p>
+
+        <div class="table-scroll"><table>
+          <thead><tr><th>Clock</th><th>Runs on</th><th>Cost</th><th>What it fires</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Capture clock</td><td>Continuous, real-time — one line the moment friction bites</td><td>Zero, lossless, logged while it’s hot</td><td><b>Nothing.</b> It only records.</td></tr>
+            <tr><td class="strong">Change clock</td><td>Events + a threshold — only when real signal clears the bar</td><td>A deliberate retro, on purpose</td><td>A proposed harness change</td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules"><div class="rule"><b>The principle:</b> harness evolution is driven by <b>evidence of a gap</b>, not by the count of interactions. Capture always; change rarely.</div></div>
+
+        <h3>The myth: “optimize after every human interaction”</h3>
+        <div class="warn"><span class="ic">!</span><p>The most tempting cadence is also the most wrong. Firing the change clock on every interaction produces a harness that thrashes — in four specific ways:</p></div>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">Noise drowns signal.</div><div class="d">Most interactions are one-offs. Treat each as a lesson and you train the harness on noise.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">Recency overfits.</div><div class="d">You patch the <em>last symptom</em>, not the class — the exact mistake Case 1’s first guard made before it was widened.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">Every change is a tax.</div><div class="d">A guard carries permanent maintenance cost. One you didn’t need is churn you pay forever.</div></div></div>
+          <div class="shift"><div class="n">4</div><div><div class="t">One-off vs systemic is invisible in the moment.</div><div class="d">Only accumulation tells them apart. Fire too early and you cannot yet know which one you’re looking at.</div></div></div>
+        </div>
+
+        <h3>The trigger ladder — ranked by signal strength</h3>
+        <p>The change clock fires on evidence, and not all evidence is equal. Strongest first — with what each one looks like on the ground, in any team, in any domain:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Trigger</th><th>Strength</th><th>Why it fires</th><th>What it looks like</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">① Incident / production escape</td><td>Highest</td><td>Reality has already paid the bill — the gap is proven, not theorized.</td><td>An outage your users meet before you do; a wrong number in a document already sent. <span class="mono" style="color:var(--faint)">→ Cases 1 &amp; 2</span></td></tr>
+            <tr><td class="strong">② Same friction ×3</td><td>High</td><td>Three is a pattern, not a coincidence. The threshold clears.</td><td>The third time anyone types the same warning into a brief; the third hand-fix of the same kind. <span class="mono" style="color:var(--faint)">→ the fourteen-copy drift</span></td></tr>
+            <tr><td class="strong">③ Process spinning in place</td><td>High</td><td>Effort repeating without progress means the <em>frame</em> is wrong — not the work.</td><td>A review gate that needs round after round; a “fix” declared done, then reopened. Again.</td></tr>
+            <tr><td class="strong">④ Near-miss</td><td>Medium</td><td>The net had a hole; luck did the guard’s job. Close it while it’s still free.</td><td>A wrong change caught at the last gate by someone’s squint — not by a machine.</td></tr>
+            <tr><td class="strong">⑤ False-confidence event</td><td>Medium</td><td>The process manufactured belief in a wrong thing — rigor amplified the error.</td><td>Each extra review round made the bug look <em>safer</em>; green checks became the argument for shipping it.</td></tr>
+            <tr><td class="strong">⑥ Periodic backstop sweep</td><td>Low · backstop</td><td>Catches what never clears a threshold. A safety net, <b>not</b> the engine.</td><td>A routine sweep through the friction log asking: “what leaks, but hasn’t bitten yet?”</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Step back before you build the guard</h3>
+        <p>Ignition is not permission to patch the nearest symptom. Zoom out to the whole arc first — find the one gap the several frictions share, and build for that:</p>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The reflex</div><div class="tt">Patch the last symptom</div><p>Case 1, in one line: the first guard blocked <span class="mono">require()</span> — exactly the symptom on the screen — and production stayed down, because <span class="mono">module.exports</span>, the same gap’s other face, walked straight past it. Multi-round reviews fail the same way: each round patches what that round can see, welding the wrong frame tighter.</p></div>
+          <div class="half mach"><div class="hd">The discipline</div><div class="tt">Zoom to the whole arc</div><p>Line up the last several frictions and ask what <b>single gap</b> produced them all. Build one machine that makes the class impossible — not three that chase its faces.</p><span class="res">GUARD THE CLASS · NOT THE INSTANCE</span></div>
+        </div>
+
+        <h3>Every firing also subtracts</h3>
+        <p>The Great Absorption cut seven human gates at the macro scale. Do it in miniature on <em>every</em> firing: a retro that <b>only</b> adds a gate is a failed retro. Ask the subtraction question each time — what can be deleted, or capped?</p>
+        <div class="rules"><div class="rule red"><b>Gate rounds have a ceiling.</b> Past two, you are usually welding, not reviewing: an extra round that can only see symptoms adds confidence faster than it adds correctness. More gate is not more safety — sometimes it is negative value.</div></div>
+
+        <h3>The anti-patterns</h3>
+        <div class="rules">
+          <div class="rule red"><b>Cadence retros</b> — evolving on a timer instead of on evidence.</div>
+          <div class="rule red"><b>Symptom patches</b> — guarding the instance you saw, not the class.</div>
+          <div class="rule red"><b>Add-only</b> — never asking what to remove; the harness only grows.</div>
+          <div class="rule red"><b>Agents editing their own harness</b> — the caged can’t hold the key.</div>
+          <div class="rule red"><b>Silent friction</b> — stepping around a pit without logging it.</div>
+        </div>
+        <div class="warn"><span class="ic">!</span><p><b>Silent friction is the one that breaks the whole clock.</b> A pit you route around but never record never reaches any threshold — the pattern never fires, and the tax is paid forever. This is why the capture clock must be <b>zero-cost and a habit</b>: if logging friction isn’t free and cultural, the change clock starves on missing evidence.</p></div>
+
+        <h3>Verify the guard itself</h3>
+        <div class="loopcard">
+          <div class="head"><span class="num">VERIFY</span><h3>Did the net catch a fish?</h3><span class="exit">EXIT: the next same-class failure is netted, not shipped</span></div>
+          <div class="was">WAS: “we added a check” — filed and forgotten</div>
+          <p>A guard that merely ships is a <b>hypothesis</b>, not a result. It is proven only when the next attempt of that failure class hits it and stops — or when that friction visibly stops recurring. One of ours passed this test quietly: a post-publish smoke probe, added after one escape, caught the next regression during routine housekeeping — <b>the net caught a fish.</b> Until yours does, the change is theater.</p>
+        </div>
+
+        <div class="insight"><span class="tag">INSIGHT 12</span>
+          <p>A harness is grown, not built.
+          <span class="sub">You don’t finish a harness; you tend it. Environment engineering is Loop ⑥ that never stops — evidence in on the capture clock, change out on the change clock, and every firing asked to subtract as well as add.</span></p>
+        </div>
+      </section>
       <section id="sentinels">
         <div class="act">Part V · Layer 3 — Loop engineering</div>
         <h2>The three sentinels: work continues while you sleep</h2>
@@ -1222,7 +1293,7 @@
           <div class="rule"><b>Sentinels:</b> from session-bound to always-on.</div>
           <div class="rule"><b>Postmortems:</b> auto-compiled into a weekly journal — the meta-loop, machine-run.</div>
         </div>
-        <div class="insight"><span class="tag">INSIGHT 12</span>
+        <div class="insight"><span class="tag">INSIGHT 13</span>
           <p>Machines carry continuity; humans carry judgment.
           <span class="sub">The loop layer doesn't remove the human — it removes the <em>waiting</em> for the human.</span></p>
         </div>
@@ -1309,7 +1380,7 @@
           <div class="rule red"><b>Every direct message leaves a trace</b> in the liaison log.</div>
           <div class="rule red"><b>MJ's single interface never widens.</b> Agents never ping the human directly.</div>
         </div>
-        <div class="insight"><span class="tag">INSIGHT 13</span>
+        <div class="insight"><span class="tag">INSIGHT 14</span>
           <p>Accountability walks the tree. Information walks the mesh. Context lives in artifacts.
           <span class="sub">Shallow hierarchy, thick artifacts. The moment you catch yourself copy-pasting between two windows, you've found a contract that should be a file.</span></p>
         </div>
