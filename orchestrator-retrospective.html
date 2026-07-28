@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Two-day retrospective on running 13 orchestrated coding agents: output, token economics, the human corrections that landed, and a token-efficiency playbook.">
+<meta name="robots" content="noindex">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body,h1,h2,h3,p,ul,figure{margin:0}
+  ul{padding:0}
+  img{max-width:100%;display:block}
+  button{font:inherit;color:inherit}
+</style>
+<title>Orchestrator Retrospective · 27–28 Jul 2026</title>
+
+<style>
+  :root {
+    --ink:        #131A19;
+    --ink-2:      #33403E;
+    --ink-3:      #64726F;
+    --ground:     #EEF1EF;
+    --panel:      #F109;
+    --panel:      #FAFBFA;
+    --line:       #D3DAD7;
+    --accent:     #A85B14;
+    --accent-dim: #C98A4B;
+    --good:       #2C6A4E;
+    --warn:       #96631A;
+    --bad:        #9E3A2C;
+    --info:       #2B5B79;
+
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+    --measure: 68ch;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink:        #E4E9E7;
+      --ink-2:      #B3BDBA;
+      --ink-3:      #7E8B88;
+      --ground:     #0E1413;
+      --panel:      #151D1B;
+      --line:       #29332F;
+      --accent:     #E0913F;
+      --accent-dim: #A8703A;
+      --good:       #6FBE92;
+      --warn:       #D7A44A;
+      --bad:        #DE7C68;
+      --info:       #71A9CB;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink:#E4E9E7; --ink-2:#B3BDBA; --ink-3:#7E8B88;
+    --ground:#0E1413; --panel:#151D1B; --line:#29332F;
+    --accent:#E0913F; --accent-dim:#A8703A;
+    --good:#6FBE92; --warn:#D7A44A; --bad:#DE7C68; --info:#71A9CB;
+  }
+  :root[data-theme="light"] {
+    --ink:#131A19; --ink-2:#33403E; --ink-3:#64726F;
+    --ground:#EEF1EF; --panel:#FAFBFA; --line:#D3DAD7;
+    --accent:#A85B14; --accent-dim:#C98A4B;
+    --good:#2C6A4E; --warn:#96631A; --bad:#9E3A2C; --info:#2B5B79;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  /* ---------- masthead ---------- */
+  .mast { display:flex; flex-direction:column; gap:14px; border-bottom:2px solid var(--ink); padding-bottom:24px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.022em;
+    font-weight: 750;
+    text-wrap: balance;
+    margin: 0;
+  }
+  .dek { max-width: var(--measure); color: var(--ink-2); font-size: 17px; }
+  .mast-meta { display:flex; flex-wrap:wrap; gap:8px 22px; font-family:var(--mono); font-size:12.5px; color:var(--ink-3); }
+
+  /* ---------- sections ---------- */
+  section { display:flex; flex-direction:column; gap:20px; }
+  h2 {
+    font-size: 13px; font-family: var(--mono); font-weight: 600;
+    letter-spacing: .13em; text-transform: uppercase;
+    color: var(--ink); margin: 0;
+    display:flex; align-items:center; gap:12px;
+  }
+  h2::after { content:""; flex:1; height:1px; background:var(--line); }
+  h3 { font-size:19px; letter-spacing:-0.01em; font-weight:660; margin:0; text-wrap:balance; }
+  p { margin:0; max-width: var(--measure); }
+  .lede { font-size:17px; color:var(--ink-2); }
+
+  /* ---------- metric strip ---------- */
+  .metrics { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); }
+  .metric { background:var(--panel); padding:16px 18px; display:flex; flex-direction:column; gap:5px; }
+  .metric .n { font-family:var(--mono); font-size:29px; font-weight:600; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; line-height:1; }
+  .metric .k { font-size:12px; color:var(--ink-3); line-height:1.35; }
+  .metric .s { font-family:var(--mono); font-size:11px; color:var(--accent-dim); }
+
+  /* ---------- tables ---------- */
+  .scroll { overflow-x:auto; border:1px solid var(--line); background:var(--panel); }
+  table { border-collapse:collapse; width:100%; font-size:14.5px; }
+  th, td { text-align:left; padding:11px 14px; border-bottom:1px solid var(--line); vertical-align:top; }
+  thead th {
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--ink-3); font-weight:600; white-space:nowrap;
+    background:var(--ground);
+  }
+  tbody tr:last-child td { border-bottom:none; }
+  td.num { font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+  td.tight { white-space:nowrap; }
+
+  /* ---------- chips ---------- */
+  .chip {
+    display:inline-block; font-family:var(--mono); font-size:10.5px; letter-spacing:.07em;
+    text-transform:uppercase; padding:2px 7px; border:1px solid currentColor; border-radius:2px;
+    white-space:nowrap; font-weight:600;
+  }
+  .c-good{color:var(--good)} .c-bad{color:var(--bad)} .c-warn{color:var(--warn)} .c-info{color:var(--info)} .c-mute{color:var(--ink-3)}
+
+  /* ---------- quote / intervention ---------- */
+  .quote {
+    font-family:var(--serif); font-size:16.5px; line-height:1.5; color:var(--ink);
+    font-style:italic;
+  }
+  .quote::before { content:"“"; } .quote::after { content:"”"; }
+
+  /* ---------- callout ---------- */
+  .callout {
+    border-left:3px solid var(--accent); background:var(--panel);
+    padding:16px 20px; display:flex; flex-direction:column; gap:8px;
+  }
+  .callout .lbl { font-family:var(--mono); font-size:11px; letter-spacing:.11em; text-transform:uppercase; color:var(--accent); }
+
+  .caveat { border-left:3px solid var(--ink-3); }
+  .caveat .lbl { color:var(--ink-3); }
+
+  /* ---------- cards ---------- */
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+  .card { background:var(--panel); border:1px solid var(--line); padding:18px 20px; display:flex; flex-direction:column; gap:9px; }
+  .card p { font-size:14.5px; color:var(--ink-2); }
+  .card .tag { font-family:var(--mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-3); }
+
+  ul { margin:0; padding-left:1.15em; max-width:var(--measure); display:flex; flex-direction:column; gap:7px; }
+  li { padding-left:.15em; }
+  li::marker { color:var(--accent-dim); }
+
+  code { font-family:var(--mono); font-size:.88em; background:var(--ground); border:1px solid var(--line); padding:.5px 4px; border-radius:2px; }
+  strong { font-weight:660; }
+
+  .foot { border-top:1px solid var(--line); padding-top:20px; font-size:13px; color:var(--ink-3); max-width:var(--measure); }
+
+  @media (max-width:640px){
+    .wrap{ padding:32px 16px 64px; gap:44px; }
+    .metric .n{ font-size:24px; }
+  }
+</style>
+
+
+<style>
+  .themebtn{
+    position:fixed; top:14px; right:14px; z-index:50;
+    background:var(--panel); border:1px solid var(--line); color:var(--ink-3);
+    font-family:var(--mono); font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+    padding:7px 11px; border-radius:2px; cursor:pointer;
+  }
+  .themebtn:hover{ color:var(--ink); border-color:var(--ink-3); }
+  .themebtn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  @media print{ .themebtn{display:none} }
+</style>
+</head>
+<body>
+<button class="themebtn" id="tt" type="button" aria-label="Switch colour theme">Theme</button>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="eyebrow">Internal retrospective · Purple Ruler engineering</div>
+    <h1>Two days of orchestrated agents: what shipped, what broke, and where the tokens actually went</h1>
+    <p class="dek">One orchestrator session driving 13 persistent coding agents across two repositories. This is the honest version — including the calls the orchestrator got wrong and the human corrections that caught them.</p>
+    <div class="mast-meta">
+      <span>27–28 Jul 2026</span>
+      <span>13 agents · 2 repos · 1 orchestrator</span>
+      <span>Compiled 28 Jul, 17:20 BST</span>
+    </div>
+  </header>
+
+  <!-- ===================== OUTPUT ===================== -->
+  <section>
+    <h2>Output</h2>
+    <div class="metrics">
+      <div class="metric"><div class="n">72</div><div class="k">Pull requests merged</div><div class="s">43 on 27th · 29 on 28th</div></div>
+      <div class="metric"><div class="n">16.5k</div><div class="k">Lines added</div><div class="s">1,297 deleted</div></div>
+      <div class="metric"><div class="n">3</div><div class="k">Production publishes</div><div class="s">all smoke-verified 12/12</div></div>
+      <div class="metric"><div class="n">200</div><div class="k">Decision-desk rows touched</div><div class="s">105 + 95</div></div>
+      <div class="metric"><div class="n">13</div><div class="k">Agents, zero idle at close</div><div class="s">2 lanes idled 4h mid-day</div></div>
+      <div class="metric"><div class="n">0</div><div class="k">Open PRs at close</div><div class="s">both repos clean</div></div>
+    </div>
+    <p class="lede">The headline number is not the 72 PRs. It is that <strong>every production publish passed its smoke gate on the first attempt</strong>, and that two publishes were <em>blocked</em> by the pre-flight gate before they could do damage — once for a stale UI version that would have reverted the human's editor work, once for a stale checkout.</p>
+  </section>
+
+  <!-- ===================== TOKENS ===================== -->
+  <section>
+    <h2>Token economics</h2>
+
+    <div class="callout caveat">
+      <div class="lbl">Measurement honesty</div>
+      <p>The orchestrator cannot read its own token counter. Everything below is derived from the <strong>shared 7-day subscription pool</strong>, which all 13 agents and the orchestrator draw from. That makes it a true fleet-wide figure, but it cannot be split per-agent.</p>
+    </div>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Observation</th><th>Value</th><th>How it was measured</th></tr></thead>
+        <tbody>
+          <tr><td>Previous 7-day window at exhaustion</td><td class="num">1–6% left</td><td>Agent status lines before the credential refresh</td></tr>
+          <tr><td>Fresh window, after 4h of full-fleet work</td><td class="num">83–90% left</td><td>Sampled across all 13 agents at 17:00</td></tr>
+          <tr><td>Burn rate, all 13 agents active</td><td class="num">≈16% / 4h</td><td>Derived from the two rows above</td></tr>
+          <tr><td>Implied capacity of one 7-day window</td><td class="num">≈25 hours</td><td>Extrapolated — of <em>full-fleet</em> activity, not wall-clock</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Twenty-five hours of full-fleet burn inside a seven-day window is the real constraint. It means a fleet this size cannot run continuously — it must run in bursts, and the orchestrator's main economic job is deciding <em>which</em> bursts are worth it.</p>
+
+    <div class="callout">
+      <div class="lbl">The single largest sink</div>
+      <p><strong>Rework, not work.</strong> Every token spent today on a wrong premise was spent twice: once producing the wrong thing, once undoing it. Two false P0 security escalations were filed and retracted. One investigation branch was designed, built into a PR, and closed unmerged. One root-cause hunt ran two levels deep before the human revealed he had already fixed the thing by hand.</p>
+    </div>
+  </section>
+
+  <!-- ===================== INTERVENTIONS ===================== -->
+  <section>
+    <h2>Human interventions that were correct</h2>
+    <p class="lede">Ten times in two days the human interrupted with a correction, and <strong>ten times the correction stood</strong>. None were preference disputes; all were factual or structural catches. This section is the most useful part of the retrospective.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>What was said</th><th>What it caught</th><th style="width:110px">Class</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="quote">A sentinel dying is a big problem — why?</span></td>
+            <td>Sentinels were built to <em>exit on first hit</em> and rely on the orchestrator remembering to re-arm. They fired 6+ times in one day; every gap between firing and re-arming was a blind window. Replaced with persistent monitors that dedupe and never exit.</td>
+            <td class="tight"><span class="chip c-bad">Architecture</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">You can create the collection yourself — why are you asking me?</span></td>
+            <td>Two CMS collections had been parked in the human's queue for a day. The orchestrator held the API key the whole time. Over-delegation upward, mistaken for caution.</td>
+            <td class="tight"><span class="chip c-bad">Ownership</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">Why did you conclude everything is moving? These are all resting.</span></td>
+            <td>The orchestrator judged fleet activity by <em>git branch names</em>. Ten agents were sitting on "awaiting your go-ahead" — nine of their PRs had already been merged without anyone telling them. <strong>Merging is not replying.</strong></td>
+            <td class="tight"><span class="chip c-bad">Coordination</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">It has always been like that.</span> <em>(screenshot of the real permission panel)</em></td>
+            <td>Killed a P0 built on an API field that turned out not to reflect the runtime for legacy collections. The orchestrator had already escalated it as urgent.</td>
+            <td class="tight"><span class="chip c-bad">False alarm</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">What are you actually investigating here?</span></td>
+            <td>Forced a restatement of the probe's purpose — which immediately exposed that its premise was unverified. The whole branch was paused and the planned publish saved.</td>
+            <td class="tight"><span class="chip c-warn">Premise</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">Surely that's after the student logs in. Why could case B pull it out?</span></td>
+            <td>Demanded the mechanism instead of the alarm. Produced the one framing that mattered: login gates the page, not the collection — and the entire severity claim rests on one unverified fact.</td>
+            <td class="tight"><span class="chip c-warn">Premise</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">Don't change that. If it's a daily report, change its content — how much came in.</span></td>
+            <td>Redirected a proposal about report <em>frequency</em> to the actual problem: the card was rendering a summary event through a single-payment template, so every morning opened with what looked like a failed payment.</td>
+            <td class="tight"><span class="chip c-info">Product</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">Option A — my management cost is lowest. And what do you need a write channel for?</span></td>
+            <td>Second half caught a standing architectural rule being violated: all Wix↔Lark traffic routes through one integration layer. An agent had proposed a new direct channel and the orchestrator had started helping it configure credentials.</td>
+            <td class="tight"><span class="chip c-bad">Policy</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">Three of them just failed registration, so no ID. I fixed it by hand.</span></td>
+            <td>Ended a two-level-deep root-cause investigation into a problem that had already been resolved manually. Two agents were mid-hunt.</td>
+            <td class="tight"><span class="chip c-warn">Stale context</span></td>
+          </tr>
+          <tr>
+            <td><span class="quote">Which PR is the suppressAuth fix?</span></td>
+            <td>There wasn't one — it had been promised but not dispatched. And the analysis behind it was wrong: the orchestrator had truncated its own search with <code>| head -20</code> and reported "all 8 sites checked" from a repository with <strong>82</strong> references.</td>
+            <td class="tight"><span class="chip c-bad">Evidence</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== FAILURE MODES ===================== -->
+  <section>
+    <h2>Failure modes, grouped</h2>
+    <p class="lede">Ten separate mistakes collapse into four recurring shapes. Naming the shape is more useful than listing the incidents.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag">Shape 1 · dominant</div>
+        <h3>Treating a report as a verified fact</h3>
+        <p>An agent reports a finding; the orchestrator forwards it as established and acts on it. Two P0 escalations, one wrong root-cause hunt, and one mis-scoped fix all trace here. The tell: the write-up says "confirmed" but no command in the transcript produced that confirmation.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Shape 2</div>
+        <h3>Partial data, whole conclusion</h3>
+        <p>Pagination not exhausted; output truncated by the orchestrator's own <code>head</code>; a 200-row page mistaken for a 5,007-row table. Same error the orchestrator had spent the day correcting in others.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Shape 3</div>
+        <h3>Zeros that mean different things</h3>
+        <p>A query returning nothing can mean "no data", "filtered out", "no permission", or "the call failed". Three separate incidents came from collapsing these. The fix that stuck: prove the collection is non-empty by a path that bypasses the filter, then interpret the zero.</p>
+      </div>
+      <div class="card">
+        <div class="tag">Shape 4</div>
+        <h3>Acting without closing the loop</h3>
+        <p>PRs merged without telling the author. A freeze order lifted for five lanes and forgotten for four. Both cost hours of agent idle time while the orchestrator believed the fleet was busy.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">The counter-pattern that worked</div>
+      <p>Agents pushed back on the orchestrator <strong>seven times</strong> and were right every time — including correcting a decision criterion that would have made a daily report cry wolf on every normal day, rejecting a bulk write of 5,001 rows because no sample existed to validate the mapping rule, and refusing to supply a precision figure the orchestrator asked for on the grounds that it would be false precision. A fleet where agents will contradict the orchestrator is worth more than a fleet that complies.</p>
+    </div>
+  </section>
+
+  <!-- ===================== HARNESS ===================== -->
+  <section>
+    <h2>Harness changes</h2>
+
+    <h3 style="margin-top:4px">Shipped during the session</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Change</th><th>Problem it removes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Persistent monitors</strong> replacing exit-on-hit sentinels</td><td>Blind windows between a sentinel firing and a human-in-the-loop re-arm. Now dedupes by record ID and reports only new items.</td></tr>
+          <tr><td><strong>Identity prefix on every ledger write</strong> — <code>&lt;agent&gt; - &lt;content&gt;</code></td><td>All agents share one API token, so the audit trail showed a single human as the author of all 73 ledger rows. Attribution was structurally impossible.</td></tr>
+          <tr><td><strong>CI sharding</strong> for the browser test suite</td><td>17 minutes down to ~7 on the happy path, with proof of zero test loss (813 sharded vs 573 local, none dropped).</td></tr>
+          <tr><td><strong>Automatic review bot disabled</strong></td><td>It was consuming the same subscription pool as the working fleet and producing no signal.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Still needed</h3>
+    <ul>
+      <li><strong>Monitors that outlive the session.</strong> The current ones die when the orchestrator session ends. Making them OS-level services is the obvious next step and has not been done.</li>
+      <li><strong>A "reply owed" queue.</strong> Nothing structurally prevents merging a PR and never telling its author. This should be mechanical, not a discipline.</li>
+      <li><strong>Verification tier on incoming reports.</strong> Agent findings should arrive tagged <em>measured</em> / <em>inferred</em> / <em>reported-by-another</em>, and only <em>measured</em> should be forwardable as fact without re-running the command.</li>
+      <li><strong>Full-output discipline.</strong> A lint that flags <code>head</code>/<code>limit</code> in any command whose result feeds a completeness claim.</li>
+      <li><strong>Per-agent credentials.</strong> Would fix attribution properly and let permissions be scoped per lane instead of every agent holding the same keys.</li>
+    </ul>
+  </section>
+
+  <!-- ===================== FOR DANIEL ===================== -->
+  <section>
+    <h2>Notes for a peer running the same structure</h2>
+    <p class="lede">Written for someone with an orchestrator-and-agents setup that is burning through quota faster than expected. Ordered by how much they saved here.</p>
+
+    <div class="cards">
+      <div class="card">
+        <div class="tag">1 · biggest lever</div>
+        <h3>Pay for verification once, not for rework twice</h3>
+        <p>The most expensive tokens are the ones that undo earlier tokens. Before an orchestrator forwards an agent's finding — especially a scary one — it should re-run the one command that proves it. A 30-second check prevented far less than it cost today, because it wasn't done: two escalations, one built-then-closed PR, one two-level root-cause hunt.</p>
+      </div>
+      <div class="card">
+        <div class="tag">2</div>
+        <h3>Never let a monitor exit on the event it monitors</h3>
+        <p>Exit-on-hit means every alert costs a full orchestrator turn just to restart the watcher — and creates a blind window. A long-running process that dedupes and emits only deltas costs almost nothing and never has a gap.</p>
+      </div>
+      <div class="card">
+        <div class="tag">3</div>
+        <h3>Close the loop in the same turn you act</h3>
+        <p>Agents end their turns with a question. If you merge their work and don't reply, they sit. Nine merged PRs sat unacknowledged here while their authors waited. That is pure waste — and worse, the orchestrator re-derives fleet state repeatedly because it can't tell idle from busy.</p>
+      </div>
+      <div class="card">
+        <div class="tag">4</div>
+        <h3>Use a shared ledger as memory, not the conversation</h3>
+        <p>Every fact worth keeping goes into a table both sides read: what's in flight, what it's waiting on, who owes what. Re-explaining context in prose each turn is the quiet, continuous drain. It also survives context compaction, which conversation does not.</p>
+      </div>
+      <div class="card">
+        <div class="tag">5</div>
+        <h3>Make agents write to disk before they compact</h3>
+        <p>Every lane here keeps a progress file. When an agent's context fills and compacts, it reloads from disk instead of reconstructing from a summary. Agents that reconstruct produce subtly wrong state — and then act on it.</p>
+      </div>
+      <div class="card">
+        <div class="tag">6</div>
+        <h3>Tier the models deliberately</h3>
+        <p>Sub-agents default to the mid-tier model; the top tier is reserved for architecture judgement, long-document synthesis, and cross-module debugging. Single-field lookups and format conversions drop to the cheapest tier. Inheriting the orchestrator's model everywhere is a silent multiplier.</p>
+      </div>
+      <div class="card">
+        <div class="tag">7</div>
+        <h3>Gate at the boundary, not in review</h3>
+        <p>Publishing runs through one script that chains pre-flight → publish → smoke test, with no way to skip a step. It blocked two bad publishes today. A gate that cannot be bypassed is cheaper than any amount of reviewing, because it costs nothing when everything is fine.</p>
+      </div>
+      <div class="card">
+        <div class="tag">8</div>
+        <h3>Let agents refuse</h3>
+        <p>Explicitly reward pushback. The most valuable outputs today were an agent declining to produce a number it called false precision, and another refusing a 5,001-row bulk write for lack of a validation sample. Compliance is cheap to get and expensive to have.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="lbl">If only one thing changes</div>
+      <p>Instrument the difference between <strong>work</strong> and <strong>rework</strong>. Count the tokens spent on things later retracted, reverted, closed unmerged, or investigated after they had already been fixed. In this session that category was large enough to be the leading line item — and it is invisible unless someone deliberately counts it.</p>
+    </div>
+  </section>
+
+  <p class="foot">
+    All figures are drawn from repository history, the publish ledger, the decision desk, and agent status readouts at 17:00 BST on 28 Jul 2026. Token figures are fleet-wide from the shared subscription pool; per-agent attribution is not available. Intervention counts are from a single continuous orchestrator session and cover 27–28 Jul only.
+  </p>
+
+</div>
+
+<script>
+  (function(){
+    var root=document.documentElement, btn=document.getElementById('tt');
+    var saved=null;
+    try{ saved=localStorage.getItem('retro-theme'); }catch(e){}
+    if(saved){ root.setAttribute('data-theme',saved); }
+    btn.addEventListener('click',function(){
+      var cur=root.getAttribute('data-theme');
+      if(!cur){
+        cur = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      var next = cur==='dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme',next);
+      try{ localStorage.setItem('retro-theme',next); }catch(e){}
+    });
+  })();
+</script>
+</body>
+</html>
