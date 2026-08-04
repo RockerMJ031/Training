@@ -549,6 +549,10 @@
   /* ===== letter ===== */
   .letter { position:relative; background:#221737; border-radius:var(--radius); padding:22px 24px; margin:20px 0; box-shadow:var(--shadow); }
   .letter pre { font-family:var(--mono); font-size:11.5px; line-height:1.7; color:#d9cdf3; white-space:pre-wrap; margin:0; }
+  .code { background:#17122a; border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:14px 0; overflow-x:auto; }
+  .code pre { font-family:var(--mono); font-size:12px; line-height:1.7; color:#d9cdf3; white-space:pre; margin:0; }
+  .code pre.wrap { white-space:pre-wrap; }
+  .placeholder { background:#3d3208; border:1px dashed #b98d1e; color:#f5d97b; border-radius:6px; padding:1px 8px; font-size:.92em; }
   .copybtn { position:absolute; top:14px; right:14px; font-family:var(--mono); font-size:10.5px; font-weight:700; color:#fff; background:var(--p500); border:none; border-radius:8px; padding:7px 12px; cursor:pointer; }
   .copybtn:hover { background:var(--p600); }
   .copybtn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
@@ -611,11 +615,15 @@
     <div class="grp">Part V · Layer 3: Loop</div>
     <a class="nav" href="#sentinels"><span class="n">21</span>The three sentinels</a>
     <a class="nav" href="#desk"><span class="n">22</span>Desk &amp; happy path</a>
-    <div class="grp">Closing · The synthesis</div>
+    <div class="grp">Part VI · Running the team day to day</div>
     <a class="nav" href="#boris"><span class="n">23</span>Boris's workflow</a>
     <a class="nav" href="#team"><span class="n">24</span>The team topology</a>
-    <a class="nav" href="#synthesis"><span class="n">25</span>Full stack &amp; first day</a>
-    <a class="nav" href="#daniel"><span class="n">26</span>Letter to Daniel's AI</a>
+    <a class="nav" href="#isolation"><span class="n">25</span>Isolation &amp; alignment</a>
+    <a class="nav" href="#dailyreport"><span class="n">26</span>The daily report</a>
+    <a class="nav" href="#upkeep"><span class="n">27</span>Harness upkeep</a>
+    <div class="grp">Closing · The synthesis</div>
+    <a class="nav" href="#synthesis"><span class="n">28</span>Full stack &amp; first day</a>
+    <a class="nav" href="#daniel"><span class="n">29</span>Letter to Daniel's AI</a>
     <div class="side-foot">Purple Ruler · Internal training<br>
       <b>This page is styled with the same pr-design tokens it teaches.</b></div>
   </aside>
@@ -1385,6 +1393,136 @@
           <span class="sub">Shallow hierarchy, thick artifacts. The moment you catch yourself copy-pasting between two windows, you've found a contract that should be a file.</span></p>
         </div>
       </section>
+      <section id="isolation">
+        <div class="act">Part VI · Running the team day to day</div>
+        <h2>Isolation &amp; alignment: one worktree per agent, three structures for the rest</h2>
+        <p class="lead">The single most common failure mode in new multi-agent setups is invisible until it hurts: <b>all agents working in the same folder.</b> It feels natural — one project, one directory — and it quietly breaks everything the previous chapters built.</p>
+
+        <h3>Why one folder breaks a team</h3>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">Agents overwrite each other.</div><div class="d">Two agents edit the same file in the same working copy; whoever saves last wins. Git status becomes a shared mess — agent A's <span class="mono">git add</span> sweeps up agent B's half-finished edits, and a commit stops meaning "one agent's finished work."</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">Half-finished work gets read as fact.</div><div class="d">Agents read files to learn the state of the world. In a shared folder, A's work-in-progress <em>is</em> B's input — B builds on code or text that was never finished, never reviewed, and may be deleted an hour later.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">Nothing can be attributed.</div><div class="d">When something breaks, "who changed this?" has no answer — every agent touched everything. No attribution means no per-agent daily report, no per-agent judgment, and no way to fix the <em>agent</em> instead of the file.</div></div></div>
+        </div>
+
+        <h3>The fix: one git worktree per agent</h3>
+        <p>A <b>worktree</b> is git's built-in way to give one repository several independent working folders — each on its own branch, all sharing the same history. One command per agent:</p>
+        <div class="code"><pre>cd ~/projects/your-repo          # your existing repo
+
+# one worktree + one branch per agent, as sibling folders
+git worktree add ../agent-drafting  -b agent/drafting
+git worktree add ../agent-review    -b agent/review
+git worktree add ../agent-research  -b agent/research
+
+git worktree list                 # verify: each path, each branch</pre></div>
+        <p>Migrating from the one-folder setup is four steps:</p>
+        <ul class="check">
+          <li><span class="lp">①</span> Stop all agents; commit or stash whatever is in flight so the main folder is clean.</li>
+          <li><span class="lp">②</span> Create one worktree per agent with the commands above.</li>
+          <li><span class="lp">③</span> Restart each agent <b>from inside its own worktree</b> — the session's working directory is its whole world.</li>
+          <li><span class="lp">④</span> New house rule: <b>an agent never edits outside its worktree.</b> Finished work travels through commits and merges (or pull requests) into the main branch — never through editing a shared folder.</li>
+        </ul>
+        <div class="rules"><div class="rule"><b>Minimum viable version:</b> if worktrees feel like too much today, the floor is one <b>subfolder + one branch per agent</b>. But worktrees cost one command and give you real isolation — the floor is rarely worth it.</div></div>
+
+        <h3>Alignment: not memory — three structures</h3>
+        <p>Isolated agents now need to agree on facts. Not by remembering — memory is per-session and dies with it — but by structure. Three of them:</p>
+
+        <h3 style="font-size:15px">1 · Layered CLAUDE.md — one fact, one home</h3>
+        <div class="table-scroll"><table>
+          <thead><tr><th>File</th><th>Lives</th><th>Holds</th></tr></thead>
+          <tbody>
+            <tr><td class="strong mono">~/.claude/CLAUDE.md</td><td>Global, your machine</td><td>Cross-project workflow: how you work with agents everywhere — spec-first habits, verification rules.</td></tr>
+            <tr><td class="strong mono">&lt;repo&gt;/CLAUDE.md</td><td>In the repo, committed</td><td>This project's facts and rules — shared by <b>every</b> agent in every worktree automatically.</td></tr>
+            <tr><td class="strong mono">CLAUDE.local.md</td><td>In the repo, <b>not</b> committed</td><td>Machine-private notes: local paths, personal reminders, today's anchors.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules"><div class="rule"><b>The placement test:</b> every fact lives in exactly <b>one</b> of the three; the other layers hold a pointer, never a copy. Two copies of one fact will disagree within a week — and an agent will read the stale one with full confidence.</div></div>
+
+        <h3 style="font-size:15px">2 · One shared ledger — messages may be lost, the ledger may not</h3>
+        <p>All tasks, statuses and handovers live in <b>one</b> shared table — a spreadsheet, an issue board, even a markdown table committed in the repo. Which tool doesn't matter; <b>oneness</b> does. Chat is transport; the ledger is the record. If a long message matters, number its parts (<span class="mono">1/4 … 4/4</span>) so the receiver can <em>count</em> what's missing instead of guessing.</p>
+
+        <h3 style="font-size:15px">3 · Dated handoff anchors — the one-minute takeover</h3>
+        <p>Before an agent stops for the day it writes a dated handoff file (<span class="mono">handoff-2026-08-03.md</span>): what's in flight, the next step, the traps. The first three lines are a <b>one-minute takeover block</b> — enough for anyone (including tomorrow's session of the same agent) to resume cold.</p>
+        <div class="warn"><span class="ic">!</span><p><b>Iron rule: a stale handoff is worse than no handoff.</b> It states dead facts with full authority. Every session starts by <em>verifying</em> the anchor — is this still true? — before acting on it.</p></div>
+
+        <div class="insight"><span class="tag">INSIGHT 15</span>
+          <p>Alignment is a property of structure, not of memory.
+          <span class="sub">Worktrees make "who did what" physical. Layered CLAUDE.md makes facts single-homed. The ledger makes state survive lost messages. None of them require anyone — human or agent — to remember anything.</span></p>
+        </div>
+        <div class="rules"><div class="rule"><b>Today's smallest step:</b> run <span class="mono">git worktree add</span> once per existing agent, restart each agent inside its own folder. Thirty minutes, and the overwrite class of bugs is structurally gone.</div></div>
+      </section>
+
+      <section id="dailyreport">
+        <h2>The daily report: six sections, three iron rules</h2>
+        <p class="lead">One report per agent per day. Its value is not reporting — you were there — but <b>analysis</b>: section 4 is where a team's judgment gets built, one real error at a time. Fixed shape, six sections, <b>at most three bullets each</b>:</p>
+        <div class="code"><pre># Daily report — &lt;agent&gt; — 2026-08-03
+
+## 1 · Done
+   Only things that landed: commits, files, deliverables. No process.
+
+## 2 · In flight / blocked
+   Each line ends with: waiting on WHAT, from WHOM.
+
+## 3 · Problems
+   Each line points at observable evidence — file:line, or the command
+   and its output. A problem with no evidence gets deleted, not written.
+
+## 4 · Candidates for team knowledge
+   Fixed form:  [Symptom] → [Why it went wrong] → [How to judge next time]
+   Each entry names the real error it came from. Generic wisdom with no
+   incident behind it is not allowed here.
+
+## 5 · Spec reflection
+   Which sentence of the spec was not enough, and at which step the
+   question should have been asked. If none: write "none — because …".
+   Never invent one to fill the box.
+
+## 6 · Avoiding rework
+   Concrete suggestions — scoped to this agent's own lane only.</pre></div>
+
+        <h3>The three iron rules that ride with the template</h3>
+        <div class="rules">
+          <div class="rule red"><b>Relaying is not measuring.</b> Quoting a conclusion? Either attach the command that produced it, or mark it <em>"as reported by X"</em>. An unmarked relay reads as a measurement — and gets trusted like one.</div>
+          <div class="rule red"><b>Yesterday's truth expires.</b> Anything about <em>state</em> (what's deployed, what's open, what's passing) gets re-checked before it's written — not copied from yesterday's report.</div>
+          <div class="rule red"><b>Unreadable data is written as "unreadable."</b> Never a plausible-looking number in its place. A visible gap invites a fix; an invented number invites a decision built on it.</div>
+        </div>
+
+        <h3>Where section 4 flows</h3>
+        <p>Section 4 entries are raw ore. Someone must <b>merge and de-duplicate</b> them into one growing <b>judgment document</b> — the team's "how to decide" file, each entry still naming its incident. On a one-person team that someone is you, once a week, thirty minutes. Skip the merging and the reports become write-only — the analysis happened, the team never learned.</p>
+
+        <div class="insight"><span class="tag">INSIGHT 16</span>
+          <p>The report is a sensor, not a ceremony.
+          <span class="sub">Sections 1–2 tell you where the work is. Sections 3–6 are the capture clock of chapter 20 in prose form: evidence in daily, judgment merged weekly, and nothing written that a reader can't trace to something real.</span></p>
+        </div>
+        <div class="rules"><div class="rule"><b>Today's smallest step:</b> tonight, have each agent (or write it yourself for them) produce its first six-section report. The first one takes twenty minutes; by day three it takes five.</div></div>
+      </section>
+
+      <section id="upkeep">
+        <h2>Keeping the harness current: the second supplier</h2>
+        <p class="lead">Chapter 20 gave the harness its first input: <b>your own incidents</b> — evidence in on the capture clock, change out on the change clock. There is a second supplier you don't control: <b>the platform itself keeps shipping.</b> A harness that ignores upstream slowly turns into a museum of workarounds for problems that no longer exist.</p>
+
+        <h3>1 · Walk the changelog — weekly is enough</h3>
+        <p>Once a week (a weekend half-hour is plenty), read the Claude Code release notes and whatever the team behind it — Boris Cherny and the other maintainers — has published. Read with exactly one question in mind:</p>
+        <div class="golden"><div class="q">"Which layer that I built myself does the platform now do natively?"</div></div>
+        <p>Not "what's new" — that list is endless. Only: <em>what did I hand-build that just became built-in?</em></p>
+
+        <h3>2 · Official coverage means uninstall</h3>
+        <p>A self-built layer has exactly one licence to exist: <b>it fills a gap the platform left open.</b> The day the platform closes that gap, the licence expires. Keeping the layer anyway costs you twice — you maintain it forever, and it now <em>fights</em> the native behavior it duplicates: two implementations of one idea, drifting apart, each half-trusted.</p>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The hoarder's reflex</div><div class="tt">"It still works, leave it"</div><p>The plugin still runs, the script still passes — so it stays. Six months later nobody remembers which behavior comes from your layer and which from the platform, and debugging means excavating both.</p></div>
+          <div class="half mach"><div class="hd">The discipline</div><div class="tt">Covered → uninstalled, same day</div><p>Real case from this harness: MJ recently uninstalled the <b>superpowers</b> plugin and updated the global CLAUDE.md and the machine-local notes to match — because <span class="placeholder">[MJ to add — one sentence: what it was replaced by / why it became redundant]</span>. One less layer to maintain, one less conflict to debug.</p><span class="res">EVERY LAYER RE-JUSTIFIES ITSELF · OR LEAVES</span></div>
+        </div>
+
+        <h3>3 · Real errors drive the rest — never the calendar</h3>
+        <p>Everything else about <em>when</em> to change the harness was settled in chapter 20 — <b>the evolution clock</b>: capture friction continuously, change only when evidence clears a threshold, and make every firing subtract as well as add. The rule bears repeating in one line: the harness changes on exactly two signals — <b>an official update made a layer redundant, or a real error exposed a missing one.</b> "It feels like time to refactor" is neither.</p>
+
+        <div class="insight"><span class="tag">INSIGHT 17</span>
+          <p>Your harness has two suppliers: your incidents, and their releases.
+          <span class="sub">Chapter 20 wired the first. The weekly changelog walk wires the second. Both feed the same discipline — evidence-driven change, with subtraction always on the table.</span></p>
+        </div>
+        <div class="rules"><div class="rule"><b>Today's smallest step:</b> put thirty minutes on this weekend's calendar: read the Claude Code changelog since your last check, and answer the one question in writing — even if the answer is "nothing to uninstall this week."</div></div>
+      </section>
+
       <section id="synthesis">
         <h2>The full stack — and where you stand</h2>
         <div class="stackwrap">
@@ -1473,7 +1611,6 @@ THE THREE RULES ABOVE ALL
           Purple Ruler · Internal Training · The AI-Native Series · This page is a live demo of <span class="mono">pr-design</span> tokens.
         </div>
       </section>
-
 
     </div>
   </main>
