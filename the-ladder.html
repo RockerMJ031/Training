@@ -727,6 +727,58 @@
   .nails .np.good .nl::before { background:var(--green); }
   .nails .cap2 { font-size:10.5px; color:var(--muted); line-height:1.4; margin-top:4px; }
 
+
+  /* ===== OKR visual ===== */
+  .okrviz { margin:18px 0 8px; }
+  .okrviz .obj { border-radius:14px; background:var(--p900); color:#fff; padding:16px 18px; text-align:center; }
+  .okrviz .obj .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--p300); }
+  .okrviz .obj .t { font-weight:800; font-size:15px; margin-top:3px; }
+  .okrviz .mid { text-align:center; color:var(--p300); font-size:12px; font-weight:700; padding:6px 0; }
+  .okrviz .krs { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .okrviz .kr { border-radius:12px; border:1.5px solid var(--line); background:var(--card); padding:12px 14px; }
+  .okrviz .kr .t { font-size:12px; font-weight:700; }
+  .okrviz .kr .track { height:8px; border-radius:5px; background:var(--p100); margin-top:8px; overflow:hidden; }
+  .okrviz .kr .fill { height:100%; background:var(--p500); border-radius:5px; }
+  .okrviz .kr .lb { font-family:var(--mono); font-size:9px; color:var(--faint); margin-top:5px; letter-spacing:.06em; }
+  .okrviz .krwarn { margin-top:10px; border:1.5px dashed #e5b9b5; background:#fdf1f0; border-radius:10px;
+    padding:9px 14px; font-size:11.5px; color:#a03a33; font-weight:600; text-align:center; }
+  @media (max-width:700px){ .okrviz .krs { grid-template-columns:1fr; } }
+  /* ===== architect flow ===== */
+  .archflow { margin:20px 0 8px; }
+  .archflow .af-in { border-radius:12px; border:1.5px solid var(--line); background:var(--card); padding:11px 16px; text-align:center; font-size:12.5px; font-weight:600; }
+  .archflow .down { text-align:center; color:var(--p300); font-size:12px; font-weight:700; padding:5px 0; }
+  .archflow .af-q { border-radius:12px; border:2px solid var(--p700); background:var(--p50); padding:12px 16px; text-align:center; }
+  .archflow .af-q .t { font-weight:800; color:var(--p700); font-size:13.5px; }
+  .archflow .af-q .d { font-size:11px; color:var(--muted); margin-top:2px; }
+  .archflow .af-outs { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:8px; }
+  .archflow .af-o { border-radius:12px; padding:12px 13px; font-size:11.5px; line-height:1.5; border:1.5px solid; }
+  .archflow .af-o b { display:block; font-size:12.5px; margin-bottom:3px; }
+  .archflow .af-o.a { border-color:#e5b9b5; background:#fdf7f6; } .archflow .af-o.a b { color:var(--red); }
+  .archflow .af-o.b { border-color:#ecd9b0; background:#fdfaf2; } .archflow .af-o.b b { color:var(--amber); }
+  .archflow .af-o.c { border-color:#bfe3d0; background:#f4faf7; } .archflow .af-o.c b { color:var(--green); }
+  .archflow .esc { display:block; margin-top:6px; font-family:var(--mono); font-size:9px; font-weight:700; color:var(--p600); }
+  .archflow .af-ban { margin-top:10px; border-radius:10px; background:var(--p50); border:1.5px solid var(--p100);
+    padding:9px 14px; text-align:center; font-size:11.5px; font-weight:600; color:var(--p700); }
+  @media (max-width:700px){ .archflow .af-outs { grid-template-columns:1fr; } }
+  /* ===== quality funnel ===== */
+  .funnel { margin:18px 0 8px; display:flex; flex-direction:column; align-items:center; gap:6px; }
+  .funnel .fl { border-radius:10px; padding:10px 16px; font-size:11.5px; line-height:1.45; color:#fff; text-align:center; }
+  .funnel .fl b { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; display:block; margin-bottom:2px; opacity:.8; }
+  .funnel .f1 { width:100%; background:var(--p300); }
+  .funnel .f2 { width:88%; background:var(--p500); }
+  .funnel .f3 { width:76%; background:var(--p700); }
+  .funnel .f4 { width:64%; background:var(--p900); }
+  .funnel .fout { width:56%; border:1.5px dashed var(--green); color:var(--green); background:#f4faf7;
+    border-radius:10px; padding:9px 14px; font-size:11.5px; font-weight:600; text-align:center; }
+  @media (max-width:700px){ .funnel .f2,.funnel .f3,.funnel .f4,.funnel .fout { width:100%; } }
+  /* ===== comms svg ===== */
+  .comms { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:16px 0 6px; }
+  .comms .cp { border-radius:12px; border:1.5px solid var(--line); background:var(--card); padding:12px; text-align:center; }
+  .comms .cp .t { font-weight:800; font-size:12.5px; }
+  .comms .cp .d { font-size:10.5px; color:var(--muted); margin-top:2px; }
+  .comms .cp.bad .t { color:var(--red); } .comms .cp.good .t { color:var(--green); }
+  @media (max-width:640px){ .comms { grid-template-columns:1fr; } }
+
 </style>
 </head>
 <body>
@@ -750,10 +802,11 @@
     <a class="nav" href="#cockpit"><span class="n">09</span>Commands &amp; status bar</a>
     <div class="grp">The vision · Full scale</div>
     <a class="nav" href="#fourteen"><span class="n">10</span>Fourteen lanes, one human</a>
-    <a class="nav" href="#alignment"><span class="n">11</span>Staying aligned</a>
+    <a class="nav" href="#quality"><span class="n">11</span>Quality, debt &amp; scale</a>
+    <a class="nav" href="#alignment"><span class="n">12</span>Staying aligned</a>
     <div class="grp">Closing</div>
-    <a class="nav" href="#lessons"><span class="n">12</span>Three lessons</a>
-    <a class="nav" href="#start"><span class="n">13</span>Start tomorrow</a>
+    <a class="nav" href="#lessons"><span class="n">13</span>Three lessons</a>
+    <a class="nav" href="#start"><span class="n">14</span>Start tomorrow</a>
     <div class="side-foot">Purple Ruler · Team training<br>
       <b>Same tool, six ways to hold it.</b></div>
   </aside>
@@ -948,6 +1001,16 @@
           <div class="half mach"><div class="hd">Metric as thermometer</div><div class="tt">Aim at the purpose · read the number for anomalies</div><p>Work aims at the stated purpose ("schools get correct, warm answers within a day"). Numbers are read like a thermometer: a sudden drop or spike is a <em>question to investigate</em> — never a score to chase.</p><span class="res">NUMBERS DIAGNOSE · PURPOSE DIRECTS</span></div>
         </div>
         <p>If you know OKRs, this is exactly the O and the KR: the <b>O</b>bjective is qualitative and <em>aims</em> the work; <b>K</b>ey <b>R</b>esults are thermometers that tell you whether you're getting closer. And OKRs break in the same famous way: the day KRs become quotas tied to rewards, Goodhart eats them. Our daily reports carry a machine-readable number line for exactly one purpose — <b>diagnosis</b> — and no agent is ever told to improve it.</p>
+        <div class="okrviz">
+          <div class="obj"><div class="k">O · OBJECTIVE — QUALITATIVE · AIMS THE WORK</div><div class="t">"Schools get correct, warm answers within a day"</div></div>
+          <div class="mid">measured by ↓ — read, never chased</div>
+          <div class="krs">
+            <div class="kr"><div class="t">Replies inside 24h</div><div class="track"><div class="fill" style="width:82%"></div></div><div class="lb">KR · THERMOMETER</div></div>
+            <div class="kr"><div class="t">Rework rounds per task</div><div class="track"><div class="fill" style="width:38%"></div></div><div class="lb">KR · THERMOMETER</div></div>
+            <div class="kr"><div class="t">Repeat complaints, trending</div><div class="track"><div class="fill" style="width:64%"></div></div><div class="lb">KR · THERMOMETER</div></div>
+          </div>
+          <div class="krwarn">⚠ The day a KR becomes a quota tied to rewards — Goodhart eats it. Thermometers measure the room; they must never become the room's job.</div>
+        </div>
         <div class="insight"><span class="tag">INSIGHT 05</span>
           <p>If it isn't written down before the session ends, it never happened.
           <span class="sub">The close-out ritual is five minutes of writing that saves an hour of morning archaeology — and it is the only defence against a kind of amnesia humans never had to plan for.</span></p>
@@ -1108,6 +1171,18 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         <p>We run about <b>fourteen parallel AI work-lanes</b> — each a long-lived Claude session owning one page or one part of the product. Above them sit two special AI roles: an <b>orchestrator</b> (assigns work, reviews, merges) and an <b>architect</b> (designs, and triages every incoming request). The human count is <b>one</b>: a product owner who describes what's needed in plain words, approves plans, and accepts results. And one thing never moves: <b>no AI can publish to the live product. The publish button is human, by design.</b></p>
         <h3>How a request enters the system</h3>
         <p>You don't need to classify your own request — plain language is enough. Every request becomes one row in a shared task table, and the architect sorts it within the hour using a fixed <b>seven-question checklist</b>. The questions don't ask "how big is this?" — they ask <b>"if this goes wrong, who else gets hit?"</b> A five-line change can be highest-risk; an 800-line one can be routine.</p>
+        <div class="archflow">
+          <div class="af-in">📨 A request, in plain words — "parents should see a receipt after uploading" → one row in the shared task table</div>
+          <div class="down">within the hour ↓</div>
+          <div class="af-q"><div class="t">🏛 THE ARCHITECT · seven fixed questions</div><div class="d">not "how big is this?" — <b>"if this goes wrong, who else gets hit?"</b> · first hit decides</div></div>
+          <div class="down">↓ sorted into one of three paths ↓</div>
+          <div class="af-outs">
+            <div class="af-o a"><b>A · Blast radius</b>one-page plan first: boundaries · contracts · what it will <em>not</em> do → human approves → a lane builds inside the fence</div>
+            <div class="af-o b"><b>B · Routine</b>straight to a lane — which runs a 3-question self-check before touching anything<span class="esc">ANY HIT → ESCALATE BACK TO A ↩</span></div>
+            <div class="af-o c"><b>C · Trivial</b>just done — documentation, known-cause fixes<span class="esc">TOUCHES SHARED? STOP → ESCALATE ↩</span></div>
+          </div>
+          <div class="af-ban">The architect's power is what it may not do: 🚫 proposes, never decides &nbsp;·&nbsp; 🚫 never builds &nbsp;·&nbsp; 📖 its errors are public record</div>
+        </div>
         <div class="table-scroll"><table>
           <thead><tr><th>Sorted as</th><th>Meaning</th><th>What happens</th></tr></thead>
           <tbody>
@@ -1126,6 +1201,66 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         <div class="insight"><span class="tag">INSIGHT 07</span>
           <p>Boundaries aren't distrust. They give every mistake exactly one owner and one repair path.
           <span class="sub">Fourteen agents with fences beat fourteen agents with freedom — because when something breaks, "whose change was it, and where's the fix?" has a one-line answer.</span></p>
+        </div>
+      </section>
+
+      <section id="quality">
+        <h2>Why the numbers hold: quality, debt, and scale</h2>
+        <p class="lead">Big numbers prove throughput, not quality. Three honest answers to the three obvious objections: how is quality enforced, who pays the technical debt, and what does adding a fifteenth lane cost?</p>
+
+        <h3>Quality: four filters, none of them "self-discipline"</h3>
+        <div class="funnel">
+          <div class="fl f1"><b>LAYER 1 · AUTOMATED GATES</b>Interface tests at three screen sizes — branch-protected: a failing PR <em>physically cannot merge</em> · 5,752 automated tests behind the backend</div>
+          <div class="fl f2"><b>LAYER 2 · ARCHITECTURE GUARDS</b>Tests that guard <em>rules</em>, not features: no colour outside the design system · publish by allow-list only · cross-repo contracts snapshot-checked — and every guard once proved it turns red in a drill</div>
+          <div class="fl f3"><b>LAYER 3 · TWIN REVIEW ENGINES</b>A report-only review pass → fixes → an <em>independent</em> second engine · both green before any human looks</div>
+          <div class="fl f4"><b>LAYER 4 · ORCHESTRATOR GATE</b>Final review — plenty of PRs take two rounds of rework · rounds are logged and reviewed weekly</div>
+          <div class="fout">✓ merged — and one discipline most teams skip: <b>the tests themselves are audited.</b> "Added a test" counts for nothing; "the assertion points the right way" counts. We've caught a reversed assertion: all green, all wrong.</div>
+        </div>
+
+        <h3>Maintainability: debt repayment is on the schedule, not "when we have time"</h3>
+        <ul class="check">
+          <li><span class="lp">4:1</span> <b>The convergence ratio:</b> every 4 feature PRs require 1 convergence PR — refactoring, debt repayment, guard hardening. The ratio is audited daily by the architect; falling behind gets named. A good share of those 157 code PRs <em>were</em> convergence work.</li>
+          <li><span class="lp">🧱</span> <b>No new logic in monoliths:</b> any file past 2,000 lines is closed to new logic — extract a shared layer, keep a thin shell. New methods past 30 lines trigger a human look.</li>
+          <li><span class="lp">×N</span> <b>Fix the family, not the instance:</b> before changing one spot, ask "how many siblings does this pattern have?" — and fix them all in one pass. The shared-layer payoff, from a real fix: <b>2 shared files changed → 22 interfaces inherited the fix → 0 call-sites touched.</b></li>
+          <li><span class="lp">📌</span> <b>Scars are annotated:</b> every "looks redundant, is deliberate" piece of defensive code carries the incident date and ID that created it — so no future colleague (human or AI) helpfully amputates a scar mistaking it for fat.</li>
+          <li><span class="lp">📒</span> <b>Debt is on the books:</b> the system's own audit file lists its remaining debt — an 820-line cloned function, a median method length over target. The difference isn't having no debt; it's debt with a ledger, a schedule, and a ratio that guarantees it only shrinks.</li>
+        </ul>
+
+        <h3>Scalability: what a fifteenth lane would cost</h3>
+        <div class="comms">
+          <div class="cp bad"><div class="t">Pairwise chat — N² channels</div>
+            <svg viewBox="0 0 150 120" width="100%" height="110" aria-hidden="true">
+              <g stroke="#e0b7b3" stroke-width="1">
+                <line x1="75" y1="16" x2="113" y2="38"/><line x1="75" y1="16" x2="113" y2="82"/><line x1="75" y1="16" x2="75" y2="104"/><line x1="75" y1="16" x2="37" y2="82"/><line x1="75" y1="16" x2="37" y2="38"/>
+                <line x1="113" y1="38" x2="113" y2="82"/><line x1="113" y1="38" x2="75" y2="104"/><line x1="113" y1="38" x2="37" y2="82"/><line x1="113" y1="38" x2="37" y2="38"/>
+                <line x1="113" y1="82" x2="75" y2="104"/><line x1="113" y1="82" x2="37" y2="82"/><line x1="113" y1="82" x2="37" y2="38"/>
+                <line x1="75" y1="104" x2="37" y2="82"/><line x1="75" y1="104" x2="37" y2="38"/>
+                <line x1="37" y1="82" x2="37" y2="38"/>
+              </g>
+              <g fill="#cf2e25"><circle cx="75" cy="16" r="6"/><circle cx="113" cy="38" r="6"/><circle cx="113" cy="82" r="6"/><circle cx="75" cy="104" r="6"/><circle cx="37" cy="82" r="6"/><circle cx="37" cy="38" r="6"/></g>
+            </svg>
+            <div class="d">6 agents = 15 channels · 14 agents = 91 · doubling the team quadruples the noise</div>
+          </div>
+          <div class="cp good"><div class="t">One shared table — N channels</div>
+            <svg viewBox="0 0 150 120" width="100%" height="110" aria-hidden="true">
+              <g stroke="#9fd4b8" stroke-width="1.4">
+                <line x1="75" y1="16" x2="75" y2="60"/><line x1="113" y1="38" x2="75" y2="60"/><line x1="113" y1="82" x2="75" y2="60"/><line x1="75" y1="104" x2="75" y2="60"/><line x1="37" y1="82" x2="75" y2="60"/><line x1="37" y1="38" x2="75" y2="60"/>
+              </g>
+              <g fill="#1f9d62"><circle cx="75" cy="16" r="6"/><circle cx="113" cy="38" r="6"/><circle cx="113" cy="82" r="6"/><circle cx="75" cy="104" r="6"/><circle cx="37" cy="82" r="6"/><circle cx="37" cy="38" r="6"/></g>
+              <rect x="64" y="49" width="22" height="22" rx="4" fill="#1f9d62"/>
+            </svg>
+            <div class="d">every agent writes to and reads from one table · doubling the team adds channels linearly</div>
+          </div>
+        </div>
+        <ul class="check">
+          <li><span class="lp">①</span> <b>Onboarding is reading, not shadowing:</b> a new lane's induction is files — role charter, repo rules, handoff anchor, the judgment library. Zero verbal hand-me-down. This is also why process change is cheap: edit one routine file, fourteen lanes comply the next day.</li>
+          <li><span class="lp">②</span> <b>Coordination doesn't explode:</b> shared layers are fixed in one place and inherited; cross-repo contracts have snapshot guards watching for drift; agent-to-agent traffic goes through the table — N agents talk to 1 table, not to N−1 peers.</li>
+          <li><span class="lp">③</span> <b>The system exposes its own scaling bills:</b> when daily reporting made CI costs compound, the architect traced the waste the same day — 65% came from documentation changes triggering full deployment checks — proposed a four-cut fix, landed inside a week. A system that can see and fix its own scale costs is what "scalable" actually means.</li>
+        </ul>
+        <div class="rules"><div class="rule"><b>The honest ceiling:</b> the limit was never the number of AIs — it is the human's bandwidth to approve plans and accept results. Which is why every next optimisation compresses <em>what the human must read</em> (the one-page morning brief, decisions ranked by what they unblock) — not adds more AI.</div></div>
+        <div class="insight"><span class="tag">INSIGHT 09</span>
+          <p>Throughput impresses; the filters, the ledger and the N-to-1 table are what make it safe to believe.
+          <span class="sub">Big numbers with no quality machinery are a warning sign, not an achievement. Show the gates before you show the graph.</span></p>
         </div>
       </section>
 
