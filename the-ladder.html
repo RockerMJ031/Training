@@ -186,6 +186,43 @@
   .animal .rg { font-family:var(--mono); font-size:9.5px; color:var(--p600); margin-top:9px; }
   @media (max-width:760px){ .animals { grid-template-columns:repeat(2,1fr); } }
 
+  .gterm { border-bottom:1.5px dotted var(--p500); cursor:pointer; }
+  .gterm:hover { background:var(--p100); }
+  #termpop { position:absolute; z-index:99; width:min(350px, calc(100vw - 32px)); background:var(--card);
+    border:1px solid var(--p300); border-radius:14px; box-shadow:0 14px 44px rgba(44,26,82,.20);
+    padding:14px 16px 13px; display:none; }
+  #termpop.on { display:block; }
+  #termpop .tpn { font-weight:800; font-size:15px; letter-spacing:-.01em; margin:0 22px 4px 0; color:var(--p900); }
+  #termpop .tpd { font-size:13px; color:var(--muted); line-height:1.55; }
+  #termpop .tpr { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  #termpop .tpr .lb { flex-basis:100%; font-family:var(--mono); font-size:8.5px; font-weight:700;
+    letter-spacing:.14em; color:var(--faint); }
+  #termpop .tpr button { font-family:var(--mono); font-size:10.5px; font-weight:700; color:var(--p700);
+    background:var(--p50); border:1px solid var(--p100); border-radius:999px; padding:3px 10px; cursor:pointer; }
+  #termpop .tpr button:hover { background:var(--p100); }
+  #termpop .tpx { position:absolute; top:9px; right:11px; border:none; background:none; font-size:15px;
+    color:var(--faint); cursor:pointer; line-height:1; }
+  #termpop .tpc { display:inline-block; margin-top:10px; font-family:var(--mono); font-size:10px;
+    font-weight:700; color:var(--p600); }
+  @media (max-width:640px){ #termpop { position:fixed; left:12px !important; right:12px;
+    bottom:12px; top:auto !important; width:auto; } }
+
+  .tmap .tmc { width:fit-content; margin:4px auto 0; background:linear-gradient(135deg,var(--p600),var(--p900));
+    color:#fff; font-family:var(--mono); font-weight:700; font-size:11px; letter-spacing:.16em;
+    padding:9px 20px; border-radius:999px; }
+  .tmap .stem { width:2px; height:18px; background:var(--p300); margin:0 auto; }
+  .tmap .tgrid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; border-top:2px solid var(--p100);
+    padding-top:14px; }
+  .tmap .tgrp { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card);
+    padding:12px 14px; }
+  .tmap .tt { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em;
+    color:var(--p600); margin-bottom:9px; }
+  .tmap .nodes { display:flex; flex-wrap:wrap; gap:6px; }
+  .tmap .nodes .gterm { border:1px solid var(--p100); background:var(--p50); border-radius:999px;
+    padding:3px 11px; font-size:12px; max-width:100%; overflow-wrap:anywhere; }
+  @media (max-width:860px){ .tmap .tgrid { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .tmap .tgrid { grid-template-columns:1fr; } }
+
   .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
     border-radius:var(--radius-sm); background:var(--card); }
   table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
@@ -910,8 +947,9 @@
     <a class="nav" href="#quality"><span class="n">11</span>Quality, debt &amp; scale</a>
     <a class="nav" href="#alignment"><span class="n">12</span>Staying aligned</a>
     <div class="grp">Closing</div>
-    <a class="nav" href="#lessons"><span class="n">13</span>Three lessons</a>
-    <a class="nav" href="#start"><span class="n">14</span>Start tomorrow</a>
+    <a class="nav" href="#termmap"><span class="n">13</span>The term map</a>
+    <a class="nav" href="#lessons"><span class="n">14</span>Three lessons</a>
+    <a class="nav" href="#start"><span class="n">15</span>Start tomorrow</a>
     <div class="side-foot">Purple Ruler · Team training<br>
       <b>Same tool, six ways to hold it.</b></div>
   </aside>
@@ -1617,6 +1655,13 @@ qualifies, say "nothing to uninstall this week."</pre></div>
 
 
 
+      <section id="termmap">
+        <div class="act">Reference · Every dotted word on this page is clickable</div>
+        <h2>The term map</h2>
+        <p class="lead">Every <span style="border-bottom:1.5px dotted var(--p500)">dotted-underlined</span> word in this page opens a small card: what it means in plain words, and which other terms it's related to — follow the related chips and you can walk the whole vocabulary like a map. Here it is in one picture, grouped by where each word lives on the ladder. <b>Click any node.</b></p>
+        <div class="tmap" id="tmap"></div>
+      </section>
+
       <section id="lessons">
         <h2>Three lessons to take home</h2>
         <p class="lead">Strip away the terminology and the whole system teaches three things — and all three apply whether you run one AI or fourteen.</p>
@@ -1689,6 +1734,180 @@ qualifies, say "nothing to uninstall this week."</pre></div>
     }, { rootMargin: '-30% 0px -60% 0px' });
     sections.forEach(function (s) { io.observe(s); });
   })();
+</script>
+<script>
+(function () {
+  var G = {
+    claudecode:  { n:'Claude Code', d:'The AI coworker this training is about: an AI that doesn’t just chat — it reads and writes files, runs tools, and follows the standing rules you give it.', r:['session','claudemd','agent','claudedesktop'], s:'#standing', c:'Where you stand' },
+    session:     { n:'session', d:'One conversation with the AI, with its own working memory. Close it and that memory is gone — which is why anything worth keeping goes into files.', r:['contextwin','compaction','claudemd'], s:'#chatbox', c:'Rung 1 · The chatbox' },
+    prompt:      { n:'prompt', d:'The ask you type. A good one carries four things: a role, the facts, the format you want, and the limits. A great prompt used twice is a rule waiting to become a file.', r:['claudemd','skill'], s:'#promptcraft', c:'Rung 2 · The prompt' },
+    token:       { n:'token', d:'A word-piece — roughly three-quarters of an English word. Everything the AI reads or writes is counted in tokens, and each session has a fixed budget of them.', r:['contextwin','ctx','compaction'], s:'#harness', c:'Rung 4 · The harness' },
+    contextwin:  { n:'context window', d:'The AI’s working memory for one session — everything it can “see” right now: your instructions, the conversation, the files it read. Fixed size; when it fills, detail gets squeezed out.', r:['token','ctx','compaction','session'], s:'#cockpit', c:'Commands & status bar' },
+    ctx:         { n:'ctx %', d:'The status-bar gauge showing how full the session’s working memory is. High ctx = tell the AI to write its progress to a file before it starts forgetting.', r:['contextwin','compaction','statusbar'], s:'#cockpit', c:'Commands & status bar' },
+    compaction:  { n:'compaction', d:'What happens when a session’s memory fills: the conversation is squeezed into a summary so work can continue. Broad strokes survive; fine detail can be lost — save progress to files first.', r:['ctx','contextwin','session'], s:'#cockpit', c:'Commands & status bar' },
+    claudemd:    { n:'CLAUDE.md', d:'The standing-instructions file, read at the start of every session: your role, tone, iron rules, and where the truth lives. Shared with the project — and the whole file is re-read (and re-paid in tokens) every session.', r:['localmd','memory','harness','token'], s:'#context', c:'Rung 3 · Context' },
+    localmd:     { n:'CLAUDE.local.md', d:'Your personal, machine-only version of the standing file — same idea, never shared with the team.', r:['claudemd'], s:'#harness', c:'Rung 4 · The harness' },
+    memory:      { n:'memory', d:'Two related meanings here: the session’s working memory (the context window), and the memory feature — lessons saved one small file each, with a one-line index — so a correction never has to be repeated.', r:['claudemd','contextwin','skill'], s:'#harness', c:'Rung 4 · The harness' },
+    harness:     { n:'harness', d:'The structure around the AI that turns rules from advice into physics: permissions that gate actions, hooks that fire automatically, skills that run the same way every time.', r:['permissions','hook','skill','gate'], s:'#harness', c:'Rung 4 · The harness' },
+    permissions: { n:'permissions', d:'The three-list control panel: what the AI may always do, what it must ask about first, and what it may never do. Enforced by the app around the AI — costs zero tokens.', r:['harness','hook','gate'], s:'#harness', c:'Rung 4 · The harness' },
+    skill:       { n:'skill', d:'A saved routine the AI performs the same way every time you ask — a folder holding a manual (SKILL.md) plus templates, checklists and SOPs. Only its one-line name loads each session.', r:['skillmd','sop','harness','memory'], s:'#harness', c:'Rung 4 · The harness' },
+    skillmd:     { n:'SKILL.md', d:'The manual inside a skill’s folder: the steps, the rules, and pointers to the supporting files. Opens only when the skill is invoked — and it is itself a small index.', r:['skill','sop'], s:'#harness', c:'Rung 4 · The harness' },
+    sop:         { n:'SOP', d:'Standard Operating Procedure — the detailed how-to for one tricky step, kept as its own file under a skill and read only when that step actually runs.', r:['skill','skillmd'], s:'#harness', c:'Rung 4 · The harness' },
+    hook:        { n:'hook', d:'A small automatic check bolted to a fixed moment (before an action, after a command, at session start). Nobody invokes it; it just fires — and it can block.', r:['harness','permissions','gate'], s:'#harness', c:'Rung 4 · The harness' },
+    gate:        { n:'gate', d:'A checkpoint work must pass before it proceeds — the AI drafts, you approve, only then it goes. The unit of trust in this whole system.', r:['harness','permissions','hook','merge'], s:'#harness', c:'Rung 4 · The harness' },
+    monitor:     { n:'monitor', d:'A background watcher that polls one signal — a queue, a board — every minute or so, and wakes the AI when the condition fires. Works through your meetings and your sleep.', r:['subagent','agent','statusbar'], s:'#harness', c:'Rung 4 · The harness' },
+    subagent:    { n:'subagent', d:'A helper AI a session spawns for one bounded errand (“read these four documents, report back”). Several run in parallel; each reports and disappears.', r:['agent','monitor','lane'], s:'#harness', c:'Rung 4 · The harness' },
+    agent:       { n:'agent', d:'An AI session doing work. One long-lived, scoped agent = a lane; a short-lived one spawned for an errand = a subagent.', r:['lane','subagent','claudecode'], s:'#fourteen', c:'Fourteen lanes' },
+    lane:        { n:'lane', d:'One long-lived agent session with its own tab, its own folder, and a written scope of what it may touch. Fourteen lanes = fourteen tabs in one window.', r:['agent','worktree','cmux'], s:'#fourteen', c:'Fourteen lanes' },
+    worktree:    { n:'working copy (worktree)', d:'An isolated copy of the project for one lane, so parallel agents never overwrite each other. Their changes only meet through reviewed proposals (PRs).', r:['lane','branch','pr'], s:'#fourteen', c:'Fourteen lanes' },
+    architect:   { n:'architect', d:'The human-side engineering role in the scale story: designs the lanes, the gates and the rules — and answers the escalations the triage can’t.', r:['lane','gate'], s:'#fourteen', c:'Fourteen lanes' },
+    repo:        { n:'repo', d:'A repository — one project’s complete folder plus its full change history.', r:['branch','pr','merge'], s:'#fourteen', c:'Fourteen lanes' },
+    branch:      { n:'branch', d:'An isolated line of work-in-progress inside a repo. A lane works on its own branch until the work is reviewed and merged.', r:['repo','pr','merge','worktree'], s:'#cockpit', c:'Commands & status bar' },
+    pr:          { n:'PR (pull request)', d:'A bundled, reviewable proposal: “here are my changes — may they join the main version?” Nothing lands without passing its checks.', r:['ci','merge','branch','gate'], s:'#fourteen', c:'Fourteen lanes' },
+    ci:          { n:'CI (checks)', d:'The automatic test suite that runs on every proposed change. Red = the change cannot merge. Think of it as a hook at project scale.', r:['pr','merge','hook','gate'], s:'#quality', c:'Quality, debt & scale' },
+    merge:       { n:'merge', d:'Accepting a proposed change into the main version — the moment work becomes real. In this system, only after the checks and the gates say yes.', r:['pr','ci','gate'], s:'#fourteen', c:'Fourteen lanes' },
+    goodhart:    { n:'Goodhart’s law', d:'“When a measure becomes a target, it ceases to be a good measure.” Pay people per nail and you get thousands of tiny nails. Numbers here stay diagnosis — never targets.', r:['okr'], s:'#loop', c:'Rung 5 · The loop' },
+    okr:         { n:'OKR', d:'Objectives & Key Results — a two-layer design that works as an anti-Goodhart machine: the O is an un-gameable purpose, the KRs are thermometers, and the firewall is: never tie them to rewards.', r:['goodhart'], s:'#loop', c:'Rung 5 · The loop' },
+    statusbar:   { n:'status bar', d:'The strip at the bottom of every session: who this agent is, which repo and branch, which model, how full its memory is (ctx), and how much usage allowance remains.', r:['ctx','usage','slash'], s:'#cockpit', c:'Commands & status bar' },
+    slash:       { n:'slash command', d:'Commands typed into the session starting with “/”: /compact to squeeze memory, /doctor to self-check, /permissions to open the control panel…', r:['statusbar','compaction','permissions'], s:'#cockpit', c:'Commands & status bar' },
+    usage:       { n:'usage window', d:'The rolling allowance of AI time — a 5-hour and a 7-day meter in the status bar, shown as % remaining. Low % = spend the strong model only on what matters.', r:['statusbar'], s:'#cockpit', c:'Commands & status bar' },
+    cmux:        { n:'cmux', d:'A free, open-source Mac terminal built for running many AI agents at once: one vertical tab per agent, notifications when one finishes or asks, all sessions restored after a restart. Mac only.', r:['lane','claudedesktop'], s:'#fourteen', c:'Fourteen lanes' },
+    claudedesktop:{ n:'Claude Desktop', d:'The official desktop app (Mac & Windows). Its Code tab runs parallel Claude Code sessions natively — the Windows answer to cmux.', r:['cmux','lane','claudecode'], s:'#fourteen', c:'Fourteen lanes' }
+  };
+  var ORDER = [
+    ['claudedesktop', /\bClaude Desktop\b/],
+    ['claudecode',    /\bClaude Code\b/],
+    ['localmd',       /\bCLAUDE\.local\.md\b/],
+    ['claudemd',      /\bCLAUDE\.md\b/],
+    ['skillmd',       /\bSKILL\.md\b/],
+    ['sop',           /\bSOPs?\b|\bsop\.md\b/],
+    ['contextwin',    /\bcontext window\b/i],
+    ['statusbar',     /\bstatus bar\b/i],
+    ['slash',         /\bslash[- ]commands?\b/i],
+    ['usage',         /\busage windows?\b/i],
+    ['worktree',      /\bworktrees?\b|\bworking cop(?:y|ies)\b/i],
+    ['subagent',      /\bsubagents?\b/i],
+    ['goodhart',      /\bGoodhart(?:'|’)?s?\b/],
+    ['okr',           /\bOKRs?\b/],
+    ['pr',            /\bPRs?\b/],
+    ['ci',            /\bCI\b/],
+    ['cmux',          /\bcmux\b/i],
+    ['compaction',    /\bcompactions?\b/i],
+    ['permissions',   /\bpermissions?\b/i],
+    ['harness',       /\bharness(?:es)?\b/i],
+    ['monitor',       /\bmonitors?\b/i],
+    ['agent',         /\bagents?\b/i],
+    ['lane',          /\blanes?\b/i],
+    ['architect',     /\barchitects?\b/i],
+    ['skill',         /\bskills?\b/i],
+    ['hook',          /\bhooks?\b/i],
+    ['gate',          /\bgat(?:e|es|ed|ing)\b/i],
+    ['memory',        /\bmemory\b/i],
+    ['token',         /\btokens?\b/i],
+    ['session',       /\bsessions?\b/i],
+    ['prompt',        /\bprompts?\b/i],
+    ['repo',          /\brepos?\b|\brepositor(?:y|ies)\b/i],
+    ['branch',        /\bbranch(?:es)?\b/i],
+    ['merge',         /\bmerged?\b|\bmerging\b/i],
+    ['ctx',           /\bctx\b ?%?/]
+  ];
+  var SKIP = 'h1,h2,h3,.act,a,.gterm,.term,.statbar,#termpop,.tmap';
+
+  function annotate() {
+    var sections = document.querySelectorAll('section[id]');
+    sections.forEach(function (sec) {
+      if (sec.id === 'termmap') return;
+      ORDER.forEach(function (pair) {
+        var key = pair[0], re = pair[1];
+        var w = document.createTreeWalker(sec, NodeFilter.SHOW_TEXT, {
+          acceptNode: function (node) {
+            if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+            var p = node.parentElement;
+            if (!p || p.closest(SKIP) || p.closest('svg')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+        var node;
+        while ((node = w.nextNode())) {
+          var m = node.nodeValue.match(re);
+          if (!m) continue;
+          var span = document.createElement('span');
+          span.className = 'gterm';
+          span.setAttribute('data-key', key);
+          var mid = node.splitText(m.index);
+          mid.splitText(m[0].length);
+          span.textContent = mid.nodeValue;
+          mid.parentNode.replaceChild(span, mid);
+          break;
+        }
+      });
+    });
+  }
+
+  var pop = document.createElement('div');
+  pop.id = 'termpop';
+  document.body.appendChild(pop);
+
+  function render(key) {
+    var t = G[key];
+    if (!t) return;
+    var rel = (t.r || []).filter(function (k) { return G[k]; });
+    pop.innerHTML =
+      '<button class="tpx" aria-label="Close">✕</button>' +
+      '<div class="tpn">' + t.n + '</div>' +
+      '<div class="tpd">' + t.d + '</div>' +
+      (rel.length ? '<div class="tpr"><span class="lb">RELATED — CLICK TO WALK THE MAP</span>' +
+        rel.map(function (k) { return '<button data-go="' + k + '">' + G[k].n + '</button>'; }).join('') + '</div>' : '') +
+      '<a class="tpc" href="' + t.s + '">→ ' + t.c + '</a>';
+  }
+
+  function openAt(key, el) {
+    render(key);
+    pop.classList.add('on');
+    var r = el.getBoundingClientRect();
+    var top = r.bottom + window.scrollY + 8;
+    var left = r.left + window.scrollX;
+    var maxLeft = document.documentElement.clientWidth - pop.offsetWidth - 16;
+    if (left > maxLeft) left = Math.max(16, maxLeft);
+    pop.style.top = top + 'px';
+    pop.style.left = left + 'px';
+  }
+
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest('#termpop [data-go]');
+    if (go) { render(go.getAttribute('data-go')); return; }
+    if (e.target.closest('#termpop .tpx')) { pop.classList.remove('on'); return; }
+    if (e.target.closest('#termpop a.tpc')) { pop.classList.remove('on'); return; }
+    if (e.target.closest('#termpop')) return;
+    var term = e.target.closest('.gterm');
+    if (term) { openAt(term.getAttribute('data-key'), term); return; }
+    pop.classList.remove('on');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') pop.classList.remove('on');
+  });
+
+  var GROUPS = [
+    ['FOUNDATIONS', ['claudecode','session','prompt','token','contextwin','ctx','compaction']],
+    ['RUNG 3 · THE STANDING FILES', ['claudemd','localmd','memory']],
+    ['RUNG 4 · THE HARNESS', ['harness','permissions','skill','skillmd','sop','hook','gate']],
+    ['AUTOMATION & SCALE', ['monitor','subagent','agent','lane','worktree','architect']],
+    ['SHIPPING WORK', ['repo','branch','pr','ci','merge']],
+    ['THE COCKPIT', ['statusbar','slash','usage','cmux','claudedesktop']],
+    ['KEEPING SCORE HONEST', ['goodhart','okr']]
+  ];
+  var tmap = document.getElementById('tmap');
+  if (tmap) {
+    tmap.innerHTML = '<div class="tmc">THE LADDER — VOCABULARY</div><div class="stem"></div>' +
+      '<div class="tgrid">' + GROUPS.map(function (g) {
+        return '<div class="tgrp"><div class="tt">' + g[0] + '</div><div class="nodes">' +
+          g[1].map(function (k) { return '<span class="gterm" data-key="' + k + '">' + G[k].n + '</span>'; }).join('') +
+          '</div></div>';
+      }).join('') + '</div>';
+  }
+
+  annotate();
+})();
 </script>
 </body>
 </html>
