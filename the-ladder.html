@@ -1495,6 +1495,17 @@ qualifies, say "nothing to uninstall this week."</pre></div>
           <li><b>Never builds</b> — construction belongs to the lanes; the architect only holds the acceptance line.</li>
           <li><b>Its errors are public record</b> — when a plan is proven wrong by reality, the reversal is logged, reviewed weekly, and the lesson joins the shared rulebook. It has happened. Nothing was deleted.</li>
         </ul>
+        <h3>What a lane physically is — and what to run on your machine</h3>
+        <p>A lane is nothing exotic: an <b>ordinary Claude Code session</b>, kept open in its own tab with its own working folder. Fourteen lanes = fourteen tabs in one window. The only tooling question is <b>what holds the tabs</b> — and the answer depends on your machine:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Your machine</th><th>Use</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Mac</td><td><b>cmux</b> <span style="color:var(--faint)">(cmux.com — free, open source)</span></td><td>A terminal built exactly for this: one vertical tab per agent, a notification when an agent finishes or asks a question, and every session — tabs, folders, scrollback — restored after a restart.</td></tr>
+            <tr><td class="strong">Windows</td><td><b>Claude Desktop</b> → the <b>Code</b> tab</td><td>cmux doesn't exist on Windows — and you don't need it. The official desktop app runs <b>parallel sessions natively</b>: a session list, side-by-side panes, each session isolated in its own working copy. Nothing extra to install.</td></tr>
+            <tr><td class="strong">Any machine</td><td><span class="mono">claude.ai/code</span> in browser tabs</td><td>Zero install: one browser tab per lane. Fine for two or three lanes; the apps above are more comfortable beyond that.</td></tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:11.5px;color:var(--faint)">Whichever window holds the tabs, the ladder is unchanged — what makes a lane trustworthy is its harness files, not its window manager.</p>
         <div class="insight"><span class="tag">INSIGHT 07</span>
           <p>Boundaries aren't distrust. They give every mistake exactly one owner and one repair path.
           <span class="sub">Fourteen agents with fences beat fourteen agents with freedom — because when something breaks, "whose change was it, and where's the fix?" has a one-line answer.</span></p>
