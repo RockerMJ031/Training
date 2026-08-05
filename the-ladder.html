@@ -119,6 +119,21 @@
   .askbox li::before { content:"?"; position:absolute; left:4px; top:4px; font-family:var(--mono);
     font-weight:700; font-style:normal; color:var(--amber); }
 
+  .cost { display:inline-block; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.08em; border-radius:6px; padding:3px 8px; white-space:nowrap; color:#fff; }
+  .cost.full { background:var(--red); }
+  .cost.line { background:var(--amber); }
+  .cost.zero { background:var(--green); }
+  .tokbands { display:grid; gap:10px; margin:16px 0 20px; max-width:820px; }
+  .tokband { display:flex; gap:14px; align-items:flex-start; border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:12px 16px; background:var(--card); }
+  .tokband .cost { flex:none; margin-top:2px; }
+  .tokband .tx { font-size:13.5px; color:var(--muted); line-height:1.55; }
+  .tokband .tx b { color:var(--ink); }
+  .tokband.full { border-left:4px solid var(--red); }
+  .tokband.line { border-left:4px solid var(--amber); }
+  .tokband.zero { border-left:4px solid var(--green); }
+
   .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
     border-radius:var(--radius-sm); background:var(--card); }
   table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
@@ -1033,6 +1048,34 @@
           </tbody>
         </table></div>
         <p style="font-size:11.5px;color:var(--faint)">Climb these in order. Entry is one afternoon. Advanced is a week of noticing what you repeat. Mastery you grow into, one proven guard at a time.</p>
+
+        <h3>Where each piece lives — and what it costs you</h3>
+        <p>One more thing before you build these, because it changes <em>how</em> you build them. Everything the AI reads costs <b>tokens</b> — think of a token as a word-piece, and of each session as having a <b>fixed reading budget</b> (that's the <span class="mono">ctx%</span> figure you'll meet in the cockpit chapter — when it fills up, the AI starts forgetting). The pieces above do <b>not</b> charge that budget equally. Three price bands:</p>
+        <div class="tokbands">
+          <div class="tokband full"><span class="cost full">EVERY SESSION · FULL TEXT</span>
+            <div class="tx"><b>CLAUDE.md · CLAUDE.local.md</b> — the whole file enters the AI's memory at the start of <b>every single session</b>, whether today's task needs it or not. Every line you write here is a standing charge, paid daily, forever.</div></div>
+          <div class="tokband line"><span class="cost line">EVERY SESSION · ONE LINE EACH</span>
+            <div class="tx"><b>Memory · Skills</b> — only a one-line index entry loads at the start (one line per remembered lesson, one line per skill name). The full body is read <b>only when it's actually relevant</b>. Cheap to hold, paid on use.</div></div>
+          <div class="tokband zero"><span class="cost zero">ZERO · NEVER READ</span>
+            <div class="tx"><b>Permissions · Hooks</b> — the AI never reads these at all. They are enforced by the app <b>around</b> the AI, the way a door lock works without the visitor reading the building rules. Any size, zero tokens.</div></div>
+        </div>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Piece</th><th>Where it lives</th><th>When the AI reads it</th><th>Cost</th></tr></thead>
+          <tbody>
+            <tr><td class="strong mono">CLAUDE.md</td><td>Project folder root — travels with the project, shared with the whole team.</td><td>Whole file, at the start of every session.</td><td><span class="cost full">FULL TEXT</span></td></tr>
+            <tr><td class="strong mono">CLAUDE.local.md</td><td>Same folder — but yours only, never shared or synced.</td><td>Whole file, every session, after the shared one.</td><td><span class="cost full">FULL TEXT</span></td></tr>
+            <tr><td class="strong mono">~/.claude/CLAUDE.md</td><td>Your home folder — one global file that applies to <b>all</b> your projects.</td><td>Whole file, every session, everywhere.</td><td><span class="cost full">FULL TEXT</span></td></tr>
+            <tr><td class="strong">Memory</td><td>Your home folder, under <span class="mono">~/.claude/</span> — one small file per lesson, plus an index.</td><td>Index only (one line per lesson) at start; a lesson's body only when it matters.</td><td><span class="cost line">ONE LINE</span></td></tr>
+            <tr><td class="strong">Skills</td><td><span class="mono">.claude/skills/</span> in the project (team) or <span class="mono">~/.claude/skills/</span> (personal) — one folder per routine.</td><td>Name + one-line description at start; full instructions only when invoked.</td><td><span class="cost line">ONE LINE</span></td></tr>
+            <tr><td class="strong">Permissions</td><td>Settings file in <span class="mono">.claude/</span> — team version and a personal one; edit via <span class="mono">/permissions</span>.</td><td>Never. The app checks them when an action is attempted.</td><td><span class="cost zero">ZERO</span></td></tr>
+            <tr><td class="strong">Hooks</td><td>Same settings files — a list of "at this moment, run this check."</td><td>Never. They run outside the AI; only what they print enters the session.</td><td><span class="cost zero">ZERO</span></td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules">
+          <div class="rule"><b>Keep the standing file ruthless.</b> Every line of <span class="mono">CLAUDE.md</span> is re-paid in every session and fills the memory budget before the day's work even starts. Rules that matter <em>always</em> go here — nothing else.</div>
+          <div class="rule"><b>Long reference material never goes in the standing file.</b> Put it in a skill or a separate file, with a one-line pointer ("for term-date questions, read file X"). You then pay for it only on the days you use it.</div>
+          <div class="rule"><b>Notice the gradient: the higher the level, the cheaper the rule.</b> Entry rules cost tokens every session. Advanced mostly pays on use. Mastery rules are free structure. Promoting a rule from paper to structure doesn't just make it unbreakable — it makes it <em>free</em>.</div>
+        </div>
         <div class="insight"><span class="tag">INSIGHT 04</span>
           <p>A rule you must remember is a hope. A rule that runs is a guarantee.
           <span class="sub">This is the jump this training is about: find your three most expensive rules, and promote them from paper to structure. Everything else can stay advice.</span></p>
