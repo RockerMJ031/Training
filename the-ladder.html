@@ -779,6 +779,34 @@
   .comms .cp.bad .t { color:var(--red); } .comms .cp.good .t { color:var(--green); }
   @media (max-width:640px){ .comms { grid-template-columns:1fr; } }
 
+
+  /* ===== OKR two-state (healthy vs captured) ===== */
+  .okr2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0 8px; }
+  .okr2 .pane { border-radius:14px; padding:14px; border:2px solid; }
+  .okr2 .pane.ok { border-color:#bfe3d0; background:#f7fbf9; }
+  .okr2 .pane.bad { border-color:#f0c9c5; background:#fdf8f7; }
+  .okr2 .ph { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; text-align:center; margin-bottom:10px; }
+  .okr2 .pane.ok .ph { color:var(--green); } .okr2 .pane.bad .ph { color:var(--red); }
+  .okr2 .obj { border-radius:11px; background:var(--p900); color:#fff; padding:11px 13px; text-align:center; }
+  .okr2 .obj .k { font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:.1em; color:var(--p300); }
+  .okr2 .obj .t { font-weight:800; font-size:12.5px; margin-top:2px; }
+  .okr2 .pane.bad .obj { opacity:.32; }
+  .okr2 .flow { text-align:center; font-size:10.5px; font-weight:700; padding:6px 0; }
+  .okr2 .pane.ok .flow { color:var(--green); } .okr2 .pane.bad .flow { color:var(--red); }
+  .okr2 .krrow { display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+  .okr2 .kr { border-radius:10px; border:1.5px solid var(--line); background:var(--card); padding:8px 9px; }
+  .okr2 .kr .t { font-size:10px; font-weight:700; line-height:1.3; }
+  .okr2 .kr .track { height:6px; border-radius:4px; background:var(--p100); margin-top:6px; overflow:hidden; }
+  .okr2 .kr .fill { height:100%; background:var(--p500); border-radius:4px; }
+  .okr2 .pane.bad .kr { border-color:#f0c9c5; }
+  .okr2 .pane.bad .kr .t { color:var(--red); }
+  .okr2 .pane.bad .kr .fill { background:var(--red); width:100% !important; }
+  .okr2 .foot2 { font-size:10.5px; line-height:1.45; color:var(--muted); margin-top:9px; text-align:center; }
+  .okr2 .pane.bad .foot2 { color:#a03a33; }
+  .okrflip { margin:10px 0 0; border:1.5px dashed #e5b9b5; background:#fdf1f0; border-radius:10px;
+    padding:9px 14px; font-size:11.5px; color:#a03a33; font-weight:600; text-align:center; }
+  @media (max-width:760px){ .okr2 { grid-template-columns:1fr; } }
+
 </style>
 </head>
 <body>
@@ -1000,17 +1028,32 @@
           <div class="half fail"><div class="hd">Metric as target</div><div class="tt">"Hit 20 closed tickets"</div><p>The number becomes the work. Quality leaks out through every gap the metric doesn't cover — and the dashboard looks <em>better</em> as the service gets worse.</p></div>
           <div class="half mach"><div class="hd">Metric as thermometer</div><div class="tt">Aim at the purpose · read the number for anomalies</div><p>Work aims at the stated purpose ("schools get correct, warm answers within a day"). Numbers are read like a thermometer: a sudden drop or spike is a <em>question to investigate</em> — never a score to chase.</p><span class="res">NUMBERS DIAGNOSE · PURPOSE DIRECTS</span></div>
         </div>
-        <p>If you know OKRs, this is exactly the O and the KR: the <b>O</b>bjective is qualitative and <em>aims</em> the work; <b>K</b>ey <b>R</b>esults are thermometers that tell you whether you're getting closer. And OKRs break in the same famous way: the day KRs become quotas tied to rewards, Goodhart eats them. Our daily reports carry a machine-readable number line for exactly one purpose — <b>diagnosis</b> — and no agent is ever told to improve it.</p>
-        <div class="okrviz">
-          <div class="obj"><div class="k">O · OBJECTIVE — QUALITATIVE · AIMS THE WORK</div><div class="t">"Schools get correct, warm answers within a day"</div></div>
-          <div class="mid">measured by ↓ — read, never chased</div>
-          <div class="krs">
-            <div class="kr"><div class="t">Replies inside 24h</div><div class="track"><div class="fill" style="width:82%"></div></div><div class="lb">KR · THERMOMETER</div></div>
-            <div class="kr"><div class="t">Rework rounds per task</div><div class="track"><div class="fill" style="width:38%"></div></div><div class="lb">KR · THERMOMETER</div></div>
-            <div class="kr"><div class="t">Repeat complaints, trending</div><div class="track"><div class="fill" style="width:64%"></div></div><div class="lb">KR · THERMOMETER</div></div>
+        <p>You already run OKRs — and here is the connection: <b>OKR's two-layer design is itself an anti-Goodhart machine.</b> The <b>O</b> exists precisely because purpose can't be gamed — it is qualitative, so there is no number to fake. The <b>KR</b>s exist to tell you whether you're getting closer — thermometers, by design. And the classic OKR commandment — <em>never tie KRs to bonuses</em> — is not HR politeness: it is the Goodhart firewall. The day a KR becomes a quota tied to rewards, the work stops aiming at the O and starts aiming at the thermometer — and you are running the nail factory in OKR clothing:</p>
+        <div class="okr2">
+          <div class="pane ok">
+            <div class="ph">OKR AS DESIGNED · THE ANTI-GOODHART MACHINE</div>
+            <div class="obj"><div class="k">O · PURPOSE — CANNOT BE GAMED</div><div class="t">"Schools get correct, warm answers within a day"</div></div>
+            <div class="flow">work aims here ↑ · KRs only report back ↓</div>
+            <div class="krrow">
+              <div class="kr"><div class="t">Replies inside 24h</div><div class="track"><div class="fill" style="width:82%"></div></div></div>
+              <div class="kr"><div class="t">Rework rounds</div><div class="track"><div class="fill" style="width:38%"></div></div></div>
+              <div class="kr"><div class="t">Repeat complaints</div><div class="track"><div class="fill" style="width:64%"></div></div></div>
+            </div>
+            <div class="foot2">KRs are thermometers: a strange reading is a <b>question to investigate</b>. Nobody's bonus rides on them.</div>
           </div>
-          <div class="krwarn">⚠ The day a KR becomes a quota tied to rewards — Goodhart eats it. Thermometers measure the room; they must never become the room's job.</div>
+          <div class="pane bad">
+            <div class="ph">OKR CAPTURED · GOODHART WINS</div>
+            <div class="obj"><div class="k">O · PURPOSE</div><div class="t">…nobody reads it anymore</div></div>
+            <div class="flow">work aims at the thermometers ↓ — the O is decoration</div>
+            <div class="krrow">
+              <div class="kr"><div class="t">"HIT 24h — mark replied, answer later"</div><div class="track"><div class="fill"></div></div></div>
+              <div class="kr"><div class="t">"ZERO rework — merge unreviewed"</div><div class="track"><div class="fill"></div></div></div>
+              <div class="kr"><div class="t">"NO repeats — new ticket ID each time"</div><div class="track"><div class="fill"></div></div></div>
+            </div>
+            <div class="foot2">Every gauge reads 100%. The service is worse. <b>The nail factory, in OKR clothing.</b></div>
+          </div>
         </div>
+        <div class="okrflip">⚠ THE FLIP happens on one decision: tying KRs to rewards. Same O, same KRs — different aim. Our daily-report numbers stay diagnosis-only for exactly this reason: no agent is ever told to improve them.</div>
         <div class="insight"><span class="tag">INSIGHT 05</span>
           <p>If it isn't written down before the session ends, it never happened.
           <span class="sub">The close-out ritual is five minutes of writing that saves an hour of morning archaeology — and it is the only defence against a kind of amnesia humans never had to plan for.</span></p>
