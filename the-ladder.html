@@ -134,23 +134,39 @@
   .tokband.line { border-left:4px solid var(--amber); }
   .tokband.zero { border-left:4px solid var(--green); }
 
-  .berg2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0 8px; }
-  .berg { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); overflow:hidden; }
+  .berg2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0 8px; }
+  .berg { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden;
+    display:flex; flex-direction:column; }
   .berg .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em;
-    padding:10px 14px 9px; color:var(--p600); border-bottom:1px solid var(--line2); }
-  .berg .zone { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.12em; margin-bottom:7px; }
-  .berg .above { background:#fffaf2; padding:12px 14px; }
-  .berg .above .zone { color:var(--amber); }
-  .berg .below { padding:12px 14px 14px; }
-  .berg .below .zone { color:var(--green); }
-  .berg .frow { display:flex; gap:8px; align-items:baseline; padding:3px 0; }
+    padding:11px 16px 10px; color:var(--p600); border-bottom:1px solid var(--line2); }
+  .berg .zone { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.11em;
+    display:flex; justify-content:space-between; gap:6px 10px; flex-wrap:wrap; margin-bottom:10px; }
+  .berg .zone .tok { font-weight:700; }
+  .berg .sky { background:linear-gradient(180deg,#ffffff,#f3effc 72%,#e9e2f7); padding:13px 16px 0; }
+  .berg .sky .zone { color:var(--amber); }
+  .berg .sky .zone .tok { color:var(--faint); }
+  .berg .tip { background:#fff; margin:0 12px; padding:32px 14px 10px;
+    clip-path:polygon(0 24px, calc(50% - 36px) 24px, 50% 0, calc(50% + 36px) 24px, 100% 24px, 100% 100%, 0 100%);
+    filter:drop-shadow(0 -2px 3px rgba(90,58,158,.22)); }
+  .berg .frow { display:flex; gap:8px; align-items:baseline; padding:2px 0; }
   .berg .frow .fn { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--ink); white-space:nowrap; }
   .berg .frow .fd { color:var(--muted); font-size:11.5px; line-height:1.45; }
   .berg .chip { font-family:var(--mono); font-size:8.5px; font-weight:700; color:var(--amber);
     border:1px solid #eeddba; border-radius:5px; padding:1px 5px; white-space:nowrap; }
-  .berg .water { padding:7px 14px; border-top:1.5px dashed var(--p300); border-bottom:1.5px dashed var(--p300);
-    background:var(--p50); font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.12em;
-    color:var(--p600); text-align:center; }
+  .berg .water2 { position:relative; height:38px; background:linear-gradient(180deg,#e9e2f7,#3a2d68 62%,#2a2050); }
+  .berg .water2 svg { position:absolute; top:3px; left:0; width:100%; height:16px; display:block; }
+  .berg .water2 .wlbl { position:absolute; left:50%; transform:translateX(-50%); top:19px;
+    font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:.13em;
+    color:#cfc4ec; white-space:nowrap; }
+  .berg .deep { background:linear-gradient(180deg,#2a2050,#171132); padding:14px 16px 20px; flex:1; }
+  .berg .deep .zone { color:#8fd6ae; margin-bottom:4px; }
+  .berg .deep .zone .tok { color:#9a8fc0; }
+  .berg .ice { background:rgba(255,255,255,.94); border-radius:9px; padding:9px 12px;
+    box-shadow:0 4px 16px rgba(0,0,0,.28); }
+  .berg .deep .ice:nth-child(even) { margin:10px 2px 0 20px; transform:rotate(.45deg); }
+  .berg .deep .ice:nth-child(odd) { margin:10px 20px 0 2px; transform:rotate(-.45deg); }
+  .berg .ice .fn { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--p800); margin-right:6px; }
+  .berg .ice .fd { color:#4a4560; font-size:11.5px; line-height:1.45; }
   @media (max-width:760px){ .berg2 { grid-template-columns:1fr; } }
 
   .animals { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 18px; }
@@ -1108,34 +1124,50 @@
         <div class="berg2">
           <div class="berg">
             <div class="hd">MEMORY — AN INDEX + ONE FILE PER LESSON</div>
-            <div class="above">
-              <div class="zone">▲ ABOVE THE WATERLINE — LOADED EVERY SESSION</div>
-              <div class="frow"><span class="fn">MEMORY.md</span><span class="fd">— the index. One line per lesson:</span></div>
-              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"term dates — always the schedule table, never the email"</span></div>
-              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"apologies to schools — name a next step, not a cause"</span></div>
-              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"invoice numbers — the finance sheet only"</span></div>
+            <div class="sky">
+              <div class="zone"><span>▲ THE TIP — LOADED EVERY SESSION</span><span class="tok">≈ A FEW DOZEN TOKENS</span></div>
+              <div class="tip">
+                <div class="frow"><span class="fn">MEMORY.md</span><span class="fd">— the index. One line per lesson:</span></div>
+                <div class="frow"><span class="chip">1 LINE</span><span class="fd">"term dates — always the schedule table, never the email"</span></div>
+                <div class="frow"><span class="chip">1 LINE</span><span class="fd">"apologies to schools — name a next step, not a cause"</span></div>
+                <div class="frow"><span class="chip">1 LINE</span><span class="fd">"invoice numbers — the finance sheet only"</span></div>
+              </div>
             </div>
-            <div class="water">～ THE WATERLINE — session start loads only what's above ～</div>
-            <div class="below">
-              <div class="zone">▼ BELOW — ON DISK, READ ONLY WHEN RELEVANT</div>
-              <div class="frow"><span class="fn">term-dates.md</span><span class="fd">the full story: the rule, the day it was learned, the example</span></div>
-              <div class="frow"><span class="fn">apologies.md</span><span class="fd">the complaint that taught it, with the exact fixed wording</span></div>
-              <div class="frow"><span class="fn">invoices.md</span><span class="fd">which sheet, which column, who owns it</span></div>
+            <div class="water2">
+              <svg viewBox="0 0 600 16" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0 8 Q15 2 30 8 T60 8 T90 8 T120 8 T150 8 T180 8 T210 8 T240 8 T270 8 T300 8 T330 8 T360 8 T390 8 T420 8 T450 8 T480 8 T510 8 T540 8 T570 8 T600 8" fill="none" stroke="#b7a6e6" stroke-width="2"/>
+                <path d="M0 13 Q15 7 30 13 T60 13 T90 13 T120 13 T150 13 T180 13 T210 13 T240 13 T270 13 T300 13 T330 13 T360 13 T390 13 T420 13 T450 13 T480 13 T510 13 T540 13 T570 13 T600 13" fill="none" stroke="#7a67b8" stroke-width="1.5" opacity=".7"/>
+              </svg>
+              <span class="wlbl">THE WATERLINE</span>
+            </div>
+            <div class="deep">
+              <div class="zone"><span>▼ THE MASS — READ ONLY WHEN RELEVANT</span><span class="tok">THOUSANDS OF TOKENS · 0 UNTIL READ</span></div>
+              <div class="ice"><span class="fn">term-dates.md</span><span class="fd">the full story: the rule, the day it was learned, the example</span></div>
+              <div class="ice"><span class="fn">apologies.md</span><span class="fd">the complaint that taught it, with the exact fixed wording</span></div>
+              <div class="ice"><span class="fn">invoices.md</span><span class="fd">which sheet, which column, who owns it</span></div>
             </div>
           </div>
           <div class="berg">
             <div class="hd">A SKILL — A ONE-LINE NAME + A WHOLE FOLDER</div>
-            <div class="above">
-              <div class="zone">▲ ABOVE THE WATERLINE — LOADED EVERY SESSION</div>
-              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"weekly-report — builds the Monday report the house way"</span></div>
+            <div class="sky">
+              <div class="zone"><span>▲ THE TIP — LOADED EVERY SESSION</span><span class="tok">≈ A DOZEN TOKENS</span></div>
+              <div class="tip">
+                <div class="frow"><span class="chip">1 LINE</span><span class="fd">"weekly-report — builds the Monday report the house way"</span></div>
+              </div>
             </div>
-            <div class="water">～ THE WATERLINE — the folder opens only when invoked ～</div>
-            <div class="below">
-              <div class="zone">▼ BELOW — THE FOLDER, OPENED ONLY ON INVOCATION</div>
-              <div class="frow"><span class="fn">SKILL.md</span><span class="fd">the full step-by-step instructions</span></div>
-              <div class="frow"><span class="fn">template.md</span><span class="fd">the report skeleton it fills in</span></div>
-              <div class="frow"><span class="fn">checklist.md</span><span class="fd">the final QA pass before it hands anything over</span></div>
-              <div class="frow"><span class="fn">a helper script</span><span class="fd">a small tool it can run for the numbers</span></div>
+            <div class="water2">
+              <svg viewBox="0 0 600 16" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M0 8 Q15 2 30 8 T60 8 T90 8 T120 8 T150 8 T180 8 T210 8 T240 8 T270 8 T300 8 T330 8 T360 8 T390 8 T420 8 T450 8 T480 8 T510 8 T540 8 T570 8 T600 8" fill="none" stroke="#b7a6e6" stroke-width="2"/>
+                <path d="M0 13 Q15 7 30 13 T60 13 T90 13 T120 13 T150 13 T180 13 T210 13 T240 13 T270 13 T300 13 T330 13 T360 13 T390 13 T420 13 T450 13 T480 13 T510 13 T540 13 T570 13 T600 13" fill="none" stroke="#7a67b8" stroke-width="1.5" opacity=".7"/>
+              </svg>
+              <span class="wlbl">THE WATERLINE</span>
+            </div>
+            <div class="deep">
+              <div class="zone"><span>▼ THE FOLDER — OPENED ONLY ON INVOCATION</span><span class="tok">THOUSANDS OF TOKENS · 0 UNTIL USED</span></div>
+              <div class="ice"><span class="fn">SKILL.md</span><span class="fd">the full step-by-step instructions</span></div>
+              <div class="ice"><span class="fn">template.md</span><span class="fd">the report skeleton it fills in</span></div>
+              <div class="ice"><span class="fn">checklist.md</span><span class="fd">the final QA pass before it hands anything over</span></div>
+              <div class="ice"><span class="fn">a helper script</span><span class="fd">a small tool it can run for the numbers</span></div>
             </div>
           </div>
         </div>
