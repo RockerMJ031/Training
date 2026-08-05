@@ -109,6 +109,16 @@
   .insight p { margin:0; font-size:16px; font-weight:700; letter-spacing:-.015em; line-height:1.5; color:var(--p900); }
   .insight p .sub { display:block; font-weight:500; font-size:13px; color:var(--muted); margin-top:5px; }
 
+  .askbox { background:#fffaf2; border:1px solid #f1e2c6; border-left:4px solid var(--amber);
+    border-radius:var(--radius-sm); padding:14px 18px 12px; margin:18px 0 22px; max-width:780px; }
+  .askbox .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:var(--amber); display:block; margin-bottom:7px; }
+  .askbox ul { list-style:none; margin:0; padding:0; }
+  .askbox li { font-size:14.5px; font-style:italic; color:var(--ink); padding:4px 0 4px 26px;
+    position:relative; line-height:1.55; }
+  .askbox li::before { content:"?"; position:absolute; left:4px; top:4px; font-family:var(--mono);
+    font-weight:700; font-style:normal; color:var(--amber); }
+
   .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
     border-radius:var(--radius-sm); background:var(--card); }
   table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
@@ -857,6 +867,12 @@
       <section id="standing">
         <h2>Where you stand</h2>
         <p class="lead">Same tool, six ways to hold it. Each rung is defined by one question: <b>where does your judgment live?</b> In your head, in a message, in a file, in a structure, in a routine — or in a system that improves itself.</p>
+        <div class="askbox"><span class="tag">✋ BEFORE WE START — ASK YOURSELF</span>
+          <ul>
+            <li>How many times this week did you explain the same background — to the AI, or to a colleague?</li>
+            <li>If you were off sick tomorrow, how much of what you know would still come to work without you?</li>
+          </ul>
+        </div>
         <div class="ladder-caption"><span class="here">▲ MOST OF THIS TEAM: BETWEEN 3 AND 4</span><span class="goal">RUNG 6 · RUNS ITSELF</span></div>
         <div class="ladder">
           <div class="rungcol r1"><div class="rcard"><div class="rn">RUNG 1</div><div class="rt">Chatbox</div><div class="rd">ask · answer · forget</div></div><div class="step"></div></div>
@@ -903,6 +919,13 @@
         <div class="act">The six rungs · one by one</div>
         <h2>Rung 1 · The chatbox: everything evaporates</h2>
         <p class="lead">This is where everyone starts, and it works — for one-off questions. You ask, you get an answer, you close the tab. Tomorrow, the AI has never met you.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Have you typed "we're an online tutoring provider, the tone should be warm but professional…" for the third time in one day?</li>
+            <li>Have you asked for an email draft, got something generic, fixed it yourself — and quietly concluded "AI isn't that useful"?</li>
+            <li>Could you find that one brilliant answer it gave you last Tuesday? Where would you even look?</li>
+          </ul>
+        </div>
         <p>Watch what a chatbox day looks like for someone answering school emails: paste the email, explain who we are, explain the tone we use, explain what we can and can't promise, ask for a draft. Tomorrow: <b>all of it again.</b> Same explanations, retyped. And because nothing persists, quality is a lottery — the days you explain well, the drafts are good; the days you rush, they aren't.</p>
         <div class="rules"><div class="rule"><b>The ceiling of rung 1:</b> you are the memory. Every session starts from zero, and the quality of the output tracks the effort you spent re-explaining — not the quality of your standards.</div></div>
       </section>
@@ -910,6 +933,13 @@
       <section id="promptcraft">
         <h2>Rung 2 · The prompt: asking well, by hand</h2>
         <p class="lead">Rung 2 is the discovery that <b>how</b> you ask changes everything: give the AI a role, the background, an example, the format you want, and what to avoid.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Do your best prompts live in a notes file or a sticky note you paste from — and drift a little every time?</li>
+            <li>When a draft comes back wrong, do you blame the AI — or check what you actually gave it?</li>
+            <li>Does a colleague doing the same job get different quality from the same tool? Why would that be?</li>
+          </ul>
+        </div>
         <div class="gpair">
           <div class="half fail"><div class="hd">Rung 1 ask</div><div class="tt">"Reply to this email"</div><p>The AI guesses the tone, guesses what we can promise, guesses the sign-off. Three guesses, three chances to be wrong — and you edit for ten minutes.</p></div>
           <div class="half mach"><div class="hd">Rung 2 ask</div><div class="tt">Role + facts + format + limits</div><p>"You draft replies for our school-support team. Warm, professional, British English. Never promise schedule changes — those go to the operations team. Keep it under 150 words. Here's one good example…" The draft comes back nearly sendable.</p><span class="res">SAME AI · DIFFERENT ASK · DIFFERENT DAY</span></div>
@@ -924,6 +954,13 @@
       <section id="context">
         <h2>Rung 3 · Context: write it down once</h2>
         <p class="lead">Rung 3 is one move: everything you keep re-explaining goes into a <b>standing-instructions file</b> the AI reads at the start of every session. In Claude Code this file is called <span class="mono">CLAUDE.md</span> — but the idea matters more than the name.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>How many corrections did you give the AI this month that you had already given it last month?</li>
+            <li>Has it ever confidently used the wrong term dates or the wrong lesson count — because nobody told it where the real numbers live?</li>
+            <li>If a new teammate joined tomorrow, is there one file that explains your standards — or is it all in your head?</li>
+          </ul>
+        </div>
         <div class="table-scroll"><table>
           <thead><tr><th>What goes in</th><th>What it looks like for our kind of work</th></tr></thead>
           <tbody>
@@ -944,6 +981,13 @@
       <section id="harness">
         <h2>Rung 4 · The harness: rules that can't be broken</h2>
         <p class="lead">Here is the uncomfortable truth about rung 3: <b>a rule in a file is advice.</b> The AI reads it, usually follows it — and sometimes drifts, forgets under a long session, or confidently does the wrong thing at machine speed. For cheap mistakes, that's fine. For expensive ones, advice is not enough.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Has a wrong name or a wrong date ever slipped into a message to a school or a parent — simply because it was 4:45 on a Friday?</li>
+            <li>Which of your rules gets broken most often — and is it written anywhere, or does it just live in "being careful"?</li>
+            <li>Would you rather trust everyone to remember, or make the mistake physically impossible?</li>
+          </ul>
+        </div>
         <p>The jump from rung 3 to rung 4 is this: take your <b>most expensive rules</b> and turn them from words into <b>structure</b> — steps that physically must happen, gates that physically won't open. This is what engineers call a <b>harness</b>, and it needs no code to understand:</p>
         <div class="gateflow">
           <div class="gf"><div class="ic">🤖</div><div class="t">AI drafts</div><div class="d">reply, report, any number of them, at any hour</div></div>
@@ -998,6 +1042,13 @@
       <section id="loop">
         <h2>Rung 5 · The loop: work that survives your absence</h2>
         <p class="lead">Rungs 1–4 assume you are present. Rung 5 asks: what happens to the work when you leave — and what greets you when you return? Two routines, five minutes each, change everything.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>What happens to your tasks when you're on leave — do they pause, or does someone end up messaging you on holiday?</li>
+            <li>How much of your first hour back is spent finding out what happened while you were away?</li>
+            <li>If you check every line the AI produces, is it actually saving you time — or just moving the work?</li>
+          </ul>
+        </div>
         <div class="dayloop">
           <div class="row">
             <div class="dl"><div class="k">ALL DAY</div><div class="t">🛠 The work</div><div class="d">drafts, lookups, tickets — with the gates of rung 4 in place</div></div>
@@ -1063,6 +1114,13 @@
       <section id="environment">
         <h2>Rung 6 · The environment: a system that improves itself</h2>
         <p class="lead">The top rung is quiet. You stop improving the system by willpower, and give it two suppliers that never run dry: <b>your mistakes</b>, and <b>the platform's releases</b>.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Has the same mistake happened twice this term — to two different people?</li>
+            <li>When something goes wrong, does the lesson end up written down — or in a story people half-remember?</li>
+            <li>The tools you use ship updates every month. Who checks what changed — and how would you even find out?</li>
+          </ul>
+        </div>
         <div class="merge2">
           <div class="in">
             <div class="src err"><div class="k">SUPPLIER 1 · YOUR ERRORS</div><div class="t">Every incident → one written line</div><div class="d">what happened · why · how to judge it next time</div></div>
@@ -1103,6 +1161,12 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         <div class="act">The tool in hand · Proof from the source</div>
         <h2>Boris's workflow: how the toolmaker uses the tool</h2>
         <p class="lead">January 2026: Boris publishes his setup — "surprisingly vanilla," barely customized. Two layers, mapping cleanly onto the ladder you just climbed:</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>How much of your current way of working did you deliberately choose — and how much did you just fall into?</li>
+            <li>If you could watch the person who <b>built</b> your tool use it for a day, what would you expect to see — magic, or discipline?</li>
+          </ul>
+        </div>
         <div class="bcycle">
           <div class="hd">Layer 1 · One session's cycle</div>
           <div class="brow">
@@ -1145,6 +1209,12 @@ qualifies, say "nothing to uninstall this week."</pre></div>
       <section id="cockpit">
         <h2>The cockpit: everyday commands &amp; the status bar</h2>
         <p class="lead">Two practical pieces before the big picture: the handful of slash-commands you'll actually type, and how to read the status bar at the bottom of every session.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Has a long chat ever turned slow and strange — so you opened a fresh one and lost everything it knew?</li>
+            <li>Do you know how full the AI's memory is right now — or do you only find out when it starts forgetting?</li>
+          </ul>
+        </div>
         <h3>Commands worth knowing</h3>
         <div class="table-scroll"><table>
           <thead><tr><th>Command</th><th>What it does</th><th>When you reach for it</th></tr></thead>
@@ -1189,6 +1259,12 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         <div class="act">The vision · What full scale looks like</div>
         <h2>Fourteen lanes, one human</h2>
         <p class="lead">Everything so far scales down to one person and one AI. Here is what it looks like scaled <b>up</b> — not a slide about the future: this runs in our company today, built by the AI architect who works alongside these lanes.</p>
+        <div class="askbox"><span class="tag">✋ ASK YOURSELF</span>
+          <ul>
+            <li>What's the largest number of workstreams you can honestly keep an eye on at once — three? five?</li>
+            <li>If you were given ten reliable assistants tomorrow morning, would you know how to keep them from colliding with each other?</li>
+          </ul>
+        </div>
         <div class="statgrid">
           <div class="st"><div class="num">341</div><div class="lb">PRs merged in six working days<br>(both repos, real data)</div></div>
           <div class="st"><div class="num">157</div><div class="lb">of them pure code — features, fixes, tests<br>(docs excluded)</div></div>
@@ -1250,6 +1326,13 @@ qualifies, say "nothing to uninstall this week."</pre></div>
       <section id="quality">
         <h2>Why the numbers hold: quality, debt, and scale</h2>
         <p class="lead">Big numbers prove throughput, not quality. Three honest answers to the three obvious objections: how is quality enforced, who pays the technical debt, and what does adding a fifteenth lane cost?</p>
+        <div class="askbox"><span class="tag">✋ ASK YOURSELF</span>
+          <ul>
+            <li>When you can't check every line of someone's work, what do you actually trust — the person, or the process around them?</li>
+            <li>Speed is easy to see. Where does the mess go when nobody is counting it?</li>
+            <li>Would you notice if quality slipped ten percent this month? By what signal?</li>
+          </ul>
+        </div>
 
         <h3>Quality: four filters, none of them "self-discipline"</h3>
         <div class="funnel">
@@ -1310,6 +1393,12 @@ qualifies, say "nothing to uninstall this week."</pre></div>
       <section id="alignment">
         <h2>Staying aligned: memory lives in the system</h2>
         <p class="lead">The hard problem with fourteen agents: they can't see each other — and each can lose its memory without warning. So every alignment mechanism obeys one principle you already met at rung 5: <b>memory lives in the system, not in the session.</b> A day runs as a closed loop:</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Have two colleagues ever solved the same problem two different ways — and only found out a week later?</li>
+            <li>After a week off, how long before you're genuinely useful again — an hour, or a day of "what did I miss"?</li>
+          </ul>
+        </div>
         <div class="dayloop">
           <div class="row">
             <div class="dl"><div class="k">DAILY · EVERY LANE</div><div class="t">🌙 Fourteen sign-offs</div><div class="d">facts re-checked live · lessons only from real errors · save verified</div></div>
@@ -1342,6 +1431,11 @@ qualifies, say "nothing to uninstall this week."</pre></div>
       <section id="lessons">
         <h2>Three lessons to take home</h2>
         <p class="lead">Strip away the terminology and the whole system teaches three things — and all three apply whether you run one AI or fourteen.</p>
+        <div class="askbox"><span class="tag">✋ ASK YOURSELF</span>
+          <ul>
+            <li>Think of your worst AI result this month. Was it really the tool — or the ask, the missing context, or the missing check?</li>
+          </ul>
+        </div>
         <div class="shifts">
           <div class="shift"><div class="n">1</div><div><div class="t">Your leverage is at the demand end.</div><div class="d">Saying clearly what you want, approving the plan, and personally checking the result moves the outcome more than watching the AI work ever will. The hour you spend sharpening the ask is worth five spent supervising.</div></div></div>
           <div class="shift"><div class="n">2</div><div><div class="t">Any number of AIs — one source of truth per fact.</div><div class="d">One status board, one rulebook, one place where each kind of fact lives. Copies drift, and an AI will trust the stale copy exactly as confidently as the fresh one.</div></div></div>
@@ -1355,6 +1449,12 @@ qualifies, say "nothing to uninstall this week."</pre></div>
       <section id="start">
         <h2>Start tomorrow: three smallest steps</h2>
         <p class="lead">Nothing above needs a project or a budget. Three moves, in order — each one climbs you a rung.</p>
+        <div class="askbox"><span class="tag">✋ BEFORE YOU LEAVE</span>
+          <ul>
+            <li>Which of these three could you finish before Friday — and what, honestly, is stopping you?</li>
+            <li>What's the one thing you re-explained this week that you will never re-explain again?</li>
+          </ul>
+        </div>
         <ul class="check">
           <li><span class="lp">①</span> <b>Today — climb to rung 3:</b> create your standing-instructions file. Three parts: your role and tone · your three iron rules · where the truth lives for the facts you use daily. Thirty minutes, and tomorrow the AI already knows you.</li>
           <li><span class="lp">②</span> <b>This week — make the jump to rung 4:</b> pick your single most expensive action (for most of us: anything that leaves the building — an email, a document, a number) and put a gate on it: the AI drafts, you approve, only then it goes. One rule, promoted from paper to structure.</li>
