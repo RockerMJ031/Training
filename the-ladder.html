@@ -578,6 +578,119 @@
   .foot { margin-top:70px; padding-top:24px; border-top:1px solid var(--line);
     font-size:12px; color:var(--faint); line-height:1.8; }
   .foot b { color:var(--muted); }
+
+  /* ===== THE LADDER: staircase hero graphic ===== */
+  .ladder { display:flex; align-items:flex-end; gap:8px; margin:26px 0 8px; }
+  .ladder .rungcol { flex:1; display:flex; flex-direction:column; justify-content:flex-end; min-width:0; }
+  .ladder .rcard { border-radius:12px; padding:12px 12px 10px; border:1.5px solid var(--line);
+    background:var(--card); box-shadow:var(--shadow); }
+  .ladder .rn { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.08em; color:var(--faint); }
+  .ladder .rt { font-weight:800; font-size:14.5px; margin:2px 0 4px; letter-spacing:-.01em; }
+  .ladder .rd { font-size:11px; line-height:1.45; color:var(--muted); }
+  .ladder .r1 .rcard { background:#fafafb; }
+  .ladder .r2 .rcard { background:var(--p50); }
+  .ladder .r3 .rcard { background:var(--p100); border-color:var(--p300); }
+  .ladder .r4 .rcard { background:var(--p500); border-color:var(--p500); }
+  .ladder .r5 .rcard { background:var(--p700); border-color:var(--p700); }
+  .ladder .r6 .rcard { background:var(--p900); border-color:var(--p900); }
+  .ladder .r4 .rt, .ladder .r5 .rt, .ladder .r6 .rt { color:#fff; }
+  .ladder .r4 .rn, .ladder .r4 .rd, .ladder .r5 .rn, .ladder .r5 .rd, .ladder .r6 .rn, .ladder .r6 .rd { color:rgba(255,255,255,.75); }
+  .ladder .step { height:0; }
+  .ladder .r1 .step{height:0} .ladder .r2 .step{height:34px} .ladder .r3 .step{height:68px}
+  .ladder .r4 .step{height:102px} .ladder .r5 .step{height:136px} .ladder .r6 .step{height:170px}
+  .ladder .jumpgap { flex:0 0 46px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; padding-bottom:120px; }
+  .ladder .jumpgap .arrow { font-size:22px; color:var(--p600); font-weight:800; }
+  .ladder .jumpgap .lbl { writing-mode:vertical-rl; transform:rotate(180deg); font-family:var(--mono); font-size:9.5px;
+    font-weight:700; letter-spacing:.14em; color:var(--p600); margin-top:6px; }
+  .ladder-caption { display:flex; justify-content:space-between; gap:10px; margin:0 0 6px; }
+  .ladder-caption .here { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em;
+    color:var(--amber); background:#fdf3e4; border:1px solid #f0d9b0; border-radius:6px; padding:3px 10px; }
+  .ladder-caption .goal { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em;
+    color:#fff; background:var(--p900); border-radius:6px; padding:3px 10px; }
+  @media (max-width:860px){
+    .ladder { flex-wrap:wrap; align-items:stretch; }
+    .ladder .rungcol { flex:1 1 45%; }
+    .ladder .step { display:none; }
+    .ladder .jumpgap { flex:1 1 100%; padding:4px 0; flex-direction:row; }
+    .ladder .jumpgap .lbl { writing-mode:horizontal-tb; transform:none; margin:0 0 0 8px; }
+  }
+
+  /* ===== pain chain: each rung is born from the previous rung's ceiling ===== */
+  .chain { display:flex; gap:0; margin:18px 0 6px; align-items:stretch; }
+  .chain .link { flex:1; display:flex; flex-direction:column; min-width:0; }
+  .chain .pain { background:#fdf1f0; border:1px solid #f2d2cf; border-bottom:none; border-radius:10px 10px 0 0;
+    padding:8px 10px; font-size:10.5px; line-height:1.4; color:#a03a33; min-height:52px; }
+  .chain .pain b { display:block; font-family:var(--mono); font-size:9px; letter-spacing:.08em; color:var(--red); margin-bottom:2px; }
+  .chain .cure { background:var(--p700); border-radius:0 0 10px 10px; padding:7px 10px;
+    font-size:11.5px; font-weight:700; color:#fff; }
+  .chain .cure span { font-family:var(--mono); font-size:9px; font-weight:700; color:var(--p300); margin-right:6px; }
+  .chain .hop { flex:0 0 26px; display:flex; align-items:center; justify-content:center;
+    color:var(--p300); font-weight:800; font-size:15px; }
+  @media (max-width:860px){ .chain { flex-direction:column; } .chain .hop { transform:rotate(90deg); padding:2px 0; flex-basis:20px; } }
+
+  /* ===== gate flow (harness) ===== */
+  .gateflow { display:flex; align-items:stretch; gap:10px; margin:20px 0 6px; }
+  .gateflow .gf { flex:1; border-radius:12px; padding:14px; text-align:center; border:1.5px solid var(--line); background:var(--card); }
+  .gateflow .gf .ic { font-size:20px; }
+  .gateflow .gf .t { font-weight:800; font-size:13.5px; margin-top:4px; }
+  .gateflow .gf .d { font-size:11px; color:var(--muted); margin-top:3px; line-height:1.45; }
+  .gateflow .gate { border:2.5px solid var(--p700); background:var(--p50); position:relative; }
+  .gateflow .gate .t { color:var(--p700); }
+  .gateflow .gate::before { content:"THE GATE"; position:absolute; top:-9px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:.12em; color:#fff; background:var(--p700);
+    border-radius:5px; padding:1px 8px; }
+  .gateflow .fa { flex:0 0 22px; display:flex; align-items:center; justify-content:center; color:var(--p300); font-size:16px; font-weight:800; }
+  @media (max-width:700px){ .gateflow { flex-direction:column; } .gateflow .fa { transform:rotate(90deg); } }
+
+  /* ===== day loop ring (loop rung + alignment) ===== */
+  .dayloop { margin:20px 0 6px; }
+  .dayloop .row { display:flex; gap:10px; align-items:stretch; }
+  .dayloop .dl { flex:1; border-radius:12px; border:1.5px solid var(--line); background:var(--card); padding:13px 14px; }
+  .dayloop .dl .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--p600); }
+  .dayloop .dl .t { font-weight:800; font-size:13.5px; margin:3px 0 4px; }
+  .dayloop .dl .d { font-size:11.5px; color:var(--muted); line-height:1.5; }
+  .dayloop .fa { flex:0 0 22px; display:flex; align-items:center; justify-content:center; color:var(--p300); font-size:16px; font-weight:800; }
+  .dayloop .ret { margin-top:8px; border:1.5px dashed var(--p300); background:var(--p50); border-radius:10px;
+    padding:8px 14px; font-size:11.5px; color:var(--p700); font-weight:600; display:flex; align-items:center; gap:8px; }
+  .dayloop .ret .arr { font-size:16px; font-weight:800; }
+  @media (max-width:700px){ .dayloop .row { flex-direction:column; } .dayloop .fa { transform:rotate(90deg); } }
+
+  /* ===== two suppliers merge (environment) ===== */
+  .merge2 { display:flex; align-items:center; gap:10px; margin:20px 0 6px; }
+  .merge2 .in { flex:1; display:flex; flex-direction:column; gap:10px; }
+  .merge2 .src { border-radius:12px; padding:12px 14px; border:1.5px solid var(--line); background:var(--card); }
+  .merge2 .src .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.1em; }
+  .merge2 .src.err .k { color:var(--red); } .merge2 .src.rel .k { color:var(--green); }
+  .merge2 .src .t { font-weight:800; font-size:13px; margin:2px 0 3px; }
+  .merge2 .src .d { font-size:11px; color:var(--muted); line-height:1.45; }
+  .merge2 .fa { flex:0 0 26px; text-align:center; color:var(--p300); font-size:18px; font-weight:800; }
+  .merge2 .sys { flex:1.1; border-radius:14px; background:var(--p900); color:#fff; padding:18px 16px; text-align:center; }
+  .merge2 .sys .t { font-weight:800; font-size:15px; }
+  .merge2 .sys .d { font-size:11.5px; color:var(--p300); margin-top:4px; line-height:1.5; }
+  .merge2 .sys .badge { display:inline-block; margin-top:9px; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.1em; background:rgba(255,255,255,.14); border-radius:6px; padding:3px 10px; }
+  @media (max-width:700px){ .merge2 { flex-direction:column; } .merge2 .fa { transform:rotate(90deg); } .merge2 .in{width:100%} .merge2 .sys{width:100%} }
+
+  /* ===== 14-lane topology ===== */
+  .topo { margin:22px 0 6px; }
+  .topo .tier { display:flex; justify-content:center; gap:12px; }
+  .topo .down { text-align:center; color:var(--p300); font-size:16px; font-weight:800; padding:3px 0; }
+  .topo .human { border-radius:14px; background:var(--p900); color:#fff; padding:14px 22px; text-align:center; position:relative; }
+  .topo .human .fig { font-size:22px; }
+  .topo .human .t { font-weight:800; font-size:14px; }
+  .topo .human .d { font-size:10.5px; color:var(--p300); }
+  .topo .human .pub { position:absolute; right:-12px; top:-12px; background:var(--amber); color:#fff;
+    font-family:var(--mono); font-size:8.5px; font-weight:700; letter-spacing:.08em; border-radius:7px; padding:4px 8px;
+    box-shadow:var(--shadow); }
+  .topo .mid { flex:0 1 260px; border-radius:12px; border:1.5px solid var(--p300); background:var(--p50); padding:11px 14px; text-align:center; }
+  .topo .mid .t { font-weight:800; font-size:13px; color:var(--p700); }
+  .topo .mid .d { font-size:10.5px; color:var(--muted); margin-top:2px; line-height:1.4; }
+  .topo .lanes { display:grid; grid-template-columns:repeat(7,1fr); gap:7px; max-width:640px; margin:0 auto; }
+  .topo .lane { border-radius:9px; border:1.5px solid var(--line); background:var(--card); text-align:center;
+    font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p600); padding:9px 0; }
+  .topo .cap { text-align:center; font-size:10.5px; color:var(--faint); margin-top:7px; }
+  @media (max-width:700px){ .topo .lanes { grid-template-columns:repeat(4,1fr); } .topo .tier{flex-wrap:wrap} }
+
 </style>
 </head>
 <body>
@@ -625,6 +738,18 @@
       <section id="standing">
         <h2>Where you stand</h2>
         <p class="lead">Same tool, six ways to hold it. Each rung is defined by one question: <b>where does your judgment live?</b> In your head, in a message, in a file, in a structure, in a routine — or in a system that improves itself.</p>
+        <div class="ladder-caption"><span class="here">▲ MOST OF THIS TEAM: BETWEEN 3 AND 4</span><span class="goal">RUNG 6 · RUNS ITSELF</span></div>
+        <div class="ladder">
+          <div class="rungcol r1"><div class="rcard"><div class="rn">RUNG 1</div><div class="rt">Chatbox</div><div class="rd">ask · answer · forget</div></div><div class="step"></div></div>
+          <div class="rungcol r2"><div class="rcard"><div class="rn">RUNG 2</div><div class="rt">Prompt</div><div class="rd">ask well — by hand, every time</div></div><div class="step"></div></div>
+          <div class="rungcol r3"><div class="rcard"><div class="rn">RUNG 3</div><div class="rt">Context</div><div class="rd">rules &amp; facts live in files</div></div><div class="step"></div></div>
+          <div class="jumpgap"><div class="arrow">⤴</div><div class="lbl">THE JUMP</div></div>
+          <div class="rungcol r4"><div class="rcard"><div class="rn">RUNG 4</div><div class="rt">Harness</div><div class="rd">rules become structure — gates, not memos</div></div><div class="step"></div></div>
+          <div class="rungcol r5"><div class="rcard"><div class="rn">RUNG 5</div><div class="rt">Loop</div><div class="rd">work survives your absence</div></div><div class="step"></div></div>
+          <div class="rungcol r6"><div class="rcard"><div class="rn">RUNG 6</div><div class="rt">Environment</div><div class="rd">errors &amp; releases improve it</div></div><div class="step"></div></div>
+        </div>
+        <p style="font-size:11.5px;color:var(--faint);margin-top:2px">Grey rungs: judgment still lives with you. Purple rungs: judgment lives in the system. The jump is where the colour changes.</p>
+
         <div class="table-scroll"><table>
           <thead><tr><th>Rung</th><th>Name</th><th>One sentence</th><th>You know you're here when…</th></tr></thead>
           <tbody>
@@ -636,6 +761,19 @@
             <tr><td class="strong">6</td><td class="strong">Environment</td><td>Every mistake and every platform update improves the system.</td><td>…this week's error becomes next week's rule — automatically on the agenda.</td></tr>
           </tbody>
         </table></div>
+        <h3>Why the ladder has exactly these rungs</h3>
+        <p>Nobody designed this sequence. Each rung is the repair of the previous rung's ceiling:</p>
+        <div class="chain">
+          <div class="link"><div class="pain"><b>CEILING 1</b>you are the memory — every day starts at zero</div><div class="cure"><span>R2</span>ask better</div></div>
+          <div class="hop">→</div>
+          <div class="link"><div class="pain"><b>CEILING 2</b>your standards live in a clipboard</div><div class="cure"><span>R3</span>write them down once</div></div>
+          <div class="hop">→</div>
+          <div class="link"><div class="pain"><b>CEILING 3</b>a rule in a file is only advice</div><div class="cure"><span>R4</span>make rules run</div></div>
+          <div class="hop">→</div>
+          <div class="link"><div class="pain"><b>CEILING 4</b>it all still needs you present</div><div class="cure"><span>R5</span>routines survive you</div></div>
+          <div class="hop">→</div>
+          <div class="link"><div class="pain"><b>CEILING 5</b>the system doesn't learn on its own</div><div class="cure"><span>R6</span>feed it errors &amp; releases</div></div>
+        </div>
         <div class="insight"><span class="tag">INSIGHT 01</span>
           <p>The tool is identical on every rung. What changes is how much of your judgment lives outside your head.
           <span class="sub">Climbing the ladder is not about better AI. It is about moving what you know — rules, facts, standards, lessons — out of your memory and into things that persist.</span></p>
@@ -688,6 +826,14 @@
         <h2>Rung 4 · The harness: rules that can't be broken</h2>
         <p class="lead">Here is the uncomfortable truth about rung 3: <b>a rule in a file is advice.</b> The AI reads it, usually follows it — and sometimes drifts, forgets under a long session, or confidently does the wrong thing at machine speed. For cheap mistakes, that's fine. For expensive ones, advice is not enough.</p>
         <p>The jump from rung 3 to rung 4 is this: take your <b>most expensive rules</b> and turn them from words into <b>structure</b> — steps that physically must happen, gates that physically won't open. This is what engineers call a <b>harness</b>, and it needs no code to understand:</p>
+        <div class="gateflow">
+          <div class="gf"><div class="ic">🤖</div><div class="t">AI drafts</div><div class="d">reply, report, any number of them, at any hour</div></div>
+          <div class="fa">→</div>
+          <div class="gf gate"><div class="ic">🙋</div><div class="t">Human reads &amp; approves</div><div class="d">the one step that physically cannot be skipped</div></div>
+          <div class="fa">→</div>
+          <div class="gf"><div class="ic">📤</div><div class="t">It goes out</div><div class="d">with our signature — and your eyes on it</div></div>
+        </div>
+        <p style="font-size:11.5px;color:var(--faint);margin-top:2px">The send button and the AI are never in the same room. That is a harness: not a better reminder — a different architecture.</p>
         <div class="shifts">
           <div class="shift"><div class="n">1</div><div><div class="t">The draft gate.</div><div class="d">The AI can draft an email to a school — it <b>cannot</b> send one. Sending requires you to read the draft and press the button. The rule "always check outgoing mail" stopped being a memo; it became a door.</div></div></div>
           <div class="shift"><div class="n">2</div><div><div class="t">The evidence rule.</div><div class="d">Any number in a document — a lesson count, a date, an amount — must arrive with <em>where it was just looked up and when</em>. "The schedule says 5 sessions (checked today 14:02)" passes; a bare "5 sessions" does not.</div></div></div>
@@ -707,6 +853,16 @@
       <section id="loop">
         <h2>Rung 5 · The loop: work that survives your absence</h2>
         <p class="lead">Rungs 1–4 assume you are present. Rung 5 asks: what happens to the work when you leave — and what greets you when you return? Two routines, five minutes each, change everything.</p>
+        <div class="dayloop">
+          <div class="row">
+            <div class="dl"><div class="k">ALL DAY</div><div class="t">🛠 The work</div><div class="d">drafts, lookups, tickets — with the gates of rung 4 in place</div></div>
+            <div class="fa">→</div>
+            <div class="dl"><div class="k">END OF DAY</div><div class="t">🌙 Sign-off ritual</div><div class="d">done · open &amp; waiting-on-whom · tomorrow's first move — written before the session forgets</div></div>
+            <div class="fa">→</div>
+            <div class="dl"><div class="k">NEXT MORNING</div><div class="t">☀️ Morning page</div><div class="d">you read one page; decisions that need you sit on top</div></div>
+          </div>
+          <div class="ret"><span class="arr">↩</span>…and the day begins already aligned — no archaeology, no asking around.</div>
+        </div>
         <div class="shifts">
           <div class="shift"><div class="n">1</div><div><div class="t">The sign-off ritual (end of day).</div><div class="d">Before finishing, the AI writes a short close-out: what got <b>done</b> (the finished things, not the effort) · what's <b>still open and who it's waiting on</b> · <b>tomorrow's first move</b>. Written at close, while the day is still in memory — not reconstructed in the morning.</div></div></div>
           <div class="shift"><div class="n">2</div><div><div class="t">The morning page (start of day).</div><div class="d">You begin by reading yesterday's close-outs — one page — instead of asking around or re-deriving where things stood. Decisions that need <em>you</em> are at the top, each with "what unblocks if you answer".</div></div></div>
@@ -722,6 +878,14 @@
       <section id="environment">
         <h2>Rung 6 · The environment: a system that improves itself</h2>
         <p class="lead">The top rung is quiet. You stop improving the system by willpower, and give it two suppliers that never run dry: <b>your mistakes</b>, and <b>the platform's releases</b>.</p>
+        <div class="merge2">
+          <div class="in">
+            <div class="src err"><div class="k">SUPPLIER 1 · YOUR ERRORS</div><div class="t">Every incident → one written line</div><div class="d">what happened · why · how to judge it next time</div></div>
+            <div class="src rel"><div class="k">SUPPLIER 2 · THEIR RELEASES</div><div class="t">Weekly upstream check</div><div class="d">"which hand-built piece is now native?" → uninstall it</div></div>
+          </div>
+          <div class="fa">→</div>
+          <div class="sys"><div class="t">Your system</div><div class="d">context files · gates · routines<br>changed only on evidence, never on mood</div><div class="badge">YOU APPROVE · IT EVOLVES</div></div>
+        </div>
         <div class="shifts">
           <div class="shift"><div class="n">1</div><div><div class="t">Supplier one: every error becomes one line.</div><div class="d">When something goes wrong, the fix isn't "be more careful" — it is one written line: what happened, why, and how to judge it next time. The line goes into the shared file. The same mistake, made twice, means the line wasn't written — not that someone forgot.</div></div></div>
           <div class="shift"><div class="n">2</div><div><div class="t">Supplier two: the weekly upstream check.</div><div class="d">Once a week we have Claude Code check <em>on itself</em>: read its own release notes and the best-practice posts from its makers, and answer one question — <b>"which part of what we built by hand does the tool now do natively?"</b> Whatever is covered gets uninstalled. The tool maintains the tool; a human approves.</div></div></div>
@@ -737,6 +901,20 @@
         <div class="act">The vision · What full scale looks like</div>
         <h2>Fourteen lanes, one human</h2>
         <p class="lead">Everything so far scales down to one person and one AI. Here is what it looks like scaled <b>up</b> — not a slide about the future: this runs in our company today, built by the AI architect who works alongside these lanes.</p>
+        <div class="topo">
+          <div class="tier"><div class="human"><div class="fig">🙋</div><div class="t">ONE HUMAN · product owner</div><div class="d">describes needs · approves plans · accepts results</div><div class="pub">🚀 PUBLISH · HUMAN ONLY</div></div></div>
+          <div class="down">↓ plain-language requests · approvals ↑</div>
+          <div class="tier">
+            <div class="mid"><div class="t">ARCHITECT</div><div class="d">triages every request in the hour · writes the one-page plans · proposes, never decides</div></div>
+            <div class="mid"><div class="t">ORCHESTRATOR</div><div class="d">assigns work · reviews · merges · keeps lanes out of each other's way</div></div>
+          </div>
+          <div class="down">↓ sorted work · finished work ↑</div>
+          <div class="lanes">
+            <div class="lane">L1</div><div class="lane">L2</div><div class="lane">L3</div><div class="lane">L4</div><div class="lane">L5</div><div class="lane">L6</div><div class="lane">L7</div>
+            <div class="lane">L8</div><div class="lane">L9</div><div class="lane">L10</div><div class="lane">L11</div><div class="lane">L12</div><div class="lane">L13</div><div class="lane">L14</div>
+          </div>
+          <div class="cap">fourteen long-lived AI lanes · each owns one part of the product · each isolated from the rest</div>
+        </div>
         <p>We run about <b>fourteen parallel AI work-lanes</b> — each a long-lived Claude session owning one page or one part of the product. Above them sit two special AI roles: an <b>orchestrator</b> (assigns work, reviews, merges) and an <b>architect</b> (designs, and triages every incoming request). The human count is <b>one</b>: a product owner who describes what's needed in plain words, approves plans, and accepts results. And one thing never moves: <b>no AI can publish to the live product. The publish button is human, by design.</b></p>
         <h3>How a request enters the system</h3>
         <p>You don't need to classify your own request — plain language is enough. Every request becomes one row in a shared task table, and the architect sorts it within the hour using a fixed <b>seven-question checklist</b>. The questions don't ask "how big is this?" — they ask <b>"if this goes wrong, who else gets hit?"</b> A five-line change can be highest-risk; an 800-line one can be routine.</p>
@@ -764,6 +942,16 @@
       <section id="alignment">
         <h2>Staying aligned: memory lives in the system</h2>
         <p class="lead">The hard problem with fourteen agents: they can't see each other — and each can lose its memory without warning. So every alignment mechanism obeys one principle you already met at rung 5: <b>memory lives in the system, not in the session.</b> A day runs as a closed loop:</p>
+        <div class="dayloop">
+          <div class="row">
+            <div class="dl"><div class="k">DAILY · EVERY LANE</div><div class="t">🌙 Fourteen sign-offs</div><div class="d">facts re-checked live · lessons only from real errors · save verified</div></div>
+            <div class="fa">→</div>
+            <div class="dl"><div class="k">DAILY · ONE HUMAN</div><div class="t">☀️ One morning page</div><div class="d">decisions ranked by what they unblock · numbers · who didn't report</div></div>
+            <div class="fa">→</div>
+            <div class="dl"><div class="k">WEEKLY</div><div class="t">🔁 The up-cycle</div><div class="d">best lessons numbered into the rulebook · complaints (with examples) change the shared routines</div></div>
+          </div>
+          <div class="ret"><span class="arr">↩</span>The agent found it → the file fixed it → the whole team inherited it, next morning.</div>
+        </div>
         <div class="shifts">
           <div class="shift"><div class="n">1</div><div><div class="t">Sign-off, every lane, every day.</div><div class="d">Before closing, each lane re-checks its facts <em>live</em> (yesterday's status quoted from memory doesn't count), writes a fixed-format daily note — done · open-and-waiting-on-whom · problems <em>with evidence</em> · new lessons <em>from real errors only</em> — then verifies the note actually saved. Real incident: a lane once "wrote" its note to a file that silently failed to save.</div></div></div>
             <div class="shift"><div class="n">2</div><div><div class="t">One morning page for the human.</div><div class="d">A read-only summary pulls all fourteen notes plus the task table into one page: decisions needing the human first (each with "answering this unblocks…"), yesterday's numbers, cross-lane warning signs, and who <em>didn't</em> report. Aligning with fourteen agents costs ten minutes.</div></div></div>
