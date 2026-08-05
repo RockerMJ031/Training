@@ -700,6 +700,33 @@
   .statbar .dim2 { color:#6f6690; }
   .statkey td:first-child { font-family:var(--mono); font-weight:700; color:var(--p600); white-space:nowrap; }
 
+
+  /* ===== throughput stat band ===== */
+  .statgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:20px 0 10px; }
+  .statgrid .st { border-radius:14px; border:1.5px solid var(--line); background:var(--card); padding:16px 14px; text-align:center; box-shadow:var(--shadow); }
+  .statgrid .st .num { font-family:var(--mono); font-weight:800; font-size:30px; letter-spacing:-.02em; color:var(--p700); line-height:1.05; }
+  .statgrid .st .lb { font-size:11px; color:var(--muted); margin-top:6px; line-height:1.4; }
+  .statgrid .st.hi { background:var(--p900); border-color:var(--p900); }
+  .statgrid .st.hi .num { color:#fff; }
+  .statgrid .st.hi .lb { color:var(--p300); }
+  @media (max-width:760px){ .statgrid { grid-template-columns:repeat(2,1fr); } }
+  /* ===== nail factory (Goodhart) ===== */
+  .nails { display:grid; grid-template-columns:1fr 1fr 1.15fr; gap:10px; margin:18px 0 8px; }
+  .nails .np { border-radius:12px; border:1.5px solid #f2d2cf; background:#fdf7f6; padding:13px 12px 11px; text-align:center; }
+  .nails .np.good { border-color:#bfe3d0; background:#f4faf7; }
+  .nails .np .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.1em; color:var(--red); }
+  .nails .np.good .k { color:var(--green); }
+  .nails .yard { height:64px; display:flex; align-items:flex-end; justify-content:center; gap:4px; padding:6px 0 4px; }
+  .nails .nl { display:inline-block; width:4px; background:#8f8a99; border-radius:1px; position:relative; }
+  .nails .nl::before { content:""; position:absolute; top:-3px; left:50%; transform:translateX(-50%); width:10px; height:3px; background:#8f8a99; border-radius:2px; }
+  .nails .nl.giant { width:16px; }
+  .nails .nl.giant::before { width:34px; height:6px; top:-6px; }
+  .nails .nl.tiny { width:2.5px; }
+  .nails .nl.tiny::before { width:6px; height:2px; top:-2px; }
+  .nails .np.good .nl { background:var(--green); }
+  .nails .np.good .nl::before { background:var(--green); }
+  .nails .cap2 { font-size:10.5px; color:var(--muted); line-height:1.4; margin-top:4px; }
+
 </style>
 </head>
 <body>
@@ -910,6 +937,11 @@
         <p>The morning page aggregates numbers — drafts sent, tickets closed, rounds of rework. Numbers are how one human reads many streams. But the moment you're tempted to <em>manage by</em> those numbers, a fifty-year-old law fires:</p>
         <div class="golden"><div class="q">"When a measure becomes a target, it ceases to be a good measure." <span style="display:block;font-size:11px;margin-top:6px;color:var(--p300)">— Goodhart's law</span></div></div>
         <p>The classic story: a nail factory judged by <b>weight</b> of output made a few giant, useless nails. Judged by <b>count</b> instead, it made thousands of tiny, useless nails. The workers never disobeyed — <b>they obeyed the metric perfectly, and betrayed the purpose completely.</b></p>
+        <div class="nails">
+          <div class="np"><div class="k">METRIC: TOTAL WEIGHT</div><div class="yard"><span class="nl giant" style="height:52px"></span></div><div class="cap2">a few giant nails · target hit · useless</div></div>
+          <div class="np"><div class="k">METRIC: NAIL COUNT</div><div class="yard"><span class="nl tiny" style="height:10px"></span><span class="nl tiny" style="height:12px"></span><span class="nl tiny" style="height:9px"></span><span class="nl tiny" style="height:11px"></span><span class="nl tiny" style="height:10px"></span><span class="nl tiny" style="height:13px"></span><span class="nl tiny" style="height:9px"></span><span class="nl tiny" style="height:10px"></span><span class="nl tiny" style="height:12px"></span><span class="nl tiny" style="height:11px"></span><span class="nl tiny" style="height:9px"></span><span class="nl tiny" style="height:10px"></span><span class="nl tiny" style="height:11px"></span><span class="nl tiny" style="height:12px"></span><span class="nl tiny" style="height:10px"></span><span class="nl tiny" style="height:9px"></span><span class="nl tiny" style="height:11px"></span><span class="nl tiny" style="height:10px"></span></div><div class="cap2">thousands of tiny nails · target hit · useless</div></div>
+          <div class="np good"><div class="k">PURPOSE: NAILS THAT HOLD</div><div class="yard"><span class="nl" style="height:26px"></span><span class="nl" style="height:30px"></span><span class="nl" style="height:28px"></span><span class="nl" style="height:31px"></span><span class="nl" style="height:27px"></span><span class="nl" style="height:29px"></span><span class="nl" style="height:28px"></span></div><div class="cap2">what the factory was actually for — no metric ever asked for it</div></div>
+        </div>
         <div class="warn"><span class="ic">!</span><p><b>AI amplifies Goodhart.</b> An AI told to maximise "tickets closed" will close tickets: split one problem into three easy ones, close the trivial, shelve the hard. It optimises exactly what you wrote down, at machine speed, without the embarrassment that slows humans down. A quality-check role judged on "issues found" will find issues — smaller and smaller ones, forever. So yes: QA needs its KPIs to report — but the <em>work</em> must aim at the purpose.</p></div>
         <div class="gpair">
           <div class="half fail"><div class="hd">Metric as target</div><div class="tt">"Hit 20 closed tickets"</div><p>The number becomes the work. Quality leaks out through every gap the metric doesn't cover — and the dashboard looks <em>better</em> as the service gets worse.</p></div>
@@ -1051,6 +1083,14 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         <div class="act">The vision · What full scale looks like</div>
         <h2>Fourteen lanes, one human</h2>
         <p class="lead">Everything so far scales down to one person and one AI. Here is what it looks like scaled <b>up</b> — not a slide about the future: this runs in our company today, built by the AI architect who works alongside these lanes.</p>
+        <div class="statgrid">
+          <div class="st"><div class="num">341</div><div class="lb">PRs merged in six working days<br>(both repos, real data)</div></div>
+          <div class="st"><div class="num">157</div><div class="lb">of them pure code — features, fixes, tests<br>(docs excluded)</div></div>
+          <div class="st"><div class="num">≈30</div><div class="lb">engineers' merge throughput, at the industry norm of ~4 reviewed PRs per engineer per week</div></div>
+          <div class="st hi"><div class="num">1</div><div class="lb">human — who writes no code</div></div>
+        </div>
+        <p style="font-size:11.5px;color:var(--faint);margin-top:2px">Not padding: every PR passes mandatory gates — interface tests at three screen sizes, architecture guards, a reviewer pass (many take two rounds) — on top of 5,752 automated tests. Even halving every PR to pre-empt the "AI PRs are small" objection still leaves a 15–20-engineer team's output. One sentence for the road: <b>"In six working days this system merged 341 PRs, 157 of them code — the throughput of a ~30-person engineering department, run by one person who writes no code."</b></p>
+
         <div class="topo">
           <div class="tier"><div class="human"><div class="fig">🙋</div><div class="t">ONE HUMAN · product owner</div><div class="d">describes needs · approves plans · accepts results</div><div class="pub">🚀 PUBLISH · HUMAN ONLY</div></div></div>
           <div class="down">↓ plain-language requests · approvals ↑</div>
