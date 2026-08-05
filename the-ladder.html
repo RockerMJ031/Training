@@ -691,6 +691,15 @@
   .topo .cap { text-align:center; font-size:10.5px; color:var(--faint); margin-top:7px; }
   @media (max-width:700px){ .topo .lanes { grid-template-columns:repeat(4,1fr); } .topo .tier{flex-wrap:wrap} }
 
+
+  /* ===== status bar anatomy (cockpit) ===== */
+  .statbar { background:#17122a; border-radius:12px; padding:16px 18px 12px; margin:16px 0 8px;
+    font-family:var(--mono); font-size:11.5px; line-height:2.1; color:#d9cdf3; overflow-x:auto; white-space:nowrap; }
+  .statbar .seg { position:relative; padding-top:10px; margin-right:2px; }
+  .statbar .seg sup { position:absolute; top:-2px; left:0; font-size:8.5px; font-weight:700; color:#f5d97b; }
+  .statbar .dim2 { color:#6f6690; }
+  .statkey td:first-child { font-family:var(--mono); font-weight:700; color:var(--p600); white-space:nowrap; }
+
 </style>
 </head>
 <body>
@@ -709,13 +718,15 @@
     <a class="nav" href="#harness"><span class="n">05</span>Rung 4 · The harness</a>
     <a class="nav" href="#loop"><span class="n">06</span>Rung 5 · The loop</a>
     <a class="nav" href="#environment"><span class="n">07</span>Rung 6 · The environment</a>
+    <div class="grp">The tool in hand</div>
+    <a class="nav" href="#boris"><span class="n">08</span>Boris's workflow</a>
+    <a class="nav" href="#cockpit"><span class="n">09</span>Commands &amp; status bar</a>
     <div class="grp">The vision · Full scale</div>
-    <a class="nav" href="#fourteen"><span class="n">08</span>Fourteen lanes, one human</a>
-    <a class="nav" href="#alignment"><span class="n">09</span>Staying aligned</a>
+    <a class="nav" href="#fourteen"><span class="n">10</span>Fourteen lanes, one human</a>
+    <a class="nav" href="#alignment"><span class="n">11</span>Staying aligned</a>
     <div class="grp">Closing</div>
-    <a class="nav" href="#boris"><span class="n">10</span>Boris's workflow</a>
-    <a class="nav" href="#lessons"><span class="n">11</span>Three lessons</a>
-    <a class="nav" href="#start"><span class="n">12</span>Start tomorrow</a>
+    <a class="nav" href="#lessons"><span class="n">12</span>Three lessons</a>
+    <a class="nav" href="#start"><span class="n">13</span>Start tomorrow</a>
     <div class="side-foot">Purple Ruler · Team training<br>
       <b>Same tool, six ways to hold it.</b></div>
   </aside>
@@ -844,6 +855,32 @@
           <div class="half mach"><div class="hd">The machine</div><div class="tt">A step that blocks the reply until the schedule was actually opened</div><p>The draft simply cannot be produced without the fresh lookup attached. Nobody remembers anything. The busy afternoon behaves exactly like the calm one.</p><span class="res">A RULE THAT RUNS · NOT A RULE THAT HOPES</span></div>
         </div>
         <p>Which rules deserve promotion? Not the style ones — the <b>expensive</b> ones. Ask of every rule in your file: <em>what does it cost when this is broken once?</em> A clumsy sentence costs an edit. A wrong number sent to a school, a promise we can't keep, a student's personal detail in the wrong place — those are harness material.</p>
+        <h3>The same idea, inside Claude Code: three levels of harness</h3>
+        <p>Everything above needs no software. But Claude Code ships real levers for exactly this — and they stack in levels. Each tool in one line, so the names stop being mysterious:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Level</th><th>You use</th><th>What each piece is</th><th>What it buys you</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="strong">Entry<br><span style="font-weight:400;font-size:10.5px;color:var(--faint)">declare the rules</span></td>
+              <td class="mono">CLAUDE.md<br>CLAUDE.local.md<br>memory</td>
+              <td><b>CLAUDE.md</b> — the standing-instructions file, shared with everyone on the project. <b>CLAUDE.local.md</b> — your own machine-local notes, never shared. <b>Memory</b> — corrections that persist across sessions, one line per lesson.</td>
+              <td>The AI starts every session knowing your rules. This is rung 3 made concrete — necessary, but still advice.</td>
+            </tr>
+            <tr>
+              <td class="strong">Advanced<br><span style="font-weight:400;font-size:10.5px;color:var(--faint)">gate the actions</span></td>
+              <td class="mono">permissions<br>skills</td>
+              <td><b>Permissions</b> — a three-list control panel (<span class="mono">/permissions</span>): may always do · must ask first · may never do. <b>Skills</b> — a repeated routine written into a file the AI runs the same way every time, for everyone.</td>
+              <td>The action whitelist stops being a paragraph and becomes enforcement. Your best routine stops living in one person's head.</td>
+            </tr>
+            <tr>
+              <td class="strong">Mastery<br><span style="font-weight:400;font-size:10.5px;color:var(--faint)">rules that run themselves</span></td>
+              <td class="mono">hooks<br>+ proven guards</td>
+              <td><b>Hooks</b> — small checks that fire automatically at fixed moments (before an action, after a command, at session start) and can inject a rule or block a step. Nobody invokes them; they just run.</td>
+              <td>The busy afternoon behaves like the calm one. House rule: every guard must once <em>demonstrate</em> it turns red when you break the thing on purpose — an alarm that never rang in a drill is not an alarm.</td>
+            </tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:11.5px;color:var(--faint)">Climb these in order. Entry is one afternoon. Advanced is a week of noticing what you repeat. Mastery you grow into, one proven guard at a time.</p>
         <div class="insight"><span class="tag">INSIGHT 04</span>
           <p>A rule you must remember is a hope. A rule that runs is a guarantee.
           <span class="sub">This is the jump this training is about: find your three most expensive rules, and promote them from paper to structure. Everything else can stay advice.</span></p>
@@ -869,6 +906,16 @@
         </div>
         <p>Why write at close and not in the morning? Because AI sessions have a failure humans don't: <b>when a session's memory fills up, it compresses — and un-written judgment is simply gone.</b> We learned this the real way: one work-lane lost its session mid-week, rewrote its notes from what survived, and the "lessons learned" section came back <em>empty</em>. The work existed; the judgment had evaporated.</p>
         <div class="rules"><div class="rule"><b>The rung-5 principle: memory lives in the system, not in the session.</b> Anything worth keeping is written down before the session ends — because the session <em>will</em> end, and not always politely.</div></div>
+        <h3>The numbers trap: Goodhart's law</h3>
+        <p>The morning page aggregates numbers — drafts sent, tickets closed, rounds of rework. Numbers are how one human reads many streams. But the moment you're tempted to <em>manage by</em> those numbers, a fifty-year-old law fires:</p>
+        <div class="golden"><div class="q">"When a measure becomes a target, it ceases to be a good measure." <span style="display:block;font-size:11px;margin-top:6px;color:var(--p300)">— Goodhart's law</span></div></div>
+        <p>The classic story: a nail factory judged by <b>weight</b> of output made a few giant, useless nails. Judged by <b>count</b> instead, it made thousands of tiny, useless nails. The workers never disobeyed — <b>they obeyed the metric perfectly, and betrayed the purpose completely.</b></p>
+        <div class="warn"><span class="ic">!</span><p><b>AI amplifies Goodhart.</b> An AI told to maximise "tickets closed" will close tickets: split one problem into three easy ones, close the trivial, shelve the hard. It optimises exactly what you wrote down, at machine speed, without the embarrassment that slows humans down. A quality-check role judged on "issues found" will find issues — smaller and smaller ones, forever. So yes: QA needs its KPIs to report — but the <em>work</em> must aim at the purpose.</p></div>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">Metric as target</div><div class="tt">"Hit 20 closed tickets"</div><p>The number becomes the work. Quality leaks out through every gap the metric doesn't cover — and the dashboard looks <em>better</em> as the service gets worse.</p></div>
+          <div class="half mach"><div class="hd">Metric as thermometer</div><div class="tt">Aim at the purpose · read the number for anomalies</div><p>Work aims at the stated purpose ("schools get correct, warm answers within a day"). Numbers are read like a thermometer: a sudden drop or spike is a <em>question to investigate</em> — never a score to chase.</p><span class="res">NUMBERS DIAGNOSE · PURPOSE DIRECTS</span></div>
+        </div>
+        <p>If you know OKRs, this is exactly the O and the KR: the <b>O</b>bjective is qualitative and <em>aims</em> the work; <b>K</b>ey <b>R</b>esults are thermometers that tell you whether you're getting closer. And OKRs break in the same famous way: the day KRs become quotas tied to rewards, Goodhart eats them. Our daily reports carry a machine-readable number line for exactly one purpose — <b>diagnosis</b> — and no agent is ever told to improve it.</p>
         <div class="insight"><span class="tag">INSIGHT 05</span>
           <p>If it isn't written down before the session ends, it never happened.
           <span class="sub">The close-out ritual is five minutes of writing that saves an hour of morning archaeology — and it is the only defence against a kind of amnesia humans never had to plan for.</span></p>
@@ -890,11 +937,114 @@
           <div class="shift"><div class="n">1</div><div><div class="t">Supplier one: every error becomes one line.</div><div class="d">When something goes wrong, the fix isn't "be more careful" — it is one written line: what happened, why, and how to judge it next time. The line goes into the shared file. The same mistake, made twice, means the line wasn't written — not that someone forgot.</div></div></div>
           <div class="shift"><div class="n">2</div><div><div class="t">Supplier two: the weekly upstream check.</div><div class="d">Once a week we have Claude Code check <em>on itself</em>: read its own release notes and the best-practice posts from its makers, and answer one question — <b>"which part of what we built by hand does the tool now do natively?"</b> Whatever is covered gets uninstalled. The tool maintains the tool; a human approves.</div></div></div>
         </div>
+        <h3>How to actually run it — the concrete routine</h3>
+        <ul class="check">
+          <li><span class="lp">①</span> <b>Daily, 30 seconds — capture:</b> the moment something goes wrong or grates, one line into a running "lessons" note. Don't fix, don't polish — log it while it's hot. Un-logged friction never reaches any threshold.</li>
+          <li><span class="lp">②</span> <b>Weekly, 30 min — the error pass:</b> merge the week's lines into the shared instructions file, de-duplicate, and <b>delete one rule</b> that no longer earns its place. A pass that only adds is a failed pass.</li>
+          <li><span class="lp">③</span> <b>Weekly, 30 min — the upstream pass:</b> hand the AI the prompt below, read its answer, uninstall what's covered.</li>
+          <li><span class="lp">④</span> <b>Monthly — drill one guard:</b> break a protected thing on purpose and watch the gate catch it. If it doesn't, you found out for free.</li>
+        </ul>
+        <p>The upstream prompt, ready to copy:</p>
+        <div class="code"><pre class="wrap">Read the Claude Code release notes published since [date of last check],
+and the latest best-practice posts from its makers.
+
+Answer one question: which part of what we currently do by hand — or
+built ourselves — does the tool now do natively?
+
+For each match: name what we should uninstall or simplify, and what
+replaces it. Ignore new features we have no use for. If nothing
+qualifies, say "nothing to uninstall this week."</pre></div>
         <div class="rules"><div class="rule"><b>What "environment engineering" means:</b> the continuous upkeep of everything below — the context files, the harness gates, the routines — driven by evidence, never by mood. The system only changes when an error exposes a gap, or a release makes a piece redundant.</div></div>
         <div class="insight"><span class="tag">INSIGHT 06</span>
           <p>You don't maintain the system. Its errors and their releases maintain it — you approve.
           <span class="sub">This is the rung where the ladder stops being your project and becomes your environment: something that tends itself, and gets a little harder to break every week.</span></p>
         </div>
+      </section>
+
+<section id="boris">
+        <div class="act">The tool in hand · Proof from the source</div>
+        <h2>Boris's workflow: how the toolmaker uses the tool</h2>
+        <p class="lead">January 2026: Boris publishes his setup — "surprisingly vanilla," barely customized. Two layers, mapping cleanly onto the ladder you just climbed:</p>
+        <div class="bcycle">
+          <div class="hd">Layer 1 · One session's cycle</div>
+          <div class="brow">
+            <div class="bstep"><div class="ic">📋</div><div class="t">Plan mode first</div><div class="d">Iterate the plan until solid, then auto-execute</div><span class="map">= Rung 4</span></div>
+            <div class="bstep"><div class="ic">🧠</div><div class="t">Strongest model</div><div class="d">Slower per step, faster on the total bill</div><span class="map">a stance</span></div>
+            <div class="bstep star"><div class="ic">⭐</div><div class="t">Self-verification</div><div class="d">"The single most important rule": AI runs its own tests, opens its own browser</div><span class="map">= Rung 4</span></div>
+            <div class="bstep"><div class="ic">✅</div><div class="t">Merge the PR</div><div class="d">The last gate before the next task</div><span class="map">= Rung 4</span></div>
+          </div>
+          <div class="breturn"><span class="arr">↩</span>Made a mistake? Write it into the shared CLAUDE.md — every agent carries the lesson next run. He calls it <b>&nbsp;compound engineering</b>&nbsp;<span style="color:var(--faint);font-family:var(--mono);font-size:10px">= Rung 6</span></div>
+        </div>
+        <div class="bpar">
+          <div class="hd">Layer 2 · Parallel dispatch — many cycles at once</div>
+          <div class="bpar-grid">
+            <div>
+              <div class="terms">
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">1</span></div><div class="ln">$ task-1/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">2</span></div><div class="ln">$ task-2/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">3</span></div><div class="ln">$ task-3/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">4</span></div><div class="ln">$ task-4/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">5</span></div><div class="ln">$ task-5/</div></div>
+              </div>
+              <div class="terms-cap">~5 terminals · one isolated checkout each</div>
+            </div>
+            <div class="dispatcher">
+              <div class="fig">🙋</div>
+              <div class="t">Human = dispatcher</div>
+              <div class="d">a notification rings; answer whichever Claude needs input</div>
+              <span class="prbadge">★ 20–30 merged PRs / day</span>
+            </div>
+            <div>
+              <div class="webs"><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div></div>
+              <div class="webs-cap" style="text-align:right">+ 5–10 web sessions</div>
+            </div>
+          </div>
+        </div>
+        <p>Nobody copied anybody. Teams that put AI to real work converge on the same four ideas: <b>align before acting · machine-verify everything · lessons become assets · humans stand at the gates.</b></p>
+        <div class="rules"><div class="rule"><b>His stack, our rungs:</b> shared CLAUDE.md = Rung 3 · plan-first + self-verification + review gates = Rung 4 · parallel dispatch + notifications = Rung 5 · mistakes written back into the shared file = Rung 6.</div></div>
+      </section>
+
+      <section id="cockpit">
+        <h2>The cockpit: everyday commands &amp; the status bar</h2>
+        <p class="lead">Two practical pieces before the big picture: the handful of slash-commands you'll actually type, and how to read the status bar at the bottom of every session.</p>
+        <h3>Commands worth knowing</h3>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Command</th><th>What it does</th><th>When you reach for it</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">/compact</td><td>Frees memory by summarising the conversation so far.</td><td>When context runs high. <b>House habit: before compacting, have the AI write its progress to a file first</b> — the summary is lossy; the file is not.</td></tr>
+            <tr><td class="mono">/clear</td><td>Starts a fresh conversation with empty context.</td><td>New task, no baggage — cleaner than compacting when nothing needs to survive.</td></tr>
+            <tr><td class="mono">/resume</td><td>Returns to an earlier conversation.</td><td>Picking up yesterday's thread instead of re-explaining it.</td></tr>
+            <tr><td class="mono">/doctor</td><td>Runs a health check on your setup — flags problems, offers fixes.</td><td>Anything feels off; or monthly, as hygiene.</td></tr>
+            <tr><td class="mono">/insights</td><td>Generates a report on how you've been working — patterns and friction points.</td><td>Feeds the weekly upstream pass: it shows where <em>your</em> setup rubs.</td></tr>
+            <tr><td class="mono">/usage</td><td>Shows how much of your usage allowance remains.</td><td>Before starting something big; when the status bar shows a low window.</td></tr>
+            <tr><td class="mono">/permissions</td><td>The allow / ask / deny control panel.</td><td>Building rung 4 — the action whitelist physically lives here.</td></tr>
+            <tr><td class="mono">/model</td><td>Switches model and reasoning-effort level.</td><td>Heavier reasoning for hard judgment; lighter for routine drafts.</td></tr>
+            <tr><td class="mono">/memory</td><td>Opens the memory and instruction files for editing.</td><td>Turning today's correction into a permanent line.</td></tr>
+            <tr><td class="mono">/init</td><td>Creates a starter CLAUDE.md for a new project.</td><td>Day one in any new folder — the rung-3 climb in one command.</td></tr>
+            <tr><td class="mono">/export</td><td>Exports the conversation as text.</td><td>Keeping a record of a decision-heavy session.</td></tr>
+          </tbody>
+        </table></div>
+        <h3>Reading the status bar</h3>
+        <p>Every session shows a one-line dashboard. Here is a real one from our team (ours is customised — yours may show a subset), decoded piece by piece:</p>
+        <div class="statbar"><span class="seg"><sup>1</sup>🏠 quality-engineer</span> <span class="dim2">|</span> <span class="seg"><sup>2</sup>⑂ purple-ruler-pages-V2</span> <span class="dim2">|</span> <span class="seg"><sup>3</sup>docs/qe-anchor-0805</span> <span class="dim2">|</span> <span class="seg"><sup>4</sup>Opus 5 high</span> <span class="dim2">|</span> <span class="seg"><sup>5</sup>ctx 81%</span> <span class="dim2">|</span> <span class="seg"><sup>6</sup>5h 3H54m→15:20 75%</span> <span class="dim2">|</span> <span class="seg"><sup>7</sup>7d 33H54m→21:00 15%</span> <span class="dim2">|</span> <span class="seg"><sup>8</sup>+Fable 29%</span> <span class="dim2">|</span> <span class="seg"><sup>9</sup>⌥ 67b6e710</span> <span class="dim2">|</span> <span class="seg"><sup>10</sup>MJ</span><br><span class="seg"><sup>11</sup>⏵⏵ auto mode on (shift+tab to cycle)</span> <span class="dim2">·</span> <span class="seg"><sup>12</sup>← 1 agent</span></div>
+        <div class="table-scroll"><table class="statkey">
+          <thead><tr><th>#</th><th>Field</th><th>Meaning</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>🏠 name</td><td>Which agent (work-lane) this session is — its identity.</td></tr>
+            <tr><td>2</td><td>⑂ repo</td><td>The project folder it works in.</td></tr>
+            <tr><td>3</td><td>branch</td><td>Its isolated line of work-in-progress — the worktree lane.</td></tr>
+            <tr><td>4</td><td>model · effort</td><td>Which AI model, at which reasoning depth.</td></tr>
+            <tr><td>5</td><td>ctx %</td><td>How full this session's memory is. <b>High ctx = have it write progress to a file now</b>, before compaction takes it.</td></tr>
+            <tr><td>6</td><td>5h window</td><td>The rolling 5-hour usage allowance: time used, when it resets, and <b>% remaining</b>.</td></tr>
+            <tr><td>7</td><td>7d window</td><td>The rolling 7-day allowance, same format. 15% left means: spend it on what matters.</td></tr>
+            <tr><td>8</td><td>+model %</td><td>Remaining share of an additional model's allowance (here: Fable).</td></tr>
+            <tr><td>9</td><td>⌥ commit</td><td>The exact code version the session currently stands on.</td></tr>
+            <tr><td>10</td><td>account</td><td>Who is signed in.</td></tr>
+            <tr><td>11</td><td>⏵⏵ mode</td><td>The permission mode — rung 4's dial: manual · accept-edits · plan · auto. Cycle with Shift+Tab.</td></tr>
+            <tr><td>12</td><td>← agents</td><td>Background helpers this session has running.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules"><div class="rule"><b>The two glances that matter daily:</b> <b>ctx</b> (5) tells you when to save progress before the session forgets; the <b>usage windows</b> (6·7) tell you whether to spend the strong model now or save it. Everything else is orientation.</div></div>
       </section>
 
       <section id="fourteen">
@@ -969,48 +1119,6 @@
         </div>
       </section>
 
-<section id="boris">
-        <div class="act">Closing · Proof from the source</div>
-        <h2>Boris's workflow: how the toolmaker uses the tool</h2>
-        <p class="lead">January 2026: Boris publishes his setup — "surprisingly vanilla," barely customized. Two layers, mapping cleanly onto the ladder you just climbed:</p>
-        <div class="bcycle">
-          <div class="hd">Layer 1 · One session's cycle</div>
-          <div class="brow">
-            <div class="bstep"><div class="ic">📋</div><div class="t">Plan mode first</div><div class="d">Iterate the plan until solid, then auto-execute</div><span class="map">= Rung 4</span></div>
-            <div class="bstep"><div class="ic">🧠</div><div class="t">Strongest model</div><div class="d">Slower per step, faster on the total bill</div><span class="map">a stance</span></div>
-            <div class="bstep star"><div class="ic">⭐</div><div class="t">Self-verification</div><div class="d">"The single most important rule": AI runs its own tests, opens its own browser</div><span class="map">= Rung 4</span></div>
-            <div class="bstep"><div class="ic">✅</div><div class="t">Merge the PR</div><div class="d">The last gate before the next task</div><span class="map">= Rung 4</span></div>
-          </div>
-          <div class="breturn"><span class="arr">↩</span>Made a mistake? Write it into the shared CLAUDE.md — every agent carries the lesson next run. He calls it <b>&nbsp;compound engineering</b>&nbsp;<span style="color:var(--faint);font-family:var(--mono);font-size:10px">= Rung 6</span></div>
-        </div>
-        <div class="bpar">
-          <div class="hd">Layer 2 · Parallel dispatch — many cycles at once</div>
-          <div class="bpar-grid">
-            <div>
-              <div class="terms">
-                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">1</span></div><div class="ln">$ task-1/</div></div>
-                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">2</span></div><div class="ln">$ task-2/</div></div>
-                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">3</span></div><div class="ln">$ task-3/</div></div>
-                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">4</span></div><div class="ln">$ task-4/</div></div>
-                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">5</span></div><div class="ln">$ task-5/</div></div>
-              </div>
-              <div class="terms-cap">~5 terminals · one isolated checkout each</div>
-            </div>
-            <div class="dispatcher">
-              <div class="fig">🙋</div>
-              <div class="t">Human = dispatcher</div>
-              <div class="d">a notification rings; answer whichever Claude needs input</div>
-              <span class="prbadge">★ 20–30 merged PRs / day</span>
-            </div>
-            <div>
-              <div class="webs"><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div></div>
-              <div class="webs-cap" style="text-align:right">+ 5–10 web sessions</div>
-            </div>
-          </div>
-        </div>
-        <p>Nobody copied anybody. Teams that put AI to real work converge on the same four ideas: <b>align before acting · machine-verify everything · lessons become assets · humans stand at the gates.</b></p>
-        <div class="rules"><div class="rule"><b>His stack, our rungs:</b> shared CLAUDE.md = Rung 3 · plan-first + self-verification + review gates = Rung 4 · parallel dispatch + notifications = Rung 5 · mistakes written back into the shared file = Rung 6.</div></div>
-      </section>
 
 
       <section id="lessons">
