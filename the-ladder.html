@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ladder · Six Rungs of Working with Claude Code · Purple Ruler Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Styled with the same tokens as assets/pr-design.css — self-demonstrating. */
+  :root {
+    --p900:#2c1a52; --p800:#3a2266; --p700:#4b2e83; --p600:#5a3a9e; --p500:#6b4ab8;
+    --p300:#a98fd8; --p100:#ece6f8; --p50:#f6f2fc;
+    --ink:#191324; --muted:#615c70; --faint:#8a8693;
+    --bg:#fbfafd; --card:#ffffff; --line:#e8e6ef; --line2:#efedf5;
+    --green:#1f9d62; --amber:#c2710a; --red:#cf2e25;
+    --radius:18px; --radius-sm:10px;
+    --shadow:0 1px 2px rgba(28,18,55,.05),0 22px 48px -28px rgba(44,26,82,.30);
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior:auto; }
+    *, *::before, *::after { animation:none !important; transition:none !important; }
+  }
+  body { background:var(--bg); color:var(--ink); font-family:var(--font);
+    letter-spacing:-.011em; -webkit-font-smoothing:antialiased; line-height:1.6; }
+  a { color:var(--p600); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  a:focus-visible { outline:2px solid var(--p500); outline-offset:2px; border-radius:4px; }
+  code { font-family:var(--mono); font-size:.86em; background:var(--p50); border:1px solid var(--line);
+    padding:1px 6px; border-radius:6px; color:var(--p700); white-space:nowrap; }
+
+  /* ---------- app shell ---------- */
+  .app { display:flex; min-height:100vh; }
+  .side { width:264px; flex:none; background:linear-gradient(185deg,var(--p700),var(--p900));
+    color:#fff; padding:22px 14px 18px; position:sticky; top:0; height:100vh; overflow-y:auto;
+    display:flex; flex-direction:column; scrollbar-width:thin; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:15.5px;
+    letter-spacing:-.02em; padding:4px 8px 16px; }
+  .brand .m { width:30px; height:30px; border-radius:8px; background:#fff; display:grid;
+    place-items:center; color:var(--p700); font-weight:800; font-size:15px; flex:none; }
+  .grp { font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:rgba(255,255,255,.48); padding:16px 10px 6px; }
+  .nav { display:flex; align-items:baseline; gap:10px; padding:6px 11px; border-radius:10px;
+    color:rgba(255,255,255,.74); font-weight:600; font-size:13px; transition:.13s; }
+  .nav:hover { background:rgba(255,255,255,.10); color:#fff; text-decoration:none; }
+  .nav.on { background:rgba(255,255,255,.17); color:#fff; font-weight:700;
+    box-shadow:inset 3px 0 0 var(--p300); }
+  .nav .n { font-family:var(--mono); font-size:10.5px; color:rgba(255,255,255,.45); width:20px; flex:none; }
+  .side-foot { margin-top:auto; padding:14px 10px 4px; border-top:1px solid rgba(255,255,255,.16);
+    font-size:11px; color:rgba(255,255,255,.55); line-height:1.5; }
+  .side-foot b { color:rgba(255,255,255,.85); }
+  .main { flex:1; min-width:0; }
+  .wrap { max-width:940px; margin:0 auto; padding:0 44px 120px; }
+  .topbar { display:none; }
+  @media (max-width: 920px) {
+    .side { display:none; }
+    .topbar { display:flex; position:sticky; top:0; z-index:20; align-items:center; gap:12px;
+      background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff; padding:12px 18px; }
+    .topbar .m { width:26px; height:26px; border-radius:7px; background:#fff; display:grid;
+      place-items:center; color:var(--p700); font-weight:800; font-size:13px; }
+    .topbar .t { font-weight:800; font-size:14px; }
+    .wrap { padding:0 18px 90px; }
+  }
+
+  /* ---------- hero ---------- */
+  .hero { padding:66px 0 44px; border-bottom:1px solid var(--line); position:relative; }
+  .eyebrow { font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(38px,5.4vw,58px); font-weight:800; letter-spacing:-.035em;
+    line-height:1.04; margin-bottom:18px; }
+  .hero h1 .dim { color:var(--p300); }
+  .hero .thesis { font-size:18px; color:var(--muted); max-width:640px; margin-bottom:30px; }
+  .hero .thesis b { color:var(--ink); }
+  .loopmark { position:absolute; right:0; top:60px; width:130px; height:130px; }
+  @media (max-width:720px){ .loopmark { display:none; } }
+  .loopmark .ring { transform-origin:50% 50%; animation:spin 28s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .threeq { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  @media (max-width:720px){ .threeq { grid-template-columns:1fr; } }
+  .threeq .q { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px 14px; box-shadow:var(--shadow); }
+  .threeq .q .k { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.14em;
+    color:var(--p500); text-transform:uppercase; margin-bottom:8px; }
+  .threeq .q p { font-size:14px; font-weight:600; line-height:1.5; margin:0; }
+
+  /* ---------- sections ---------- */
+  section { padding-top:60px; }
+  .act { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--p500); display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .act::after { content:''; height:1px; flex:1; background:var(--line); }
+  h2 { font-size:clamp(25px,3.2vw,32px); font-weight:800; letter-spacing:-.028em;
+    line-height:1.15; margin-bottom:14px; }
+  h3 { font-size:18px; font-weight:700; letter-spacing:-.015em; margin:30px 0 10px; }
+  p { margin-bottom:12px; max-width:72ch; }
+  .lead { font-size:16.5px; color:var(--muted); }
+  .lead b { color:var(--ink); }
+  .cap { font-size:12.5px; color:var(--faint); margin-top:-4px; }
+
+  .insight { display:flex; gap:16px; background:var(--p50); border:1px solid var(--p100);
+    border-radius:var(--radius); padding:18px 20px; margin:24px 0; max-width:780px; }
+  .insight .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:#fff; background:var(--p700); border-radius:7px; padding:5px 9px; height:fit-content;
+    flex:none; margin-top:2px; }
+  .insight p { margin:0; font-size:16px; font-weight:700; letter-spacing:-.015em; line-height:1.5; color:var(--p900); }
+  .insight p .sub { display:block; font-weight:500; font-size:13px; color:var(--muted); margin-top:5px; }
+
+  .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); background:var(--card); }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
+  th { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--p600); text-align:left; padding:10px 14px;
+    background:var(--p50); border-bottom:2px solid var(--p100); white-space:nowrap; }
+  td { padding:10px 14px; border-bottom:1px solid var(--line2); vertical-align:top; line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  td.strong { font-weight:700; }
+  .mono { font-family:var(--mono); font-size:.92em; }
+
+  /* ===== SDLC scars strip ===== */
+  .sdlc { display:flex; flex-wrap:wrap; margin:22px 0 4px; }
+  .stage { flex:1 1 118px; min-width:116px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:11px 10px 9px; position:relative; margin-right:17px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .stage:last-child { margin-right:0; }
+  .stage::after { content:'→'; position:absolute; right:-15px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:13px; }
+  .stage:last-child::after { content:''; }
+  .stage .k { font-family:var(--mono); font-size:9.5px; font-weight:700; color:var(--p500);
+    letter-spacing:.08em; margin-bottom:4px; text-transform:uppercase; }
+  .stage .t { font-size:13.5px; font-weight:800; line-height:1.25; margin-bottom:7px; }
+  .stage .scar { font-size:11px; line-height:1.4; color:var(--red); background:rgba(207,46,37,.05);
+    border:1px solid rgba(207,46,37,.18); border-radius:7px; padding:5px 8px; }
+  .stage .scar b { font-family:var(--mono); font-size:9px; letter-spacing:.08em; display:block; color:var(--red); opacity:.75; }
+
+  /* ===== era timeline ===== */
+  .eras { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:22px 0 6px; position:relative; }
+  @media (max-width:840px){ .eras { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .eras { grid-template-columns:1fr; } }
+  .era { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 16px 14px; box-shadow:var(--shadow); }
+  .era.now { border:1.5px solid var(--p500); background:var(--p50); }
+  .era .yr { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    color:var(--faint); text-transform:uppercase; margin-bottom:6px; }
+  .era .t { font-weight:800; font-size:15.5px; margin-bottom:6px; }
+  .era .d { font-size:12px; color:var(--muted); line-height:1.45; margin-bottom:12px; }
+  .era .loop { font-family:var(--mono); font-size:10px; color:var(--faint); letter-spacing:.06em; }
+  .era .loop b { display:block; font-size:19px; letter-spacing:-.02em; color:var(--p700); margin-top:2px; }
+  .era.now .loop b { color:var(--green); }
+
+  /* ===== vocab cards ===== */
+  .vocab { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:22px 0 6px; }
+  @media (max-width:840px){ .vocab { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:560px){ .vocab { grid-template-columns:1fr; } }
+  .vcard { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:13px 15px 11px; box-shadow:var(--shadow); }
+  .vcard .vterm { display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+  .vcard .vterm .w { font-family:var(--mono); font-weight:700; font-size:14px; color:var(--ink); }
+  .vcard .vterm .st { font-family:var(--mono); font-size:9px; font-weight:700; color:#fff;
+    background:var(--p500); border-radius:5px; padding:2px 6px; margin-left:auto; flex:none; }
+  .vcard .def { font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:7px; }
+  .vcard .here { font-size:11.5px; line-height:1.45; color:var(--p700); background:var(--p50);
+    border:1px solid var(--p100); border-radius:7px; padding:5px 9px; font-weight:600; }
+  .vcard .here b { font-family:var(--mono); font-size:9px; letter-spacing:.08em; display:block;
+    color:var(--p500); margin-bottom:1px; }
+
+  /* ===== test pyramid & shifts ===== */
+  .pyrcap { text-align:center; font-family:var(--mono); font-size:10px; color:var(--faint);
+    letter-spacing:.06em; margin:12px 0 0; }
+  .pyr { display:flex; flex-direction:column; align-items:center; gap:7px; margin:10px 0 0; }
+  .pyr .lv { border-radius:9px; padding:9px 14px; text-align:center; font-size:12.5px;
+    border:1px solid var(--line); background:var(--card); min-width:270px; box-shadow:var(--shadow); }
+  .pyr .lv b { font-size:13px; }
+  .pyr .lv span { display:block; font-family:var(--mono); font-size:10px; color:var(--p600); margin-top:3px; }
+  .pyr .lv.l2 { background:var(--p50); border-color:var(--p100); }
+  .pyr .lv.l3 { background:var(--p100); border-color:var(--p300); }
+  .pyr .lv.l4 { background:rgba(31,157,98,.07); border-color:rgba(31,157,98,.35); }
+  .pyr .lv.l4 span { color:var(--green); }
+  .shifts { display:flex; flex-direction:column; gap:10px; margin:20px 0; max-width:820px; }
+  .shift { display:flex; gap:14px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:14px 16px 12px; box-shadow:var(--shadow); }
+  .shift .n { font-family:var(--mono); font-weight:700; font-size:21px; color:var(--p300); flex:none; width:30px; line-height:1.2; }
+  .shift .t { font-weight:800; font-size:14.5px; margin-bottom:3px; }
+  .shift .d { font-size:13px; color:var(--muted); line-height:1.5; }
+  .shift .d b { color:var(--ink); }
+
+  /* ===== persona cards ===== */
+  .personas { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0; }
+  @media (max-width:720px){ .personas { grid-template-columns:1fr; } }
+  .persona { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 22px 18px; box-shadow:var(--shadow); }
+  .persona .who { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+  .persona .av { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,var(--p600),var(--p900));
+    color:#fff; display:grid; place-items:center; font-weight:800; font-size:15px; flex:none; }
+  .persona .who .nm { font-weight:800; font-size:16.5px; line-height:1.2; }
+  .persona .who .rl { font-size:12px; color:var(--muted); }
+  .bignum { display:flex; align-items:baseline; gap:8px; margin-bottom:10px; }
+  .bignum .v { font-family:var(--mono); font-weight:700; font-size:32px; color:var(--p700); letter-spacing:-.03em; }
+  .bignum .l { font-size:12.5px; color:var(--muted); line-height:1.3; }
+  .persona .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:12px; }
+  .chip { font-family:var(--mono); font-size:10.5px; font-weight:600; color:var(--p700);
+    background:var(--p50); border:1px solid var(--p100); border-radius:999px; padding:4px 10px; }
+  .chip.g { color:var(--green); background:rgba(31,157,98,.07); border-color:rgba(31,157,98,.25); }
+
+  /* ===== collapse stats ===== */
+  .collapse { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+  @media (max-width:760px){ .collapse { grid-template-columns:1fr; } }
+  .col-c { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px 14px; box-shadow:var(--shadow); }
+  .col-c .t { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:10px; }
+  .col-c .flow { display:flex; align-items:center; gap:9px; font-weight:800; font-size:14.5px; flex-wrap:wrap; }
+  .col-c .flow .old { color:var(--faint); text-decoration:line-through; text-decoration-thickness:1.5px; }
+  .col-c .flow .arr { color:var(--p300); }
+  .col-c .flow .new { color:var(--green); }
+  .col-c .d { font-size:12px; color:var(--muted); line-height:1.45; margin-top:8px; }
+
+  /* ===== absorb flow (board composition: old pipeline → absorbers → gates) ===== */
+  .absorb2 { display:grid; grid-template-columns:215px 26px 1fr; gap:0; margin:24px 0 6px; align-items:stretch; }
+  @media (max-width:760px){ .absorb2 { grid-template-columns:1fr; } .absorb2 .flowcol { display:none; } }
+  .oldstack { display:flex; flex-direction:column; gap:7px; }
+  .oldstack .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--faint); margin-bottom:2px; }
+  .oldchip { background:var(--line2); border:1px solid var(--line); border-radius:8px; padding:7px 10px;
+    font-size:12px; font-weight:600; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .oldchip .n { font-family:var(--mono); font-size:9.5px; color:var(--faint); flex:none; }
+  .oldchip .dot { width:9px; height:9px; border-radius:50%; flex:none; margin-left:auto; }
+  .dot.ctx { background:var(--amber); } .dot.hrn { background:var(--p500); } .dot.keep { background:var(--green); }
+  .flowcol { display:flex; align-items:center; justify-content:center; color:var(--p300); font-weight:700; }
+  .sinks { display:flex; flex-direction:column; gap:12px; }
+  .abox { border-radius:var(--radius); padding:14px 18px 12px; border:1px solid; }
+  .abox .t { font-weight:800; font-size:14.5px; display:flex; align-items:center; gap:8px; }
+  .abox .t i { width:10px; height:10px; border-radius:50%; display:inline-block; }
+  .abox .s { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase; margin:2px 0 8px; }
+  .abox.ctx { background:rgba(194,113,10,.05); border-color:rgba(194,113,10,.3); }
+  .abox.ctx .t, .abox.ctx .s { color:var(--amber); }
+  .abox.hrn { background:var(--p50); border-color:var(--p300); }
+  .abox.hrn .t, .abox.hrn .s { color:var(--p700); }
+  .abox .items { display:flex; flex-wrap:wrap; gap:6px; }
+  .aitem { background:var(--card); border:1px solid var(--line); border-radius:8px;
+    padding:5px 10px; font-size:11.5px; font-weight:600; color:var(--ink); }
+  .keepbar { background:var(--card); border:1.5px solid var(--green); border-radius:var(--radius);
+    padding:14px 18px 10px; box-shadow:var(--shadow); }
+  .keepbar .t { font-weight:800; font-size:14.5px; color:var(--green); display:flex; align-items:center; gap:8px; }
+  .keepbar .t i { width:10px; height:10px; border-radius:50%; background:var(--green); display:inline-block; }
+  .keepbar .s { font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--green); margin:2px 0 8px; }
+  .keepbar .items { display:flex; flex-wrap:wrap; gap:7px; }
+  .keepbar .aitem { border-color:rgba(31,157,98,.35); background:rgba(31,157,98,.05); font-weight:700; }
+
+  /* ===== unchanged trio ===== */
+  .trio { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+  @media (max-width:760px){ .trio { grid-template-columns:1fr; } }
+  .trio .c { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 18px 14px; box-shadow:var(--shadow); }
+  .trio .c .ic { font-size:19px; margin-bottom:8px; }
+  .trio .c .t { font-weight:800; font-size:14.5px; margin-bottom:5px; }
+  .trio .c .d { font-size:12.5px; color:var(--muted); line-height:1.5; }
+
+  /* ===== lanes ===== */
+  .lanes { margin:22px 0 8px; }
+  .lane { display:flex; align-items:center; flex-wrap:wrap; background:var(--card);
+    border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px 8px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .lane .lt { flex:0 0 100%; margin-bottom:10px; display:flex; align-items:baseline; gap:10px; }
+  .lane .lt .nm { font-weight:800; font-size:15px; }
+  .lane .lt .ds { font-family:var(--mono); font-size:9.5px; color:var(--muted); letter-spacing:.05em; }
+  .stop { position:relative; background:var(--p50); border:1px solid var(--p100); border-radius:9px;
+    padding:7px 10px; font-size:12px; font-weight:600; margin-right:20px; margin-bottom:8px; }
+  .stop::after { content:'→'; position:absolute; right:-17px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:13px; }
+  .stop:last-child { margin-right:0; }
+  .stop:last-child::after { content:''; }
+  .stop .sub { display:block; font-size:10px; font-family:var(--mono); color:var(--muted); font-weight:500; }
+  .stop.live { background:rgba(31,157,98,.08); border-color:rgba(31,157,98,.35); color:var(--green); }
+  .stop.inert { background:var(--line2); border-color:var(--line); color:var(--faint); }
+  .stop.human { background:#fff; border:1.5px solid var(--p500); color:var(--p900); }
+
+  /* ===== onion ===== */
+  .onion-wrap { display:grid; grid-template-columns:minmax(300px,430px) 1fr; gap:26px; align-items:center; margin:20px 0; }
+  @media (max-width:800px){ .onion-wrap { grid-template-columns:1fr; } }
+  .onion { border-radius:var(--radius); padding:14px; border:1.5px dashed var(--p300); background:var(--p50); }
+  .onion .lbl { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--p600); padding:2px 4px 8px; }
+  .onion .o2 { border-radius:14px; padding:12px; border:1.5px dashed var(--p500); background:#f1eafb; }
+  .onion .o3 { border-radius:12px; padding:12px; border:1.5px solid var(--p500); background:var(--p100); }
+  .onion .o4 { border-radius:10px; padding:14px; border:1.5px solid var(--p700); background:#fff; text-align:center; }
+  .onion .agent { display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,var(--p600),var(--p900));
+    color:#fff; font-weight:800; border-radius:10px; padding:10px 18px; font-size:14px; }
+  .onion .o4 .d { font-size:11px; color:var(--muted); margin-top:8px; }
+
+  /* ===== anatomy + pipeline ===== */
+  .anatomy { display:grid; grid-template-columns:340px 1fr; gap:26px; align-items:center; margin:20px 0; }
+  @media (max-width:760px){ .anatomy { grid-template-columns:1fr; } }
+  .openloop { background:var(--card); border:1px dashed var(--line); border-radius:var(--radius); padding:18px 20px; }
+  .openloop .t { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; margin-bottom:10px; color:var(--red); }
+  .openloop .row { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; flex-wrap:wrap; }
+  .openloop .row .gap { color:var(--red); font-family:var(--mono); font-size:12px; }
+  .openloop .d { font-size:12.5px; color:var(--muted); margin-top:8px; }
+  .pipeline { display:flex; align-items:stretch; margin:24px 0 6px; flex-wrap:wrap; }
+  .pipe-step { flex:1 1 128px; min-width:126px; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius-sm); padding:12px 12px 10px; position:relative; margin-right:26px; margin-bottom:14px; }
+  .pipe-step:last-child { margin-right:0; }
+  .pipe-step::after { content:'→'; position:absolute; right:-21px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:15px; }
+  .pipe-step:last-child::after { content:''; }
+  .pipe-step.meta { border-style:dashed; border-color:var(--p300); background:var(--p50); }
+  .pipe-step .k { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p500);
+    letter-spacing:.1em; margin-bottom:4px; }
+  .pipe-step .t { font-size:13px; font-weight:700; line-height:1.3; margin-bottom:4px; }
+  .pipe-step .e { font-size:11px; color:var(--muted); line-height:1.35; }
+
+  /* ===== loop cards ===== */
+  .loopcard { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--p500);
+    border-radius:var(--radius-sm); padding:18px 22px 6px; margin:18px 0; box-shadow:var(--shadow); }
+  .loopcard .head { display:flex; align-items:baseline; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+  .loopcard .num { font-family:var(--mono); font-weight:700; font-size:13px; color:#fff;
+    background:var(--p700); border-radius:8px; padding:4px 10px; }
+  .loopcard .head h3 { margin:0; font-size:19px; }
+  .loopcard .exit { font-family:var(--mono); font-size:11px; color:var(--green); font-weight:600;
+    background:rgba(31,157,98,.08); border:1px solid rgba(31,157,98,.25); border-radius:7px; padding:3px 9px; }
+  .loopcard p { font-size:14px; }
+  .loopcard .was { font-family:var(--mono); font-size:10.5px; color:var(--faint); margin-bottom:8px; }
+  .rules { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 14px; }
+  .rule { background:var(--p50); border:1px solid var(--p100); border-radius:9px; padding:8px 12px;
+    font-size:12.5px; font-weight:600; color:var(--p900); max-width:340px; line-height:1.4; }
+  .rule b { color:var(--p700); }
+  .rule.red { background:rgba(207,46,37,.05); border-color:rgba(207,46,37,.25); }
+  .rule.red b { color:var(--red); }
+
+  /* ===== design radial ===== */
+  .radial { display:grid; grid-template-columns:minmax(220px,300px) 1fr; gap:0; align-items:center; margin:22px 0 8px; }
+  @media (max-width:720px){ .radial { grid-template-columns:1fr; } }
+  .src { background:linear-gradient(135deg,var(--p700),var(--p900)); color:#fff; border-radius:var(--radius);
+    padding:20px 22px; box-shadow:var(--shadow); position:relative; z-index:2; }
+  .src .f { font-family:var(--mono); font-weight:700; font-size:14px; margin-bottom:6px; }
+  .src .d { font-size:12px; color:var(--p300); line-height:1.5; }
+  .rooms { display:flex; flex-direction:column; gap:10px; padding-left:34px; }
+  @media (max-width:720px){ .rooms { padding-left:0; margin-top:14px; } }
+  .room { position:relative; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:10px 14px; font-size:13px; font-weight:600; box-shadow:var(--shadow); }
+  .room .im { font-family:var(--mono); font-size:9.5px; color:var(--amber); display:block; font-weight:600; }
+  .room::before { content:''; position:absolute; left:-34px; top:50%; width:34px; height:1.5px; background:var(--p300); }
+  @media (max-width:720px){ .room::before { display:none; } }
+  .swatches { display:flex; border-radius:9px; overflow:hidden; margin:18px 0 4px; max-width:640px; border:1px solid var(--line); }
+  .sw { flex:1; height:44px; position:relative; }
+  .sw span { position:absolute; bottom:3px; left:50%; transform:translateX(-50%);
+    font-family:var(--mono); font-size:8.5px; color:#fff; opacity:.85; }
+  .sw.light span { color:var(--p900); }
+  .status-sw { display:flex; gap:8px; align-items:center; margin:8px 0 14px; flex-wrap:wrap; }
+  .ssw { display:flex; align-items:center; gap:6px; font-family:var(--mono); font-size:10.5px; color:var(--muted); }
+  .ssw i { width:14px; height:14px; border-radius:4px; display:inline-block; }
+
+  /* ===== timeline ===== */
+  .tl { border-left:2.5px solid #d5c8ee; margin:20px 0 20px 8px; padding-left:24px; max-width:720px; }
+  .tl-i { position:relative; padding-bottom:18px; }
+  .tl-i:last-child { padding-bottom:4px; }
+  .tl-i::before { content:''; position:absolute; left:-31.5px; top:5px; width:12px; height:12px;
+    border-radius:50%; background:var(--p500); border:2.5px solid var(--bg); }
+  .tl-i.bad::before { background:var(--red); }
+  .tl-i.good::before { background:var(--green); }
+  .tl-i .h { font-weight:800; font-size:14.5px; }
+  .tl-i .h .tag2 { font-family:var(--mono); font-size:10px; font-weight:600; color:var(--muted);
+    background:var(--line2); padding:2px 7px; border-radius:6px; margin-left:8px; }
+  .tl-i .b { font-size:13.5px; color:var(--muted); line-height:1.5; max-width:64ch; }
+  .tl-i .b b { color:var(--ink); }
+
+  .golden { background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff;
+    border-radius:var(--radius); padding:28px 30px; margin:26px 0; box-shadow:var(--shadow); max-width:800px; }
+  .golden .q { font-size:18.5px; font-weight:700; letter-spacing:-.015em; line-height:1.55; }
+  .golden .q em { color:var(--p300); font-style:normal; }
+  .golden .orig { margin-top:14px; padding-top:12px; border-top:1px solid rgba(255,255,255,.18);
+    font-size:12px; color:rgba(255,255,255,.66); line-height:1.7; }
+  blockquote.prop { border-left:4px solid var(--p500); background:var(--p50); border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+    padding:16px 20px; margin:20px 0; max-width:780px; }
+  blockquote.prop p { margin-bottom:8px; font-weight:600; color:var(--p900); font-size:15px; }
+  blockquote.prop p:last-child { margin-bottom:0; }
+  .warn { display:flex; gap:14px; background:rgba(207,46,37,.05); border:1px solid rgba(207,46,37,.28);
+    border-radius:var(--radius-sm); padding:14px 16px; margin:16px 0; max-width:780px; }
+  .warn .ic { color:var(--red); font-weight:800; font-size:16px; flex:none; }
+  .warn p { margin:0; font-size:13.5px; }
+
+  /* ===== dual loop ===== */
+  .dual { display:grid; grid-template-columns:1fr 200px 1fr; gap:16px; margin:24px 0; align-items:stretch; }
+  @media (max-width:840px){ .dual { grid-template-columns:1fr; } }
+  .loop-panel { border-radius:var(--radius); padding:18px 20px 14px; border:1px solid; }
+  .loop-panel.bad { background:rgba(207,46,37,.045); border-color:rgba(207,46,37,.25); }
+  .loop-panel.good { background:rgba(31,157,98,.05); border-color:rgba(31,157,98,.3); }
+  .loop-panel .t { font-weight:800; font-size:16px; }
+  .loop-panel.bad .t { color:var(--red); }
+  .loop-panel.good .t { color:var(--green); }
+  .loop-panel .s { font-size:12px; color:var(--muted); margin-bottom:12px; }
+  .loop-panel ol { margin-left:18px; font-size:13.5px; }
+  .loop-panel ol li { margin-bottom:6px; line-height:1.45; }
+  .loop-panel .cycle { font-family:var(--mono); font-size:11px; margin-top:10px; font-weight:600; }
+  .loop-panel.bad .cycle { color:var(--red); }
+  .loop-panel.good .cycle { color:var(--green); }
+  .switch { display:flex; flex-direction:column; justify-content:center; text-align:center;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:16px 14px; box-shadow:var(--shadow); }
+  .switch .q { font-weight:800; font-size:14px; line-height:1.35; margin-bottom:10px; }
+  .switch .opt { font-family:var(--mono); font-size:10.5px; line-height:1.5; margin-bottom:8px; }
+  .switch .opt.l { color:var(--red); } .switch .opt.r { color:var(--green); }
+  .switch .note { font-size:11px; color:var(--faint); line-height:1.45; }
+
+  /* ===== quadrants ===== */
+  .quad { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:22px 0; }
+  @media (max-width:720px){ .quad { grid-template-columns:1fr; } }
+  .quad .cell { background:var(--card); border:1px solid var(--line); border-top:4px solid var(--p500);
+    border-radius:var(--radius-sm); padding:16px 18px 10px; box-shadow:var(--shadow); }
+  .quad .cell.a { border-top-color:var(--amber); }
+  .quad .cell.c { border-top-color:var(--faint); }
+  .quad .cell.d { border-top-color:var(--red); }
+  .quad .cell .t { font-weight:800; font-size:15px; }
+  .quad .cell .s { font-family:var(--mono); font-size:10px; color:var(--muted); letter-spacing:.06em; margin-bottom:10px; text-transform:uppercase; }
+  .quad .cell ul { margin-left:16px; font-size:13px; }
+  .quad .cell ul li { margin-bottom:6px; line-height:1.45; }
+  .quad-core { text-align:center; margin:0 0 2px; }
+  .quad-core span { display:inline-block; background:var(--p700); color:#fff; font-weight:700;
+    font-size:13.5px; border-radius:999px; padding:9px 22px; box-shadow:var(--shadow); }
+
+  /* ===== boris two-layer (board composition) ===== */
+  .bcycle { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px 14px; margin:20px 0 14px; box-shadow:var(--shadow); }
+  .bcycle .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:12px; }
+  .brow { display:flex; flex-wrap:wrap; }
+  .bstep { flex:1 1 138px; min-width:134px; background:var(--p50); border:1px solid var(--p100);
+    border-radius:var(--radius-sm); padding:12px 12px 10px; position:relative; margin-right:21px; margin-bottom:10px; }
+  .bstep:last-child { margin-right:0; }
+  .bstep::after { content:'→'; position:absolute; right:-18px; top:50%; transform:translateY(-50%);
+    color:var(--p300); font-weight:700; font-size:14px; }
+  .bstep:last-child::after { content:''; }
+  .bstep .ic { font-size:18px; margin-bottom:5px; }
+  .bstep .t { font-size:13px; font-weight:800; line-height:1.3; margin-bottom:4px; }
+  .bstep .d { font-size:11px; color:var(--muted); line-height:1.4; margin-bottom:7px; }
+  .bstep .map { font-family:var(--mono); font-size:9px; font-weight:700; color:var(--p600);
+    background:#fff; border:1px solid var(--p100); border-radius:6px; padding:2px 7px; display:inline-block; }
+  .bstep.star { border:1.5px solid var(--amber); background:rgba(194,113,10,.05); }
+  .bstep.star .t { color:var(--amber); }
+  .breturn { display:flex; align-items:center; gap:10px; border:1.5px dashed var(--amber);
+    border-radius:var(--radius-sm); padding:9px 14px; font-size:12px; font-weight:600; color:var(--amber);
+    background:rgba(194,113,10,.04); }
+  .breturn .arr { font-size:15px; font-weight:800; }
+  .bpar { background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:18px 20px 14px; margin:0 0 8px; box-shadow:var(--shadow); }
+  .bpar .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:12px; }
+  .bpar-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; }
+  @media (max-width:760px){ .bpar-grid { grid-template-columns:1fr; } }
+  .terms { display:flex; flex-wrap:wrap; gap:7px; }
+  .term { background:#221737; border-radius:8px; padding:8px 10px 7px; width:74px; }
+  .term .bar { display:flex; gap:3px; margin-bottom:6px; }
+  .term .bar i { width:5px; height:5px; border-radius:50%; display:inline-block; }
+  .term .bar i:nth-child(1){ background:#ff5f57; } .term .bar i:nth-child(2){ background:#febc2e; } .term .bar i:nth-child(3){ background:#28c840; }
+  .term .bar .num { margin-left:auto; font-family:var(--mono); font-size:8.5px; color:#a98fd8; }
+  .term .ln { font-family:var(--mono); font-size:9px; color:#c9b8ec; }
+  .terms-cap, .webs-cap { font-family:var(--mono); font-size:9.5px; color:var(--faint); margin-top:7px; }
+  .dispatcher { text-align:center; }
+  .dispatcher .fig { width:52px; height:52px; margin:0 auto 6px; border-radius:50%;
+    background:linear-gradient(135deg,var(--p600),var(--p900)); color:#fff; display:grid; place-items:center; font-size:22px; }
+  .dispatcher .t { font-weight:800; font-size:13px; }
+  .dispatcher .d { font-size:10.5px; color:var(--muted); line-height:1.4; max-width:150px; margin:2px auto 8px; }
+  .prbadge { display:inline-block; font-family:var(--mono); font-size:10.5px; font-weight:700; color:#fff;
+    background:var(--amber); border-radius:999px; padding:5px 12px; }
+  .webs { display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+  @media (max-width:760px){ .webs { justify-content:flex-start; } }
+  .web { width:56px; height:38px; background:#fff; border:1px solid var(--p100); border-radius:7px;
+    box-shadow:var(--shadow); position:relative; }
+  .web::before { content:''; position:absolute; top:5px; left:6px; right:6px; height:4px; border-radius:2px; background:var(--p100); }
+  .web::after { content:''; position:absolute; top:13px; left:6px; width:60%; height:3px; border-radius:2px; background:var(--line2); }
+
+  /* ===== team topology ===== */
+  .topo { margin:22px 0 10px; }
+  .trow { display:flex; justify-content:center; }
+  .tnode { background:var(--card); border:1.5px solid var(--p500); border-radius:var(--radius);
+    padding:13px 22px; box-shadow:var(--shadow); text-align:center; max-width:640px; }
+  .tnode .who { font-weight:800; font-size:15px; }
+  .tnode .d { font-size:12px; color:var(--muted); line-height:1.5; margin-top:3px; }
+  .tnode .d b { color:var(--red); }
+  .tnode.mj { background:linear-gradient(135deg,var(--p700),var(--p900)); border-color:var(--p700); }
+  .tnode.mj .who { color:#fff; } .tnode.mj .d { color:var(--p300); }
+  .tlink { position:relative; display:flex; flex-direction:column; align-items:center; gap:5px; padding:14px 0; }
+  .tlink::before { content:''; position:absolute; top:0; bottom:0; left:50%; width:2.5px;
+    transform:translateX(-50%); background:var(--p500); }
+  .tlink.dashed::before { background:repeating-linear-gradient(180deg,var(--p300) 0 5px,transparent 5px 10px); }
+  .tlink .lab { position:relative; z-index:1; background:var(--bg); border:1px solid var(--p100);
+    border-radius:999px; padding:4px 12px; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.08em; color:var(--p600); text-transform:uppercase; text-align:center; max-width:92%; }
+  .tlink .lab.soft { color:var(--muted); text-transform:none; letter-spacing:0; font-family:var(--font);
+    font-weight:600; font-size:11px; }
+  .mesh { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; }
+  .mesh .ag { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:9px 13px; font-size:12.5px; font-weight:700; box-shadow:var(--shadow); text-align:center; }
+  .mesh .ag .on { display:block; font-family:var(--mono); font-size:8.5px; font-weight:600;
+    color:var(--amber); letter-spacing:.06em; text-transform:uppercase; margin-top:2px; }
+  .mesh .mm { color:var(--p500); font-weight:800; font-size:15px; }
+  .meshlab { text-align:center; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.08em; color:var(--p600); text-transform:uppercase; margin:8px 0 0; }
+  .artifact { margin-top:16px; background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff;
+    border-radius:var(--radius); padding:14px 20px 12px; box-shadow:var(--shadow); text-align:center; }
+  .artifact .t { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--p300); margin-bottom:6px; }
+  .artifact .items { font-size:13px; font-weight:700; }
+  .artifact .d { font-size:11px; color:var(--p300); margin-top:4px; }
+
+  /* ===== stack diagram ===== */
+  .stackwrap { display:grid; grid-template-columns:1fr 212px; gap:22px; align-items:center; margin:22px 0; }
+  @media (max-width:760px){ .stackwrap { grid-template-columns:1fr; } }
+  .stk { display:flex; flex-direction:column; gap:9px; }
+  .slayer { border-radius:var(--radius-sm); padding:13px 18px; border:1.5px solid; }
+  .slayer .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:2px; }
+  .slayer .t { font-weight:800; font-size:15px; }
+  .slayer .d { font-size:11.5px; margin-top:2px; line-height:1.45; }
+  .slayer.loop { border-style:dashed; border-color:var(--p300); background:var(--p50); }
+  .slayer.loop .k, .slayer.loop .d { color:var(--p600); }
+  .slayer.harn { border-color:var(--p500); background:var(--p100); }
+  .slayer.harn .k, .slayer.harn .d { color:var(--p700); }
+  .slayer.ctx { border-color:var(--p900); background:linear-gradient(135deg,var(--p700),var(--p900)); color:#fff; }
+  .slayer.ctx .k, .slayer.ctx .d { color:var(--p300); }
+  .po { text-align:center; background:var(--card); border:1.5px solid var(--p500); border-radius:var(--radius); padding:16px 12px; box-shadow:var(--shadow); }
+  .po .fig { width:50px; height:50px; margin:0 auto 6px; border-radius:50%; background:linear-gradient(135deg,var(--p600),var(--p900)); color:#fff; display:grid; place-items:center; font-size:21px; }
+  .po .t { font-weight:800; font-size:13.5px; margin-bottom:8px; }
+  .po .chips { display:flex; flex-direction:column; gap:5px; }
+  .po .chip2 { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p700); background:var(--p50); border:1px solid var(--p100); border-radius:999px; padding:4px 8px; }
+
+  /* ===== guard gallery ===== */
+  .gpair { display:grid; grid-template-columns:1fr 1fr; border:1px solid var(--line); border-radius:var(--radius-sm); overflow:hidden; margin-bottom:12px; box-shadow:var(--shadow); }
+  @media (max-width:720px){ .gpair { grid-template-columns:1fr; } }
+  .gpair .half { padding:14px 16px 12px; }
+  .gpair .half.fail { background:rgba(207,46,37,.05); border-right:1px solid var(--line); }
+  @media (max-width:720px){ .gpair .half.fail { border-right:none; border-bottom:1px solid var(--line); } }
+  .gpair .half.mach { background:var(--p50); }
+  .gpair .hd { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-bottom:5px; }
+  .gpair .fail .hd { color:var(--red); } .gpair .mach .hd { color:var(--p600); }
+  .gpair .tt { font-weight:800; font-size:14px; margin-bottom:4px; }
+  .gpair p { font-size:12.5px; color:var(--muted); margin:0; line-height:1.5; }
+  .gpair p b { color:var(--ink); }
+  .gpair .res { display:inline-block; margin-top:8px; font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.08em; color:var(--green); background:rgba(31,157,98,.08); border:1px solid rgba(31,157,98,.25); border-radius:6px; padding:2px 7px; }
+
+  /* ===== context shelves ===== */
+  .shelf { background:var(--card); border:1px solid var(--line); border-left:4px solid var(--amber); border-radius:var(--radius-sm); padding:15px 18px 12px; margin:12px 0; box-shadow:var(--shadow); }
+  .shelf .tt { font-weight:800; font-size:15px; }
+  .shelf .tt .mono2 { font-family:var(--mono); font-size:10.5px; color:var(--amber); font-weight:600; margin-left:6px; }
+  .shelf p { font-size:13px; color:var(--muted); margin:5px 0 0; max-width:none; }
+  .shelf p b { color:var(--ink); }
+
+  /* ===== letter ===== */
+  .letter { position:relative; background:#221737; border-radius:var(--radius); padding:22px 24px; margin:20px 0; box-shadow:var(--shadow); }
+  .letter pre { font-family:var(--mono); font-size:11.5px; line-height:1.7; color:#d9cdf3; white-space:pre-wrap; margin:0; }
+  .code { background:#17122a; border:1px solid var(--line); border-radius:12px; padding:16px 18px; margin:14px 0; overflow-x:auto; }
+  .code pre { font-family:var(--mono); font-size:12px; line-height:1.7; color:#d9cdf3; white-space:pre; margin:0; }
+  .code pre.wrap { white-space:pre-wrap; }
+  .placeholder { background:#3d3208; border:1px dashed #b98d1e; color:#f5d97b; border-radius:6px; padding:1px 8px; font-size:.92em; }
+  .copybtn { position:absolute; top:14px; right:14px; font-family:var(--mono); font-size:10.5px; font-weight:700; color:#fff; background:var(--p500); border:none; border-radius:8px; padding:7px 12px; cursor:pointer; }
+  .copybtn:hover { background:var(--p600); }
+  .copybtn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
+
+  /* ===== gates / checklist ===== */
+  .gates { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:20px 0; }
+  @media (max-width:840px){ .gates { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .gates { grid-template-columns:1fr; } }
+  .gate { background:var(--card); border:1.5px solid var(--p500); border-radius:var(--radius);
+    padding:16px 14px; text-align:center; box-shadow:var(--shadow); }
+  .gate .ic { font-size:20px; margin-bottom:8px; }
+  .gate .t { font-weight:800; font-size:14px; margin-bottom:4px; }
+  .gate .d { font-size:11.5px; color:var(--muted); line-height:1.45; }
+  .check { list-style:none; margin:16px 0 8px; max-width:780px; }
+  .check li { display:block; position:relative; padding:10px 14px 10px 46px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); margin-bottom:7px; background:var(--card); font-size:13.5px; }
+  .check li::before { content:'✓'; font-family:var(--mono); color:#fff; background:var(--p500);
+    border-radius:6px; width:20px; height:20px; display:grid; place-items:center; font-size:11px;
+    font-weight:700; position:absolute; left:14px; top:11px; }
+  .check li b { font-weight:700; }
+  .check li .lp { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p600);
+    background:var(--p50); border-radius:5px; padding:1px 6px; margin-right:2px; }
+  .foot { margin-top:70px; padding-top:24px; border-top:1px solid var(--line);
+    font-size:12px; color:var(--faint); line-height:1.8; }
+  .foot b { color:var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="m">PR</div><div class="t">The Ladder · Working with Claude Code</div></div>
+
+<div class="app">
+  <aside class="side" aria-label="Contents">
+    <div class="brand"><div class="m">PR</div>The Ladder</div>
+    <div class="grp">Opening</div>
+    <a class="nav" href="#standing"><span class="n">01</span>Where you stand</a>
+    <div class="grp">The six rungs</div>
+    <a class="nav" href="#chatbox"><span class="n">02</span>Rung 1 · The chatbox</a>
+    <a class="nav" href="#promptcraft"><span class="n">03</span>Rung 2 · The prompt</a>
+    <a class="nav" href="#context"><span class="n">04</span>Rung 3 · Context</a>
+    <a class="nav" href="#harness"><span class="n">05</span>Rung 4 · The harness</a>
+    <a class="nav" href="#loop"><span class="n">06</span>Rung 5 · The loop</a>
+    <a class="nav" href="#environment"><span class="n">07</span>Rung 6 · The environment</a>
+    <div class="grp">The vision · Full scale</div>
+    <a class="nav" href="#fourteen"><span class="n">08</span>Fourteen lanes, one human</a>
+    <a class="nav" href="#alignment"><span class="n">09</span>Staying aligned</a>
+    <div class="grp">Closing</div>
+    <a class="nav" href="#boris"><span class="n">10</span>Boris's workflow</a>
+    <a class="nav" href="#lessons"><span class="n">11</span>Three lessons</a>
+    <a class="nav" href="#start"><span class="n">12</span>Start tomorrow</a>
+    <div class="side-foot">Purple Ruler · Team training<br>
+      <b>Same tool, six ways to hold it.</b></div>
+  </aside>
+
+  <main class="main">
+    <div class="wrap">
+
+      <!-- HERO -->
+      <header class="hero">
+        <div class="eyebrow">Purple Ruler · Team Training · The AI-Native Series</div>
+        <h1>The Ladder <span class="dim">/ six rungs from<br>chatbox to system</span></h1>
+        <p class="thesis">Everyone in this room already uses AI. The difference between a quick answer and a working system is not talent — it is <b>which rung you hold the tool from</b>. Six rungs: <b>chatbox → prompt → context → harness → loop → environment</b>. Most of us stand between rungs 3 and 4. This hour is about that one step — and a look at what the top of the ladder looks like, running in production, today, in this company.</p>
+        <div class="threeq">
+          <div class="q"><div class="k">The ladder</div><p>Six rungs, one tool. Which rung are you on — and what does the next one buy you?</p></div>
+          <div class="q"><div class="k">The jump</div><p>Rung 3 → 4: the moment your rules stop being reminders and start being structure.</p></div>
+          <div class="q"><div class="k">The vision</div><p>Fourteen AI work-lanes, one human. What full scale actually looks like — and the three lessons it teaches.</p></div>
+        </div>
+      </header>
+
+      <section id="standing">
+        <h2>Where you stand</h2>
+        <p class="lead">Same tool, six ways to hold it. Each rung is defined by one question: <b>where does your judgment live?</b> In your head, in a message, in a file, in a structure, in a routine — or in a system that improves itself.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Rung</th><th>Name</th><th>One sentence</th><th>You know you're here when…</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">1</td><td class="strong">Chatbox</td><td>You ask, it answers, everything evaporates.</td><td>…you introduce yourself to the AI every single morning.</td></tr>
+            <tr><td class="strong">2</td><td class="strong">Prompt</td><td>You learn to ask well — by hand, every time.</td><td>…your best prompts live in a notes file you paste from.</td></tr>
+            <tr><td class="strong">3</td><td class="strong">Context</td><td>Your rules and facts live in files the AI always reads.</td><td>…the AI knows your role, your tone, your no-gos — without being told.</td></tr>
+            <tr><td class="strong">4</td><td class="strong">Harness</td><td>Your most expensive rules become steps that <em>must</em> happen.</td><td>…the AI <em>can't</em> send, only draft. The send button is yours.</td></tr>
+            <tr><td class="strong">5</td><td class="strong">Loop</td><td>Work continues and hands over cleanly while you're away.</td><td>…you start the day by reading one page, not by asking around.</td></tr>
+            <tr><td class="strong">6</td><td class="strong">Environment</td><td>Every mistake and every platform update improves the system.</td><td>…this week's error becomes next week's rule — automatically on the agenda.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="insight"><span class="tag">INSIGHT 01</span>
+          <p>The tool is identical on every rung. What changes is how much of your judgment lives outside your head.
+          <span class="sub">Climbing the ladder is not about better AI. It is about moving what you know — rules, facts, standards, lessons — out of your memory and into things that persist.</span></p>
+        </div>
+      </section>
+
+      <section id="chatbox">
+        <div class="act">The six rungs · one by one</div>
+        <h2>Rung 1 · The chatbox: everything evaporates</h2>
+        <p class="lead">This is where everyone starts, and it works — for one-off questions. You ask, you get an answer, you close the tab. Tomorrow, the AI has never met you.</p>
+        <p>Watch what a chatbox day looks like for someone answering school emails: paste the email, explain who we are, explain the tone we use, explain what we can and can't promise, ask for a draft. Tomorrow: <b>all of it again.</b> Same explanations, retyped. And because nothing persists, quality is a lottery — the days you explain well, the drafts are good; the days you rush, they aren't.</p>
+        <div class="rules"><div class="rule"><b>The ceiling of rung 1:</b> you are the memory. Every session starts from zero, and the quality of the output tracks the effort you spent re-explaining — not the quality of your standards.</div></div>
+      </section>
+
+      <section id="promptcraft">
+        <h2>Rung 2 · The prompt: asking well, by hand</h2>
+        <p class="lead">Rung 2 is the discovery that <b>how</b> you ask changes everything: give the AI a role, the background, an example, the format you want, and what to avoid.</p>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">Rung 1 ask</div><div class="tt">"Reply to this email"</div><p>The AI guesses the tone, guesses what we can promise, guesses the sign-off. Three guesses, three chances to be wrong — and you edit for ten minutes.</p></div>
+          <div class="half mach"><div class="hd">Rung 2 ask</div><div class="tt">Role + facts + format + limits</div><p>"You draft replies for our school-support team. Warm, professional, British English. Never promise schedule changes — those go to the operations team. Keep it under 150 words. Here's one good example…" The draft comes back nearly sendable.</p><span class="res">SAME AI · DIFFERENT ASK · DIFFERENT DAY</span></div>
+        </div>
+        <p>But notice what you've built: a small standard. And where does it live? <b>In your clipboard.</b> You paste it every time, you drift a little every time, and a colleague doing the same job has a slightly different version. You've started engineering — by hand.</p>
+        <div class="insight"><span class="tag">INSIGHT 02</span>
+          <p>A good prompt is a draft of a rule. If you've pasted it three times, it wants to be a file.
+          <span class="sub">The third paste is the signal. That's the moment rung 3 is calling.</span></p>
+        </div>
+      </section>
+
+      <section id="context">
+        <h2>Rung 3 · Context: write it down once</h2>
+        <p class="lead">Rung 3 is one move: everything you keep re-explaining goes into a <b>standing-instructions file</b> the AI reads at the start of every session. In Claude Code this file is called <span class="mono">CLAUDE.md</span> — but the idea matters more than the name.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>What goes in</th><th>What it looks like for our kind of work</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Your role &amp; standards</td><td>"You support the school-operations team. Tone: warm, precise, British English. Sign-off: the team signature, never a personal promise."</td></tr>
+            <tr><td class="strong">Iron rules</td><td>"Lesson counts and dates come from the schedule system only — never trust the number quoted in an email, including ours."</td></tr>
+            <tr><td class="strong">Where the truth lives</td><td>A short list: which table is the real source for schedules, for student status, for billing. One source per fact.</td></tr>
+            <tr><td class="strong">Vocabulary</td><td>Product names, term dates, what "deactivated" actually means here — so the AI speaks your language, not a generic one.</td></tr>
+            <tr><td class="strong">Corrections that must stick</td><td>Every time you correct the AI, one line goes in: the rule, and why. Goal: <b>no correction is ever needed twice.</b></td></tr>
+          </tbody>
+        </table></div>
+        <p>From that day on, the AI opens every session already knowing your role, your tone, your no-gos and where the truth lives. The morning re-introduction is gone. <b>Most of this team is standing here</b> — and it's a good rung. But it has a quiet weakness, and the next rung exists because of it.</p>
+        <div class="insight"><span class="tag">INSIGHT 03</span>
+          <p>The file remembers so you don't have to.
+          <span class="sub">Rung 3 is where the AI stops being a stranger every morning. It is also where most people stop climbing — one rung short of the jump that changes everything.</span></p>
+        </div>
+      </section>
+
+      <section id="harness">
+        <h2>Rung 4 · The harness: rules that can't be broken</h2>
+        <p class="lead">Here is the uncomfortable truth about rung 3: <b>a rule in a file is advice.</b> The AI reads it, usually follows it — and sometimes drifts, forgets under a long session, or confidently does the wrong thing at machine speed. For cheap mistakes, that's fine. For expensive ones, advice is not enough.</p>
+        <p>The jump from rung 3 to rung 4 is this: take your <b>most expensive rules</b> and turn them from words into <b>structure</b> — steps that physically must happen, gates that physically won't open. This is what engineers call a <b>harness</b>, and it needs no code to understand:</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">The draft gate.</div><div class="d">The AI can draft an email to a school — it <b>cannot</b> send one. Sending requires you to read the draft and press the button. The rule "always check outgoing mail" stopped being a memo; it became a door.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">The evidence rule.</div><div class="d">Any number in a document — a lesson count, a date, an amount — must arrive with <em>where it was just looked up and when</em>. "The schedule says 5 sessions (checked today 14:02)" passes; a bare "5 sessions" does not.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">The action whitelist.</div><div class="d">The AI may do the things on an approved list. Anything not on the list — deleting records, contacting someone new, changing a schedule — is not "discouraged". It is <b>not available.</b></div></div></div>
+        </div>
+        <div class="gpair">
+          <div class="half fail"><div class="hd">The reminder</div><div class="tt">"Please always double-check the schedule before replying"</div><p>Lives in a file. Works until the one busy afternoon it doesn't — and the wrong lesson count goes to a school with our signature under it. Then everyone is reminded harder. Reminders don't compound; they fade.</p></div>
+          <div class="half mach"><div class="hd">The machine</div><div class="tt">A step that blocks the reply until the schedule was actually opened</div><p>The draft simply cannot be produced without the fresh lookup attached. Nobody remembers anything. The busy afternoon behaves exactly like the calm one.</p><span class="res">A RULE THAT RUNS · NOT A RULE THAT HOPES</span></div>
+        </div>
+        <p>Which rules deserve promotion? Not the style ones — the <b>expensive</b> ones. Ask of every rule in your file: <em>what does it cost when this is broken once?</em> A clumsy sentence costs an edit. A wrong number sent to a school, a promise we can't keep, a student's personal detail in the wrong place — those are harness material.</p>
+        <div class="insight"><span class="tag">INSIGHT 04</span>
+          <p>A rule you must remember is a hope. A rule that runs is a guarantee.
+          <span class="sub">This is the jump this training is about: find your three most expensive rules, and promote them from paper to structure. Everything else can stay advice.</span></p>
+        </div>
+      </section>
+
+      <section id="loop">
+        <h2>Rung 5 · The loop: work that survives your absence</h2>
+        <p class="lead">Rungs 1–4 assume you are present. Rung 5 asks: what happens to the work when you leave — and what greets you when you return? Two routines, five minutes each, change everything.</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">The sign-off ritual (end of day).</div><div class="d">Before finishing, the AI writes a short close-out: what got <b>done</b> (the finished things, not the effort) · what's <b>still open and who it's waiting on</b> · <b>tomorrow's first move</b>. Written at close, while the day is still in memory — not reconstructed in the morning.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">The morning page (start of day).</div><div class="d">You begin by reading yesterday's close-outs — one page — instead of asking around or re-deriving where things stood. Decisions that need <em>you</em> are at the top, each with "what unblocks if you answer".</div></div></div>
+        </div>
+        <p>Why write at close and not in the morning? Because AI sessions have a failure humans don't: <b>when a session's memory fills up, it compresses — and un-written judgment is simply gone.</b> We learned this the real way: one work-lane lost its session mid-week, rewrote its notes from what survived, and the "lessons learned" section came back <em>empty</em>. The work existed; the judgment had evaporated.</p>
+        <div class="rules"><div class="rule"><b>The rung-5 principle: memory lives in the system, not in the session.</b> Anything worth keeping is written down before the session ends — because the session <em>will</em> end, and not always politely.</div></div>
+        <div class="insight"><span class="tag">INSIGHT 05</span>
+          <p>If it isn't written down before the session ends, it never happened.
+          <span class="sub">The close-out ritual is five minutes of writing that saves an hour of morning archaeology — and it is the only defence against a kind of amnesia humans never had to plan for.</span></p>
+        </div>
+      </section>
+
+      <section id="environment">
+        <h2>Rung 6 · The environment: a system that improves itself</h2>
+        <p class="lead">The top rung is quiet. You stop improving the system by willpower, and give it two suppliers that never run dry: <b>your mistakes</b>, and <b>the platform's releases</b>.</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">Supplier one: every error becomes one line.</div><div class="d">When something goes wrong, the fix isn't "be more careful" — it is one written line: what happened, why, and how to judge it next time. The line goes into the shared file. The same mistake, made twice, means the line wasn't written — not that someone forgot.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">Supplier two: the weekly upstream check.</div><div class="d">Once a week we have Claude Code check <em>on itself</em>: read its own release notes and the best-practice posts from its makers, and answer one question — <b>"which part of what we built by hand does the tool now do natively?"</b> Whatever is covered gets uninstalled. The tool maintains the tool; a human approves.</div></div></div>
+        </div>
+        <div class="rules"><div class="rule"><b>What "environment engineering" means:</b> the continuous upkeep of everything below — the context files, the harness gates, the routines — driven by evidence, never by mood. The system only changes when an error exposes a gap, or a release makes a piece redundant.</div></div>
+        <div class="insight"><span class="tag">INSIGHT 06</span>
+          <p>You don't maintain the system. Its errors and their releases maintain it — you approve.
+          <span class="sub">This is the rung where the ladder stops being your project and becomes your environment: something that tends itself, and gets a little harder to break every week.</span></p>
+        </div>
+      </section>
+
+      <section id="fourteen">
+        <div class="act">The vision · What full scale looks like</div>
+        <h2>Fourteen lanes, one human</h2>
+        <p class="lead">Everything so far scales down to one person and one AI. Here is what it looks like scaled <b>up</b> — not a slide about the future: this runs in our company today, built by the AI architect who works alongside these lanes.</p>
+        <p>We run about <b>fourteen parallel AI work-lanes</b> — each a long-lived Claude session owning one page or one part of the product. Above them sit two special AI roles: an <b>orchestrator</b> (assigns work, reviews, merges) and an <b>architect</b> (designs, and triages every incoming request). The human count is <b>one</b>: a product owner who describes what's needed in plain words, approves plans, and accepts results. And one thing never moves: <b>no AI can publish to the live product. The publish button is human, by design.</b></p>
+        <h3>How a request enters the system</h3>
+        <p>You don't need to classify your own request — plain language is enough. Every request becomes one row in a shared task table, and the architect sorts it within the hour using a fixed <b>seven-question checklist</b>. The questions don't ask "how big is this?" — they ask <b>"if this goes wrong, who else gets hit?"</b> A five-line change can be highest-risk; an 800-line one can be routine.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Sorted as</th><th>Meaning</th><th>What happens</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">A · Blast radius</td><td>Touches shared foundations, interfaces between parts, or things many lanes depend on</td><td>Architect writes a one-page plan first — boundaries, contracts, what it deliberately will <em>not</em> do. Human approves, then a lane builds inside the fence.</td></tr>
+            <tr><td class="strong">B · Routine</td><td>One lane's local work</td><td>Assigned directly — but the working lane runs a three-question self-check before starting; any hit escalates it back to A. That's the safety net for mis-sorting.</td></tr>
+            <tr><td class="strong">C · Trivial</td><td>Documentation, or a fix whose cause is already known and touches nothing shared</td><td>Just done. But if it turns out to touch anything shared — stop and escalate.</td></tr>
+          </tbody>
+        </table></div>
+        <p>Two anonymised true stories of why the checklist beats gut feel: a request that <em>looked</em> like a small bug fix was actually a change to how two parts of the system talk — sorted casually, the change went in and nobody told the other side; only a safety check caught it. And a request to "add colours to the calendar" looked purely cosmetic — but colours are governed by a site-wide design rulebook with its own automated guard, and a casual change would have bounced straight off it. <b>The checklist knew. Intuition didn't.</b></p>
+        <h3>The architect's power is what it may not do</h3>
+        <ul class="check">
+          <li><b>Proposes, never decides</b> — every plan needs a human yes before it counts.</li>
+          <li><b>Never builds</b> — construction belongs to the lanes; the architect only holds the acceptance line.</li>
+          <li><b>Its errors are public record</b> — when a plan is proven wrong by reality, the reversal is logged, reviewed weekly, and the lesson joins the shared rulebook. It has happened. Nothing was deleted.</li>
+        </ul>
+        <div class="insight"><span class="tag">INSIGHT 07</span>
+          <p>Boundaries aren't distrust. They give every mistake exactly one owner and one repair path.
+          <span class="sub">Fourteen agents with fences beat fourteen agents with freedom — because when something breaks, "whose change was it, and where's the fix?" has a one-line answer.</span></p>
+        </div>
+      </section>
+
+      <section id="alignment">
+        <h2>Staying aligned: memory lives in the system</h2>
+        <p class="lead">The hard problem with fourteen agents: they can't see each other — and each can lose its memory without warning. So every alignment mechanism obeys one principle you already met at rung 5: <b>memory lives in the system, not in the session.</b> A day runs as a closed loop:</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">Sign-off, every lane, every day.</div><div class="d">Before closing, each lane re-checks its facts <em>live</em> (yesterday's status quoted from memory doesn't count), writes a fixed-format daily note — done · open-and-waiting-on-whom · problems <em>with evidence</em> · new lessons <em>from real errors only</em> — then verifies the note actually saved. Real incident: a lane once "wrote" its note to a file that silently failed to save.</div></div></div>
+            <div class="shift"><div class="n">2</div><div><div class="t">One morning page for the human.</div><div class="d">A read-only summary pulls all fourteen notes plus the task table into one page: decisions needing the human first (each with "answering this unblocks…"), yesterday's numbers, cross-lane warning signs, and who <em>didn't</em> report. Aligning with fourteen agents costs ten minutes.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">The weekly up-cycle.</div><div class="d">The best "new lessons" from daily notes get numbered into the shared rulebook; process complaints (only the ones with a real example) change the shared routine files. Real case: a lane reported two rules contradicting each other — next day the routine file carried the fix, for everyone. <b>The agent found it; the file fixed it; the team inherited it.</b></div></div></div>
+        </div>
+        <div class="rules">
+          <div class="rule"><b>Merged is not live.</b> A task's final state is not "the work is done" — it is "someone verified, with evidence, that it works where users are."</div>
+          <div class="rule"><b>A guard must prove it guards.</b> Every automated check must once demonstrate that it actually turns red when someone breaks the thing on purpose. An alarm that never rang in a drill is not an alarm.</div>
+          <div class="rule red"><b>A stale status is worse than none.</b> Status older than a working day counts as expired — write "idle" rather than leave yesterday's state up, because a colleague who reads it won't ask you again.</div>
+          <div class="rule red"><b>The red lines.</b> No AI output ever contains passwords, keys, or students' personal information — and anything published is assembled from an explicit allow-list. (A deny-list once let something through. Allow-lists don't have that failure mode.)</div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 08</span>
+          <p>One kind of fact, one home.
+          <span class="sub">A status lives on the board; detail lives in the note; rules live in the rulebook — and nothing lives in two places, because two homes for one fact means they disagree within a week and an agent reads the wrong one with full confidence.</span></p>
+        </div>
+      </section>
+
+<section id="boris">
+        <div class="act">Closing · Proof from the source</div>
+        <h2>Boris's workflow: how the toolmaker uses the tool</h2>
+        <p class="lead">January 2026: Boris publishes his setup — "surprisingly vanilla," barely customized. Two layers, mapping cleanly onto the ladder you just climbed:</p>
+        <div class="bcycle">
+          <div class="hd">Layer 1 · One session's cycle</div>
+          <div class="brow">
+            <div class="bstep"><div class="ic">📋</div><div class="t">Plan mode first</div><div class="d">Iterate the plan until solid, then auto-execute</div><span class="map">= Rung 4</span></div>
+            <div class="bstep"><div class="ic">🧠</div><div class="t">Strongest model</div><div class="d">Slower per step, faster on the total bill</div><span class="map">a stance</span></div>
+            <div class="bstep star"><div class="ic">⭐</div><div class="t">Self-verification</div><div class="d">"The single most important rule": AI runs its own tests, opens its own browser</div><span class="map">= Rung 4</span></div>
+            <div class="bstep"><div class="ic">✅</div><div class="t">Merge the PR</div><div class="d">The last gate before the next task</div><span class="map">= Rung 4</span></div>
+          </div>
+          <div class="breturn"><span class="arr">↩</span>Made a mistake? Write it into the shared CLAUDE.md — every agent carries the lesson next run. He calls it <b>&nbsp;compound engineering</b>&nbsp;<span style="color:var(--faint);font-family:var(--mono);font-size:10px">= Rung 6</span></div>
+        </div>
+        <div class="bpar">
+          <div class="hd">Layer 2 · Parallel dispatch — many cycles at once</div>
+          <div class="bpar-grid">
+            <div>
+              <div class="terms">
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">1</span></div><div class="ln">$ task-1/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">2</span></div><div class="ln">$ task-2/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">3</span></div><div class="ln">$ task-3/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">4</span></div><div class="ln">$ task-4/</div></div>
+                <div class="term"><div class="bar"><i></i><i></i><i></i><span class="num">5</span></div><div class="ln">$ task-5/</div></div>
+              </div>
+              <div class="terms-cap">~5 terminals · one isolated checkout each</div>
+            </div>
+            <div class="dispatcher">
+              <div class="fig">🙋</div>
+              <div class="t">Human = dispatcher</div>
+              <div class="d">a notification rings; answer whichever Claude needs input</div>
+              <span class="prbadge">★ 20–30 merged PRs / day</span>
+            </div>
+            <div>
+              <div class="webs"><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div><div class="web"></div></div>
+              <div class="webs-cap" style="text-align:right">+ 5–10 web sessions</div>
+            </div>
+          </div>
+        </div>
+        <p>Nobody copied anybody. Teams that put AI to real work converge on the same four ideas: <b>align before acting · machine-verify everything · lessons become assets · humans stand at the gates.</b></p>
+        <div class="rules"><div class="rule"><b>His stack, our rungs:</b> shared CLAUDE.md = Rung 3 · plan-first + self-verification + review gates = Rung 4 · parallel dispatch + notifications = Rung 5 · mistakes written back into the shared file = Rung 6.</div></div>
+      </section>
+
+
+      <section id="lessons">
+        <h2>Three lessons to take home</h2>
+        <p class="lead">Strip away the terminology and the whole system teaches three things — and all three apply whether you run one AI or fourteen.</p>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">Your leverage is at the demand end.</div><div class="d">Saying clearly what you want, approving the plan, and personally checking the result moves the outcome more than watching the AI work ever will. The hour you spend sharpening the ask is worth five spent supervising.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">Any number of AIs — one source of truth per fact.</div><div class="d">One status board, one rulebook, one place where each kind of fact lives. Copies drift, and an AI will trust the stale copy exactly as confidently as the fresh one.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">Changing the process is cheaper than changing anyone.</div><div class="d">With AI teammates, a rule written into a shared file binds everyone <em>tomorrow</em>. Every incident that becomes a written line makes the whole system harder to break — that is how it gets better on its own.</div></div></div>
+        </div>
+        <div class="golden">
+          <div class="q">"Manage the demand, not the typing. Keep one home per fact. Turn every mistake into a line in a file — <em>and the system improves itself.</em>"</div>
+        </div>
+      </section>
+
+      <section id="start">
+        <h2>Start tomorrow: three smallest steps</h2>
+        <p class="lead">Nothing above needs a project or a budget. Three moves, in order — each one climbs you a rung.</p>
+        <ul class="check">
+          <li><span class="lp">①</span> <b>Today — climb to rung 3:</b> create your standing-instructions file. Three parts: your role and tone · your three iron rules · where the truth lives for the facts you use daily. Thirty minutes, and tomorrow the AI already knows you.</li>
+          <li><span class="lp">②</span> <b>This week — make the jump to rung 4:</b> pick your single most expensive action (for most of us: anything that leaves the building — an email, a document, a number) and put a gate on it: the AI drafts, you approve, only then it goes. One rule, promoted from paper to structure.</li>
+          <li><span class="lp">③</span> <b>Tonight — borrow from rung 5:</b> end the day by having the AI write a three-line close-out: what got done · what's open and who it waits on · tomorrow's first move. Read it tomorrow before anything else. That's the loop, in miniature.</li>
+        </ul>
+        <p>That's the hour. The ladder doesn't ask you to become technical — it asks you to move what you already know out of your head and into files, gates and routines. <b>Same tool. Different rung. Different job.</b></p>
+        <div class="foot">
+          <b>Sources &amp; siblings.</b> Boris Cherny's workflow: his public posts, Jan 2026. The fourteen-lane system, the seven-question triage and the daily loop are first-party descriptions of Purple Ruler's production setup, anonymised. The engineering deep-dive of the same ideas (for those who build): <span class="mono">closed-loop-playbook.html</span> in this same folder.<br><br>
+          Purple Ruler · Team Training · The AI-Native Series · This page is a live demo of <span class="mono">pr-design</span> tokens.
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var btn = document.getElementById('copyLetter');
+    if (btn) btn.addEventListener('click', function () {
+      var t = document.getElementById('letterText').innerText;
+      navigator.clipboard.writeText(t).then(function () {
+        btn.textContent = 'Copied \u2713';
+        setTimeout(function () { btn.textContent = 'Copy letter'; }, 2000);
+      });
+    });
+  })();
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav'));
+    var map = {};
+    links.forEach(function (l) { map[l.getAttribute('href').slice(1)] = l; });
+    var sections = Array.prototype.slice.call(document.querySelectorAll('section[id]'));
+    if (!('IntersectionObserver' in window)) return;
+    var current = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          if (current) current.classList.remove('on');
+          current = map[e.target.id];
+          if (current) current.classList.add('on');
+        }
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    sections.forEach(function (s) { io.observe(s); });
+  })();
+</script>
+</body>
+</html>
