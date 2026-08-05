@@ -167,6 +167,11 @@
   .berg .deep .ice:nth-child(odd) { margin:10px 20px 0 2px; transform:rotate(-.45deg); }
   .berg .ice .fn { font-family:var(--mono); font-size:11px; font-weight:700; color:var(--p800); margin-right:6px; }
   .berg .ice .fd { color:#4a4560; font-size:11.5px; line-height:1.45; }
+  .berg .ice.entry { border-left:3px solid var(--amber); }
+  .berg .deep .zone.zone2 { margin-top:16px; color:#5f9f7d; }
+  .berg .deep .zone.zone2 .tok { color:#7c72a3; }
+  .berg .ice.d2 { background:rgba(255,255,255,.84); }
+  .berg .ice.d2 .fd { font-size:11px; }
   @media (max-width:760px){ .berg2 { grid-template-columns:1fr; } }
 
   .animals { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 18px; }
@@ -1163,15 +1168,17 @@
               <span class="wlbl">THE WATERLINE</span>
             </div>
             <div class="deep">
-              <div class="zone"><span>▼ THE FOLDER — OPENED ONLY ON INVOCATION</span><span class="tok">THOUSANDS OF TOKENS · 0 UNTIL USED</span></div>
-              <div class="ice"><span class="fn">SKILL.md</span><span class="fd">the full step-by-step instructions</span></div>
-              <div class="ice"><span class="fn">template.md</span><span class="fd">the report skeleton it fills in</span></div>
-              <div class="ice"><span class="fn">checklist.md</span><span class="fd">the final QA pass before it hands anything over</span></div>
-              <div class="ice"><span class="fn">a helper script</span><span class="fd">a small tool it can run for the numbers</span></div>
+              <div class="zone"><span>▼ FIRST DEPTH — OPENED ON INVOCATION</span><span class="tok">0 UNTIL USED</span></div>
+              <div class="ice entry"><span class="fn">SKILL.md</span><span class="fd">the routine's own manual — the steps, the rules, and <b>pointers to the files below</b>. It is itself a small index.</span></div>
+              <div class="zone zone2"><span>▼ SECOND DEPTH — READ ONLY IF A STEP CALLS FOR IT</span><span class="tok">STILL 0 UNTIL THAT STEP RUNS</span></div>
+              <div class="ice d2"><span class="fn">sop.md</span><span class="fd">the detailed operating procedure for the tricky part</span></div>
+              <div class="ice d2"><span class="fn">template.md</span><span class="fd">the report skeleton it fills in</span></div>
+              <div class="ice d2"><span class="fn">checklist.md</span><span class="fd">the final QA pass before it hands anything over</span></div>
+              <div class="ice d2"><span class="fn">a helper script</span><span class="fd">a small tool it can run for the numbers</span></div>
             </div>
           </div>
         </div>
-        <p style="font-size:11.5px;color:var(--faint);margin-bottom:18px">This is why the one-line band scales: you can hold fifty lessons and a dozen routines, and the session still starts nearly weightless — it carries the card catalogue, not the library.</p>
+        <p style="font-size:11.5px;color:var(--faint);margin-bottom:18px">This is why the one-line band scales: you can hold fifty lessons and a dozen routines, and the session still starts nearly weightless — it carries the card catalogue, not the library. Note the skill iceberg goes <b>two depths</b> down: invoking it opens <span class="mono">SKILL.md</span>, which is itself a small index — the SOPs and templates beneath load only when the routine actually reaches the step that needs them.</p>
 
         <div class="rules">
           <div class="rule"><b>Keep the standing file ruthless.</b> Every line of <span class="mono">CLAUDE.md</span> is re-paid in every session and fills the memory budget before the day's work even starts. Rules that matter <em>always</em> go here — nothing else.</div>
