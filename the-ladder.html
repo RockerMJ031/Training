@@ -134,6 +134,18 @@
   .tokband.line { border-left:4px solid var(--amber); }
   .tokband.zero { border-left:4px solid var(--green); }
 
+  .animals { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 18px; }
+  .animal { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card);
+    padding:14px 14px 12px; display:flex; flex-direction:column; }
+  .animal .who { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em;
+    color:#fff; background:var(--p700); border-radius:6px; padding:3px 8px; align-self:flex-start; margin-bottom:9px; }
+  .animal.a3 .who { background:var(--amber); }
+  .animal.a4 .who { background:var(--green); }
+  .animal .nm { font-weight:800; font-size:14.5px; letter-spacing:-.01em; margin-bottom:4px; }
+  .animal .ds { font-size:12.5px; color:var(--muted); line-height:1.5; flex:1; }
+  .animal .rg { font-family:var(--mono); font-size:9.5px; color:var(--p600); margin-top:9px; }
+  @media (max-width:760px){ .animals { grid-template-columns:repeat(2,1fr); } }
+
   .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
     border-radius:var(--radius-sm); background:var(--card); }
   table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
@@ -1076,6 +1088,31 @@
           <div class="rule"><b>Long reference material never goes in the standing file.</b> Put it in a skill or a separate file, with a one-line pointer ("for term-date questions, read file X"). You then pay for it only on the days you use it.</div>
           <div class="rule"><b>Notice the gradient: the higher the level, the cheaper the rule.</b> Entry rules cost tokens every session. Advanced mostly pays on use. Mastery rules are free structure. Promoting a rule from paper to structure doesn't just make it unbreakable — it makes it <em>free</em>.</div>
         </div>
+
+        <h3>Is a skill all the automation there is? No — four animals</h3>
+        <p>From a distance they blur into one idea, "the AI does something by itself" — and that blur is how automation plans go vague. They separate cleanly on one question: <b>who presses the button?</b></p>
+        <div class="animals">
+          <div class="animal a1"><span class="who">YOU PRESS IT</span>
+            <div class="nm">Skill</div>
+            <div class="ds">A written routine the AI performs the same way every time <b>you ask</b> — "run the weekly-report routine." It never starts by itself.</div>
+            <div class="rg">RUNG 4 · ON REQUEST</div></div>
+          <div class="animal a2"><span class="who">THE MOMENT PRESSES IT</span>
+            <div class="nm">Hook</div>
+            <div class="ds">A checkpoint bolted to a fixed moment — before an action, after a command. Fires every time that moment occurs, remembered or not. Can block.</div>
+            <div class="rg">RUNG 4 · AT A MOMENT</div></div>
+          <div class="animal a3"><span class="who">THE SIGNAL PRESSES IT</span>
+            <div class="nm">Monitor</div>
+            <div class="ds">A background watcher polling one signal — a request queue, an approvals board — and <b>waking the AI</b> when the condition fires. It works through your meetings and your sleep.</div>
+            <div class="rg">RUNG 5 · ON A SIGNAL</div></div>
+          <div class="animal a4"><span class="who">THE AI PRESSES IT</span>
+            <div class="nm">Subagent</div>
+            <div class="ds">A helper AI the session spawns for one bounded errand — "read these four documents, report back." Several run in parallel; each reports and disappears.</div>
+            <div class="rg">SCALE · DELEGATED</div></div>
+        </div>
+        <p>You can watch the last two being alive: the corner of the status bar reads <span class="mono">4 monitors · ← 1 agent</span> — four watchers on duty, one helper out on an errand. (Full anatomy in the cockpit chapter.)</p>
+        <div class="rules">
+          <div class="rule"><b>The planning test: name who presses the button.</b> "The AI should handle new requests" is a wish. "A <b>monitor</b> watches the request queue and wakes the AI · a <b>skill</b> tells it how to answer · a <b>hook</b> blocks anything from going out unapproved · <b>subagents</b> fetch the facts in parallel" — that is a plan. One real workflow usually uses all four.</div>
+        </div>
         <div class="insight"><span class="tag">INSIGHT 04</span>
           <p>A rule you must remember is a hope. A rule that runs is a guarantee.
           <span class="sub">This is the jump this training is about: find your three most expensive rules, and promote them from paper to structure. Everything else can stay advice.</span></p>
@@ -1277,7 +1314,7 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         </table></div>
         <h3>Reading the status bar</h3>
         <p>Every session shows a one-line dashboard. Here is a real one from our team (ours is customised — yours may show a subset), decoded piece by piece:</p>
-        <div class="statbar"><span class="seg"><sup>1</sup>🏠 quality-engineer</span> <span class="dim2">|</span> <span class="seg"><sup>2</sup>⑂ purple-ruler-pages-V2</span> <span class="dim2">|</span> <span class="seg"><sup>3</sup>docs/qe-anchor-0805</span> <span class="dim2">|</span> <span class="seg"><sup>4</sup>Opus 5 high</span> <span class="dim2">|</span> <span class="seg"><sup>5</sup>ctx 81%</span> <span class="dim2">|</span> <span class="seg"><sup>6</sup>5h 3H54m→15:20 75%</span> <span class="dim2">|</span> <span class="seg"><sup>7</sup>7d 33H54m→21:00 15%</span> <span class="dim2">|</span> <span class="seg"><sup>8</sup>+Fable 29%</span> <span class="dim2">|</span> <span class="seg"><sup>9</sup>⌥ 67b6e710</span> <span class="dim2">|</span> <span class="seg"><sup>10</sup>MJ</span><br><span class="seg"><sup>11</sup>⏵⏵ auto mode on (shift+tab to cycle)</span> <span class="dim2">·</span> <span class="seg"><sup>12</sup>← 1 agent</span></div>
+        <div class="statbar"><span class="seg"><sup>1</sup>🏠 quality-engineer</span> <span class="dim2">|</span> <span class="seg"><sup>2</sup>⑂ purple-ruler-pages-V2</span> <span class="dim2">|</span> <span class="seg"><sup>3</sup>docs/qe-anchor-0805</span> <span class="dim2">|</span> <span class="seg"><sup>4</sup>Opus 5 high</span> <span class="dim2">|</span> <span class="seg"><sup>5</sup>ctx 81%</span> <span class="dim2">|</span> <span class="seg"><sup>6</sup>5h 3H54m→15:20 75%</span> <span class="dim2">|</span> <span class="seg"><sup>7</sup>7d 33H54m→21:00 15%</span> <span class="dim2">|</span> <span class="seg"><sup>8</sup>+Fable 29%</span> <span class="dim2">|</span> <span class="seg"><sup>9</sup>⌥ 67b6e710</span> <span class="dim2">|</span> <span class="seg"><sup>10</sup>MJ</span><br><span class="seg"><sup>11</sup>⏵⏵ auto mode on (shift+tab to cycle)</span> <span class="dim2">·</span> <span class="seg"><sup>12</sup>4 monitors</span> <span class="dim2">·</span> <span class="seg"><sup>13</sup>← 1 agent</span></div>
         <div class="table-scroll"><table class="statkey">
           <thead><tr><th>#</th><th>Field</th><th>Meaning</th></tr></thead>
           <tbody>
@@ -1292,7 +1329,8 @@ qualifies, say "nothing to uninstall this week."</pre></div>
             <tr><td>9</td><td>⌥ commit</td><td>The exact code version the session currently stands on.</td></tr>
             <tr><td>10</td><td>account</td><td>Who is signed in.</td></tr>
             <tr><td>11</td><td>⏵⏵ mode</td><td>The permission mode — rung 4's dial: manual · accept-edits · plan · auto. Cycle with Shift+Tab.</td></tr>
-            <tr><td>12</td><td>← agents</td><td>Background helpers this session has running.</td></tr>
+            <tr><td>12</td><td>monitors</td><td>Background watchers on duty right now (the rung-5 animal): each polls one signal and wakes the session when it fires. If this reads 0 when you expected watchers, they've died — re-arm them.</td></tr>
+            <tr><td>13</td><td>← agents</td><td>Helper AIs (subagents) this session has out on errands, running in parallel.</td></tr>
           </tbody>
         </table></div>
         <div class="rules"><div class="rule"><b>The two glances that matter daily:</b> <b>ctx</b> (5) tells you when to save progress before the session forgets; the <b>usage windows</b> (6·7) tell you whether to spend the strong model now or save it. Everything else is orientation.</div></div>
