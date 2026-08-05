@@ -564,6 +564,18 @@
   .bpar-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:16px; align-items:center; }
   @media (max-width:760px){ .bpar-grid { grid-template-columns:1fr; } }
   .terms { display:flex; flex-wrap:wrap; gap:7px; }
+  .away { display:flex; align-items:stretch; gap:8px; margin:16px 0 6px; flex-wrap:wrap; }
+  .away .ac { flex:1 1 150px; border:1px solid var(--line); border-radius:var(--radius-sm);
+    background:var(--card); padding:11px 12px; min-width:140px; }
+  .away .ac .k { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.12em;
+    color:var(--p600); margin-bottom:5px; }
+  .away .ac .d { font-size:11.5px; color:var(--muted); line-height:1.45; }
+  .away .ac.go { background:var(--p50); border-color:var(--p300); }
+  .away .ar { align-self:center; color:var(--p300); font-weight:700; }
+  .away .opt { font-size:11px; line-height:1.4; border-radius:7px; padding:5px 8px; margin-top:5px; }
+  .away .opt.in { background:rgba(31,157,98,.08); color:var(--green); }
+  .away .opt.out { background:rgba(194,113,10,.08); color:var(--amber); }
+
   .term { background:#221737; border-radius:8px; padding:8px 10px 7px; width:74px; }
   .term .bar { display:flex; gap:3px; margin-bottom:6px; }
   .term .bar i { width:5px; height:5px; border-radius:50%; display:inline-block; }
@@ -1256,7 +1268,7 @@
 
       <section id="loop">
         <h2>Rung 5 · The loop: work that survives your absence</h2>
-        <p class="lead">Rungs 1–4 assume you are present. Rung 5 asks: what happens to the work when you leave — and what greets you when you return? Two routines, five minutes each, change everything.</p>
+        <p class="lead">Rungs 1–4 assume you are present. Rung 5 asks: what happens to the work when you leave — and what greets you when you return? Two routines, five minutes each, change everything — and they are only the floor. <b>The key word of this rung is autonomy.</b></p>
         <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
           <ul>
             <li>What happens to your tasks when you're on leave — do they pause, or does someone end up messaging you on holiday?</li>
@@ -1280,6 +1292,24 @@
         </div>
         <p>Why write at close and not in the morning? Because AI sessions have a failure humans don't: <b>when a session's memory fills up, it compresses — and un-written judgment is simply gone.</b> We learned this the real way: one work-lane lost its session mid-week, rewrote its notes from what survived, and the "lessons learned" section came back <em>empty</em>. The work existed; the judgment had evaporated.</p>
         <div class="rules"><div class="rule"><b>The rung-5 principle: memory lives in the system, not in the session.</b> Anything worth keeping is written down before the session ends — because the session <em>will</em> end, and not always politely.</div></div>
+
+        <h3>The key word: autonomy</h3>
+        <p>The rituals are the floor, not the point. The point is that rung 5 turns an assistant into <b>a colleague with duty hours</b>: while you're away, the work doesn't pause and wait for you — it <b>governs itself</b>, inside the fences you built at rung 4. Autonomy here is not "the AI does whatever it likes." It is <b>bounded self-government</b>: everything inside its gates it handles and logs on its own; everything outside its authority queues for you, with the context already attached.</p>
+        <div class="away">
+          <div class="ac go"><div class="k">YOU LEAVE</div><div class="d">a meeting, a holiday, a night's sleep</div></div>
+          <div class="ar">→</div>
+          <div class="ac"><div class="k">A SIGNAL ARRIVES</div><div class="d">a request lands on the queue — a monitor wakes the AI</div></div>
+          <div class="ar">→</div>
+          <div class="ac"><div class="k">IT GOVERNS ITSELF</div>
+            <div class="opt in">inside its gates → handled &amp; logged ✓</div>
+            <div class="opt out">outside its authority → queued for you, context attached</div></div>
+          <div class="ar">→</div>
+          <div class="ac"><div class="k">SIGN-OFF WRITTEN</div><div class="d">done · open · waiting-on-whom</div></div>
+          <div class="ar">→</div>
+          <div class="ac go"><div class="k">YOU RETURN</div><div class="d">read one page, make the two decisions only you can — no archaeology</div></div>
+        </div>
+        <p style="font-size:11.5px;color:var(--faint)">Notice what your absence now costs: nothing routine. The only things waiting for you are the decisions that were always yours anyway — and that is the honest definition of this whole rung.</p>
+
         <h3>The numbers trap: Goodhart's law</h3>
         <p>The morning page aggregates numbers — drafts sent, tickets closed, rounds of rework. Numbers are how one human reads many streams. But the moment you're tempted to <em>manage by</em> those numbers, a fifty-year-old law fires:</p>
         <div class="golden"><div class="q">"When a measure becomes a target, it ceases to be a good measure." <span style="display:block;font-size:11px;margin-top:6px;color:var(--p300)">— Goodhart's law</span></div></div>
@@ -1755,7 +1785,8 @@ qualifies, say "nothing to uninstall this week."</pre></div>
     sop:         { n:'SOP', d:'Standard Operating Procedure — the detailed how-to for one tricky step, kept as its own file under a skill and read only when that step actually runs.', r:['skill','skillmd'], s:'#harness', c:'Rung 4 · The harness' },
     hook:        { n:'hook', d:'A small automatic check bolted to a fixed moment (before an action, after a command, at session start). Nobody invokes it; it just fires — and it can block.', r:['harness','permissions','gate'], s:'#harness', c:'Rung 4 · The harness' },
     gate:        { n:'gate', d:'A checkpoint work must pass before it proceeds — the AI drafts, you approve, only then it goes. The unit of trust in this whole system.', r:['harness','permissions','hook','merge'], s:'#harness', c:'Rung 4 · The harness' },
-    monitor:     { n:'monitor', d:'A background watcher that polls one signal — a queue, a board — every minute or so, and wakes the AI when the condition fires. Works through your meetings and your sleep.', r:['subagent','agent','statusbar'], s:'#harness', c:'Rung 4 · The harness' },
+    autonomy:    { n:'autonomy', d:'The key word of rung 5: bounded self-government. While you\'re away the work doesn\'t pause — everything inside its gates the AI handles and logs on its own; everything outside its authority queues for you, context attached.', r:['gate','monitor','lane'], s:'#loop', c:'Rung 5 · The loop' },
+    monitor:     { n:'monitor', d:'A background watcher that polls one signal — a queue, a board — every minute or so, and wakes the AI when the condition fires. Works through your meetings and your sleep.', r:['subagent','agent','autonomy','statusbar'], s:'#harness', c:'Rung 4 · The harness' },
     subagent:    { n:'subagent', d:'A helper AI a session spawns for one bounded errand (“read these four documents, report back”). Several run in parallel; each reports and disappears.', r:['agent','monitor','lane'], s:'#harness', c:'Rung 4 · The harness' },
     agent:       { n:'agent', d:'An AI session doing work. One long-lived, scoped agent = a lane; a short-lived one spawned for an errand = a subagent.', r:['lane','subagent','claudecode'], s:'#fourteen', c:'Fourteen lanes' },
     lane:        { n:'lane', d:'One long-lived agent session with its own tab, its own folder, and a written scope of what it may touch. Fourteen lanes = fourteen tabs in one window.', r:['agent','worktree','cmux'], s:'#fourteen', c:'Fourteen lanes' },
@@ -1792,6 +1823,7 @@ qualifies, say "nothing to uninstall this week."</pre></div>
     ['pr',            /\bPRs?\b/],
     ['ci',            /\bCI\b/],
     ['cmux',          /\bcmux\b/i],
+    ['autonomy',      /\bautonom(?:y|ous|ously)\b/i],
     ['compaction',    /\bcompactions?\b/i],
     ['permissions',   /\bpermissions?\b/i],
     ['harness',       /\bharness(?:es)?\b/i],
@@ -1891,7 +1923,7 @@ qualifies, say "nothing to uninstall this week."</pre></div>
     ['FOUNDATIONS', ['claudecode','session','prompt','token','contextwin','ctx','compaction']],
     ['RUNG 3 · THE STANDING FILES', ['claudemd','localmd','memory']],
     ['RUNG 4 · THE HARNESS', ['harness','permissions','skill','skillmd','sop','hook','gate']],
-    ['AUTOMATION & SCALE', ['monitor','subagent','agent','lane','worktree','architect']],
+    ['AUTOMATION & SCALE', ['autonomy','monitor','subagent','agent','lane','worktree','architect']],
     ['SHIPPING WORK', ['repo','branch','pr','ci','merge']],
     ['THE COCKPIT', ['statusbar','slash','usage','cmux','claudedesktop']],
     ['KEEPING SCORE HONEST', ['goodhart','okr']]
