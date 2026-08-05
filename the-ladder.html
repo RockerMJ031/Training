@@ -134,6 +134,25 @@
   .tokband.line { border-left:4px solid var(--amber); }
   .tokband.zero { border-left:4px solid var(--green); }
 
+  .berg2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0 8px; }
+  .berg { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); overflow:hidden; }
+  .berg .hd { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em;
+    padding:10px 14px 9px; color:var(--p600); border-bottom:1px solid var(--line2); }
+  .berg .zone { font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.12em; margin-bottom:7px; }
+  .berg .above { background:#fffaf2; padding:12px 14px; }
+  .berg .above .zone { color:var(--amber); }
+  .berg .below { padding:12px 14px 14px; }
+  .berg .below .zone { color:var(--green); }
+  .berg .frow { display:flex; gap:8px; align-items:baseline; padding:3px 0; }
+  .berg .frow .fn { font-family:var(--mono); font-size:11px; font-weight:600; color:var(--ink); white-space:nowrap; }
+  .berg .frow .fd { color:var(--muted); font-size:11.5px; line-height:1.45; }
+  .berg .chip { font-family:var(--mono); font-size:8.5px; font-weight:700; color:var(--amber);
+    border:1px solid #eeddba; border-radius:5px; padding:1px 5px; white-space:nowrap; }
+  .berg .water { padding:7px 14px; border-top:1.5px dashed var(--p300); border-bottom:1.5px dashed var(--p300);
+    background:var(--p50); font-family:var(--mono); font-size:9px; font-weight:700; letter-spacing:.12em;
+    color:var(--p600); text-align:center; }
+  @media (max-width:760px){ .berg2 { grid-template-columns:1fr; } }
+
   .animals { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 18px; }
   .animal { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card);
     padding:14px 14px 12px; display:flex; flex-direction:column; }
@@ -1083,6 +1102,45 @@
             <tr><td class="strong">Hooks</td><td>Same settings files — a list of "at this moment, run this check."</td><td>Never. They run outside the AI; only what they print enters the session.</td><td><span class="cost zero">ZERO</span></td></tr>
           </tbody>
         </table></div>
+
+        <h3>Under the waterline: the one-line entry is just the tip</h3>
+        <p>The "one line each" band deserves a picture, because <b>the line is not the thing.</b> Memory and skills are both icebergs: a one-line <b>index entry</b> floats above the waterline — that's all the AI carries into every session. The real content sits on disk below, in files that cost nothing until the moment they're needed:</p>
+        <div class="berg2">
+          <div class="berg">
+            <div class="hd">MEMORY — AN INDEX + ONE FILE PER LESSON</div>
+            <div class="above">
+              <div class="zone">▲ ABOVE THE WATERLINE — LOADED EVERY SESSION</div>
+              <div class="frow"><span class="fn">MEMORY.md</span><span class="fd">— the index. One line per lesson:</span></div>
+              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"term dates — always the schedule table, never the email"</span></div>
+              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"apologies to schools — name a next step, not a cause"</span></div>
+              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"invoice numbers — the finance sheet only"</span></div>
+            </div>
+            <div class="water">～ THE WATERLINE — session start loads only what's above ～</div>
+            <div class="below">
+              <div class="zone">▼ BELOW — ON DISK, READ ONLY WHEN RELEVANT</div>
+              <div class="frow"><span class="fn">term-dates.md</span><span class="fd">the full story: the rule, the day it was learned, the example</span></div>
+              <div class="frow"><span class="fn">apologies.md</span><span class="fd">the complaint that taught it, with the exact fixed wording</span></div>
+              <div class="frow"><span class="fn">invoices.md</span><span class="fd">which sheet, which column, who owns it</span></div>
+            </div>
+          </div>
+          <div class="berg">
+            <div class="hd">A SKILL — A ONE-LINE NAME + A WHOLE FOLDER</div>
+            <div class="above">
+              <div class="zone">▲ ABOVE THE WATERLINE — LOADED EVERY SESSION</div>
+              <div class="frow"><span class="chip">1 LINE</span><span class="fd">"weekly-report — builds the Monday report the house way"</span></div>
+            </div>
+            <div class="water">～ THE WATERLINE — the folder opens only when invoked ～</div>
+            <div class="below">
+              <div class="zone">▼ BELOW — THE FOLDER, OPENED ONLY ON INVOCATION</div>
+              <div class="frow"><span class="fn">SKILL.md</span><span class="fd">the full step-by-step instructions</span></div>
+              <div class="frow"><span class="fn">template.md</span><span class="fd">the report skeleton it fills in</span></div>
+              <div class="frow"><span class="fn">checklist.md</span><span class="fd">the final QA pass before it hands anything over</span></div>
+              <div class="frow"><span class="fn">a helper script</span><span class="fd">a small tool it can run for the numbers</span></div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:11.5px;color:var(--faint);margin-bottom:18px">This is why the one-line band scales: you can hold fifty lessons and a dozen routines, and the session still starts nearly weightless — it carries the card catalogue, not the library.</p>
+
         <div class="rules">
           <div class="rule"><b>Keep the standing file ruthless.</b> Every line of <span class="mono">CLAUDE.md</span> is re-paid in every session and fills the memory budget before the day's work even starts. Rules that matter <em>always</em> go here — nothing else.</div>
           <div class="rule"><b>Long reference material never goes in the standing file.</b> Put it in a skill or a separate file, with a one-line pointer ("for term-date questions, read file X"). You then pay for it only on the days you use it.</div>
