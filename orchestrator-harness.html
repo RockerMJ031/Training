@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>编排者 Harness 总览 · Purple Ruler Training</title>
+<style>
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --ink:#20241f; --muted:#6a7166;
+  --accent:#5b3fa8; --accent-soft:#efeaf9;
+  --ok:#2e7d4f; --warn:#b26a00; --crit:#b3261e;
+  --line:#e3e6df; --code:#f0f1ec;
+  --mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#16181a; --panel:#1e2124; --ink:#e8e8e4; --muted:#9aa096;
+    --accent:#b39ddb; --accent-soft:#2a2438;
+    --ok:#7fc99a; --warn:#e0a94f; --crit:#e58a84;
+    --line:#31353a; --code:#26292d; }
+}
+*{box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;line-height:1.65;margin:0;padding:2rem 1rem 4rem;}
+main{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:1.4rem;}
+header h1{font-size:1.55rem;margin:0 0 .3rem;letter-spacing:.01em;text-wrap:balance;}
+header p{color:var(--muted);margin:0;font-size:.92rem;}
+section{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:1.1rem 1.3rem;}
+h2{font-size:1.02rem;margin:0 0 .8rem;color:var(--accent);font-weight:700;}
+table{border-collapse:collapse;width:100%;font-size:.88rem;}
+.tw{overflow-x:auto;}
+th{color:var(--muted);font-weight:600;text-align:left;padding:.35rem .6rem;border-bottom:1px solid var(--line);white-space:nowrap;}
+td{padding:.42rem .6rem;border-bottom:1px solid var(--line);vertical-align:top;}
+tr:last-child td{border-bottom:none;}
+code{font-family:var(--mono);font-size:.82em;background:var(--code);padding:.1em .35em;border-radius:4px;}
+.pill{display:inline-block;font-size:.74rem;font-weight:700;padding:.08em .55em;border-radius:999px;white-space:nowrap;}
+.ok{background:rgba(46,125,79,.14);color:var(--ok);}
+.warn{background:rgba(178,106,0,.16);color:var(--warn);}
+.acc{background:var(--accent-soft);color:var(--accent);}
+.flow{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;font-size:.85rem;}
+.flow .step{background:var(--code);border:1px solid var(--line);border-radius:8px;padding:.3rem .7rem;}
+.flow .sep{color:var(--muted);}
+.note{color:var(--muted);font-size:.84rem;margin:.6rem 0 0;}
+ul{margin:.2rem 0;padding-left:1.2rem;}
+li{margin:.25rem 0;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.4rem 1.4rem;}
+@media(max-width:640px){.grid2{grid-template-columns:1fr;}}
+.kpi{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:.2rem;}
+.kpi div{min-width:110px;}
+.kpi b{font-size:1.35rem;font-variant-numeric:tabular-nums;display:block;}
+.kpi span{color:var(--muted);font-size:.8rem;}
+footer{color:var(--muted);font-size:.8rem;text-align:center;}
+footer a{color:var(--accent);}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>🎛️ 编排者 Harness 总览</h1>
+  <p>Purple Ruler 多 agent 编排中心的运行机制(training 版,2026-08-07)。编排者的职责边界:派单 / gate / 合 PR / 汇报,<b>不下场写代码</b>;13-14 个常驻 dev agent 在两个真实代码仓上干活。</p>
+</header>
+
+<section>
+  <h2>① 信号输入 —— 编排者怎么知道有事发生</h2>
+  <div class="tw"><table>
+    <tr><th>信号源</th><th>机制</th><th>要点</th></tr>
+    <tr><td><b>四哨兵</b>(常驻进程)</td><td><code>mon-deskboard</code> 决策台新行 · <code>mon-open-prs</code> 两仓 PR 指纹 · <code>mon-publish</code> 发布台授权 · <code>mon-qeledger</code> QE 台账</td><td>永不退出、按 record_id 去重只报增量、查询失败只报警不退出、空结果连续 5 次才当真</td></tr>
+    <tr><td><b>日终 cron</b></td><td><code>57 17 * * *</code> 触发收工广播(日报/状态板/锚点三步)</td><td>session-only,compact 后必须重建</td></tr>
+    <tr><td><b>Lane 状态板</b></td><td>各 lane 自报「在做什么/在等什么/ctx 水位」,取代逐一读十几块屏</td><td>自报超 8h 视为过期 —— 过期的自报等于没有</td></tr>
+    <tr><td><b>Bridge</b>(Lark)</td><td>负责人不在电脑前时经 Lark 群 @ bot 下达,经专用 skill 与编排者会话互通</td><td>bridge 会话是负责人的代理,不代编排者拍板</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2>② 扫账 —— 每轮状态问题的唯一合法起点</h2>
+  <p style="margin:.2rem 0 .6rem;font-size:.9rem;"><code>bash tools/orch-sweep.sh</code> 一条命令读全五处真源,全部翻页到 <code>has_more=false</code>,<b>禁止凭记忆回答「有什么待办」</b>:</p>
+  <div class="grid2">
+    <ul>
+      <li>决策台:待处理 / 等负责人拍 / <b>处理中逐条过</b>(PR 合了就当场销)</li>
+      <li>发布台非终态 + CE↔Velo 联络日志待中转</li>
+      <li>两仓 open PR 队列</li>
+    </ul>
+    <ul>
+      <li>回执欠账(合并了没回 lane)+ 销账欠账(行里 PR 已合)</li>
+      <li>交付比例(需求交付 ≥30% 达线)+ lane ctx 水位</li>
+      <li>【编排者自己的 P0】段 —— 专治没人催的活滑走</li>
+    </ul>
+  </div>
+  <p class="note">铁律:扫出来的已完成项在<b>同一批命令里</b>立刻销账;「🔄处理中」必须写得出【在等什么、等谁】,否则它不该是处理中。</p>
+</section>
+
+<section>
+  <h2>③ 出手 —— 两个唯一入口</h2>
+  <div class="tw"><table>
+    <tr><th>动作</th><th>命令</th><th>内建保险</th></tr>
+    <tr><td>给 lane 投递</td><td><code>bash tools/cmux-say.sh &lt;lane&gt; '正文'</code></td><td>surface 实时重解析(防错窗)· 三步协议 · 投递后读屏自证 · 记账</td></tr>
+    <tr><td>合并 PR</td><td><code>bash tools/pr-merge.sh &lt;repo&gt; &lt;n&gt;</code></td><td>堆叠 PR 检测(防 squash 孤儿:MERGED ≠ 落 main)· 合完必回 lane 一句(<b>合并 ≠ 回执</b>)</td></tr>
+  </table></div>
+  <p class="note">agent 间互传一律编排者中转,前后端 lane 不许直接互发;涉及共享浏览器的低代码平台操作直接问负责人,不派 agent。</p>
+</section>
+
+<section>
+  <h2>④ Gate 流水线 —— 一个 PR 怎么走到生产</h2>
+  <div class="flow">
+    <span class="step">lane 开 PR</span><span class="sep">→</span>
+    <span class="step">CI(required checks)</span><span class="sep">→</span>
+    <span class="step">外部二审<br><small>高风险类;额度尽则合后补审</small></span><span class="sep">→</span>
+    <span class="step">arm auto-merge<br><small>必回读 mergeStateStatus</small></span><span class="sep">→</span>
+    <span class="step">落 main 核实<br><small>merge SHA = main tip</small></span><span class="sep">→</span>
+    <span class="step">回执 lane</span><span class="sep">→</span>
+    <span class="step">攒批 → 负责人 Publish<br><small>发布台先立行,禁事后补录</small></span>
+  </div>
+  <ul style="margin-top:.8rem;font-size:.88rem;">
+    <li><b>后端 lane</b>:happy path 自动合;<b>前端 CE lane</b>:CI 绿即合、线上验收、不对就 revert</li>
+    <li><b>硬拦上桌</b>:动钱链路的发布负责人亲跑;权限/支付/loop 类机器改动强制人审;批量写生产数据先过 spec 关(样例先审,未知值留空,绝不编造)</li>
+    <li><b>验收铁律</b>:「没报错」不是验收 —— 必须答得出「如果它悄悄坏了,我会在哪一格看到不一样的值」</li>
+  </ul>
+</section>
+
+<section>
+  <h2>⑤ 台账 —— 五张 Lark Base 表构成的共享记忆</h2>
+  <div class="tw"><table>
+    <tr><th>表</th><th>职责</th><th>关键纪律</th></tr>
+    <tr><td>决策台</td><td>三方信箱:agent 完工/卡点上报 · 负责人远程拍板 · 编排者派单销账</td><td>写入带身份前缀;<b>台账条目引用前先核现状</b>(条目是写下那一刻的事实,不是现在的事实)</td></tr>
+    <tr><td>发布台</td><td>每次发布的授权与批次记录</td><td>行先于发布存在,禁止事后补录</td></tr>
+    <tr><td>联络日志</td><td>跨 lane 消息中转记录</td><td>「待发送」= 编排者当场转发</td></tr>
+    <tr><td>QE-Bug 台账</td><td>缺陷全生命周期跟踪</td><td>哨兵盯增量;条件触发单写清触发点与基线</td></tr>
+    <tr><td>Lane 状态板</td><td>各 lane 心跳 + 日报锚点</td><td>「最后更新」非自动字段,必须显式写</td></tr>
+  </table></div>
+</section>
+
+<section>
+  <h2>⑥ 断点续传 —— compact 不丢线</h2>
+  <div class="flow">
+    <span class="step">handover 文档<br><small>⚡一分钟接手表 + 重启后第一步清单</small></span><span class="sep">→</span>
+    <span class="step">本地锚点文件<br><small>永远指向最新一份</small></span><span class="sep">→</span>
+    <span class="step">SessionStart hook<br><small>恢复后自动注入检查清单</small></span><span class="sep">→</span>
+    <span class="step">ps 核哨兵 + 扫账<br><small>TaskList 空 ≠ 哨兵死</small></span>
+  </div>
+  <p class="note">实测:一次 compact 后 16 分钟内完成全部恢复动作(哨兵核活 / 欠投补投 / cron 重建 / 待合 PR 处置),零丢失。</p>
+</section>
+
+<section>
+  <h2>⑦ 一天的量级(2026-08-07 实测样本)</h2>
+  <div class="kpi">
+    <div><b>37</b><span>PR 合并(全天)</span></div>
+    <div><b>35%</b><span>需求交付占比(线 30%)</span></div>
+    <div><b>14</b><span>常驻 dev lane</span></div>
+    <div><b>5</b><span>台账真源表</span></div>
+    <div><b>4</b><span>台账过期病当日抓获</span></div>
+  </div>
+  <p class="note">「台账过期病」= 引用台账旧结论派单/下结论,而现状早已变化 —— 这是多 agent 编排里最高频的错误族,对策就是 ②⑤ 里的两条铁律。</p>
+</section>
+
+<footer>Purple Ruler · AI-native 工程编排 training 系列</footer>
+</main>
+</body>
+</html>
