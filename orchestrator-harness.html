@@ -134,7 +134,34 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;}
 </section>
 
 <section>
-  <h2>⑦ A day at scale (measured sample, 2026-08-07)</h2>
+  <h2>⑦ Hooks — rules injected by the runtime, not remembered by the model</h2>
+  <p style="margin:.2rem 0 .6rem;font-size:.9rem;">Anything the orchestrator must <i>never</i> forget is not left to memory — a hook re-injects it at the right moment. Memory decays across compactions; hooks don't.</p>
+  <div class="tw"><table>
+    <tr><th>Hook event</th><th>What it injects / gates</th></tr>
+    <tr><td><code>SessionStart</code> (user)</td><td>Today's date and time — so "what day is it" is never answered from stale context</td></tr>
+    <tr><td><code>SessionStart</code> (project, on compact/resume)</td><td>The recovery checklist: read the handover anchor first, verify sentinels via <code>ps</code> (an empty task list is not proof of death), run the sweep before touching anything</td></tr>
+    <tr><td><code>UserPromptSubmit</code></td><td>Standing iron rules, re-attached to <b>every single prompt</b>: default output language; the sweep rule ("status questions must start from <code>orch-sweep.sh</code>, never from memory"); source-verification rules for factual/financial claims</td></tr>
+    <tr><td><code>PreToolUse</code></td><td>Guard scripts that intercept risky tool calls before they run — e.g. delivery-target verification and ticket-cancellation double-checks</td></tr>
+  </table></div>
+  <p class="note">Design principle: a rule that only lives in the model's memory has a half-life of one compaction. A rule that lives in a hook has the half-life of the config file.</p>
+</section>
+
+<section>
+  <h2>⑧ The document layer — which .md file owns what</h2>
+  <div class="tw"><table>
+    <tr><th>File</th><th>Owns</th><th>Loaded</th></tr>
+    <tr><td><code>CLAUDE.md</code> (project)</td><td>Workspace charter: the two operating modes, repo layout, hard behavioural rules (verify-before-asserting, git hygiene, API gotchas)</td><td>Every session, always</td></tr>
+    <tr><td><code>CLAUDE.local.md</code></td><td>The handover <b>anchor</b> — always points at the newest handover doc; kept out of git</td><td>First read after every compaction</td></tr>
+    <tr><td><code>docs/superpowers/…-handover-vN.md</code></td><td>Numbered handover documents (v27 as of this page): one-minute takeover table, restart checklist, owner's pending answers, the day's new heuristics</td><td>On takeover; written before every planned compaction</td></tr>
+    <tr><td><code>docs/rules/judgment-boundary.md</code></td><td>Which calls the orchestrator makes alone vs. which must go to the owner; the three mandatory questions before dispatching new features</td><td>Before dispatching / ruling</td></tr>
+    <tr><td><code>docs/rules/</code> (the rest)</td><td>On-demand rulebooks: coding behaviour, CE viewport compatibility, bridge routing &amp; voice, business artifacts</td><td>Only when the matching task type comes up — they never squat in context</td></tr>
+    <tr><td><code>memory/MEMORY.md</code> + entries</td><td>Auto-memory index: team map, tool syntax traps, past-incident heuristics (~130 entries)</td><td>Index every session; entries on demand — and <b>every entry is dated knowledge, re-verified before use</b></td></tr>
+  </table></div>
+  <p class="note">The split is deliberate: charter (always-on) / anchor (compaction survival) / rulebooks (on-demand) / memory (dated hints, never authority). Keeping the always-on layer thin is what keeps the context budget alive for actual work.</p>
+</section>
+
+<section>
+  <h2>⑨ A day at scale (measured sample, 2026-08-07)</h2>
   <div class="kpi">
     <div><b>37</b><span>PRs merged (one day)</span></div>
     <div><b>35%</b><span>feature-delivery share (bar: 30%)</span></div>
