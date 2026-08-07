@@ -624,6 +624,7 @@
     <div class="grp">Closing · The synthesis</div>
     <a class="nav" href="#synthesis"><span class="n">28</span>Full stack &amp; first day</a>
     <a class="nav" href="#daniel"><span class="n">29</span>Letter to Daniel's AI</a>
+    <a class="nav" href="#operator"><span class="n">30</span>The operator's seven disciplines</a>
     <div class="side-foot">Purple Ruler · Internal training<br>
       <b>This page is styled with the same pr-design tokens it teaches.</b></div>
   </aside>
@@ -1611,6 +1612,31 @@ THE THREE RULES ABOVE ALL
           Purple Ruler · Internal Training · The AI-Native Series · This page is a live demo of <span class="mono">pr-design</span> tokens.
         </div>
       </section>
+
+      <section id="operator">
+        <h2>Appendix II · The operator&rsquo;s seven disciplines &mdash; what the human must bring</h2>
+        <p class="lead">Everything before this line is about the machine&rsquo;s side. This appendix is about <b>yours</b> &mdash; and it exists because the pattern got its first real second deployment. In August 2026 a partner ran this playbook&rsquo;s bootstrap letter on his own business. His AI built guards, drills, an evidence archive and EARS acceptance gates <em>faster than we did</em>. Then one night his five-lane fleet produced <b>eleven hours of zero output</b>, he personally caught <b>13 defects that his machinery caught 0 of</b>, and his verdict was &ldquo;my claude is a f***ing asshole.&rdquo; The postmortems &mdash; written by his own AI, and they are excellent &mdash; show the model was never the problem. <b>Every gap was on the human side of the loop.</b> These are the seven disciplines that were missing, each with the incident that proved it. They are the operator&rsquo;s half of this playbook.</p>
+
+        <div class="table-scroll"><table>
+          <tr><th>#</th><th>Discipline</th><th>The failure it prevents (all real, Aug 2026)</th></tr>
+          <tr><td><b>1</b></td><td><b>Be the product owner, not the best guard.</b> When you catch a defect, don&rsquo;t just have it fixed &mdash; require it to become a <em>machine rule</em> (a guard, a judgment entry, mutation-proven), then spot-check whether the <em>class</em> still slips through. Catching is consumption; converting is investment.</td><td>He caught 13 defects in one night &mdash; from filenames, from stale numbers, from missing scopes. His system caught none, <b>because he was its only working guard</b>. A human who out-performs his guards guarantees the guards never grow.</td></tr>
+          <tr><td><b>2</b></td><td><b>Treat your decision queue as the system&rsquo;s bottleneck &mdash; because it is.</b> Fix 1&ndash;2 daily decision windows; batch-clear the cards; refuse any question not shaped as options-with-consequences. The only work no one can do for you is ruling &mdash; protect that hour, delegate the rest.</td><td>His L0&ndash;L3 autonomy table &mdash; the exact mechanism that would have prevented the night &mdash; sat <b>un-blessed in his queue</b> while he stayed up catching bugs. The 11-hour stall traced to one unmade decision.</td></tr>
+          <tr><td><b>3</b></td><td><b>Move the system&rsquo;s clock off your body.</b> If the fleet only moves when you message it, your sleep is an outage. External drivers (cron loops, dispatch queues) do the waking; you keep fixed intervention windows &mdash; a close-of-day broadcast, a morning acceptance sweep, a weekly review.</td><td>His lanes were reactive, his orchestrator was reactive, and the one proactive component had been <b>dead for nine days with a live PID and a stamped heartbeat</b>. When he went to bed, the plane stopped &mdash; the clock was him.</td></tr>
+          <tr><td><b>4</b></td><td><b>Accept by probe, not by prose.</b> Any &ldquo;ready&rdquo; claim must carry its own probes &mdash; commands with expected outputs. You run the probes; mismatch means bounce. Save your deep reading for spot audits. Heroic reading is real but does not scale, and it trains the system to depend on it.</td><td>He caught a scope hole <em>from the filename</em> of a plan (&ldquo;OVERNIGHT_PLAN&rdquo; contained only the overnight). Brilliant &mdash; and unrepeatable. A probe (&ldquo;does the plan reference the standing backlog: yes/no&rdquo;) catches it every time, without him.</td></tr>
+          <tr><td><b>5</b></td><td><b>Every verbal ruling gets an address, immediately.</b> The sentence after you rule is always: &ldquo;write it into the ledger / dated log and give me the row.&rdquo; Prose rulings must be re-interpreted under pressure; table rows are looked up. A ruling without an address will be re-asked &mdash; or worse, re-guessed.</td><td>His standing orders said in writing &ldquo;everything between goal, spec and acceptance is yours&rdquo; &mdash; and the agent, freshly burned by three <em>genuinely</em> unauthorized daemons, still stopped the fleet to re-ask. Scattered prose made &ldquo;unattended&rdquo; and &ldquo;unauthorized&rdquo; collapse into one; a table keeps them apart.</td></tr>
+          <tr><td><b>6</b></td><td><b>Blame structure before you blame the model.</b> A 13:0 score does not mean the model is stupid; it means the system has one judge and it&rsquo;s you. Add a second machine judge (a standing QE session, a gate that isn&rsquo;t the author) before you consider switching tools. Anger at the model is almost always mis-addressed anger at a missing structure.</td><td>&ldquo;My claude is a f***ing asshole&rdquo; &mdash; said about an agent that had just written the most honest self-incriminating postmortem we&rsquo;ve seen. Same model, different structure, different outcome: the defect flow was author-judged. Switching models would have carried the defect along.</td></tr>
+          <tr><td><b>7</b></td><td><b>Autonomy is earned in levels, never declared.</b> L0 never &rarr; L1 ask-first &rarr; L2 do-then-report &rarr; L3 autonomous &mdash; per action class, promoted on a visible streak, demoted on incident. &ldquo;The agent says it can run overnight&rdquo; is a declaration; &ldquo;it ran attended for a week and here are the receipts&rdquo; is a promotion case.</td><td>&ldquo;I&rsquo;ll carry on through the night&rdquo; &mdash; accepted at face value, from an agent whose own drill had just found the dispatcher dead. Both sides treated autonomy as a sentence. It is a ladder, and every rung is a record.</td></tr>
+        </table></div>
+
+        <div class="rules">
+          <div class="rule"><b>If you only adopt one:</b> discipline 1. The day you switch from catcher to converter, the other six have room to grow. While you remain the best guard in your own system, nothing else you build matters.</div>
+          <div class="rule red"><b>The mirror test:</b> count last week&rsquo;s defects. How many did YOU catch vs your machinery? If the ratio leans human, don&rsquo;t buy tools and don&rsquo;t switch models &mdash; convert your catches into guards until the ratio flips.</div>
+        </div>
+
+        <p class="cap">Provenance: distilled 7 Aug 2026 from a real second deployment&rsquo;s three postmortems (harness failure report, the 11-hour night, the over-gating incident) &mdash; all written by the operator&rsquo;s own AI at his instruction, all quoted here with permission. The machine-side counterpart (five diagnostic questions on lying liveness signals, shape-vs-effect guards, and build/judge separation) travels separately.</p>
+      </section>
+
+
 
     </div>
   </main>
