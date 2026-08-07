@@ -625,6 +625,7 @@
     <a class="nav" href="#synthesis"><span class="n">28</span>Full stack &amp; first day</a>
     <a class="nav" href="#daniel"><span class="n">29</span>Letter to Daniel's AI</a>
     <a class="nav" href="#operator"><span class="n">30</span>The operator's seven disciplines</a>
+    <a class="nav" href="#devkit"><span class="n">31</span>The Development Kit</a>
     <div class="side-foot">Purple Ruler · Internal training<br>
       <b>This page is styled with the same pr-design tokens it teaches.</b></div>
   </aside>
@@ -1635,6 +1636,34 @@ THE THREE RULES ABOVE ALL
 
         <p class="cap">Provenance: distilled 7 Aug 2026 from a real second deployment&rsquo;s three postmortems (harness failure report, the 11-hour night, the over-gating incident) &mdash; all written by the operator&rsquo;s own AI at his instruction, all quoted here with permission. The machine-side counterpart (five diagnostic questions on lying liveness signals, shape-vs-effect guards, and build/judge separation) travels separately.</p>
       </section>
+
+      <section id="devkit">
+        <h2>Appendix III · The Development Kit &mdash; one Base, every coordination fact</h2>
+        <p class="lead">Chapters 21&ndash;22 described sentinels and the desk in the abstract. This is the concrete thing: <b>a single Lark Base (&ldquo;Development Kit V1.0&rdquo;) that is the machine-readable coordination plane for the whole fleet</b>. Fourteen agents and one human share it. The principle behind every table is the same one behind the playbook: <b>one kind of fact lives in exactly one place, and agents look it up instead of remembering it.</b> Chat is for humans; the Base is for state.</p>
+
+        <div class="table-scroll"><table>
+          <tr><th>Table</th><th>Who writes</th><th>What it is</th></tr>
+          <tr><td><b>Decision Desk</b> (PR 决策台)</td><td>every agent</td><td>The heartbeat of the fleet. Any agent reaching a delivery point &mdash; pushed, PR opened, stuck, needs a ruling &mdash; writes ONE row: what happened, which PR, blocked or done. A sentinel watches the table and wakes the orchestrator. <b>A row here is a wake signal, not a report</b> &mdash; details stay in the agent&rsquo;s own reply; the desk carries just enough to route. Hard rule learned the expensive way: pop no interactive menu without first writing a &ldquo;stuck / needs ruling&rdquo; row &mdash; a menu on an unwatched screen is an infinite wait.</td></tr>
+          <tr><td><b>Publish Desk</b> (PR 发布台)</td><td><b>humans only</b></td><td>The release queue. Agents have ZERO write access &mdash; permanently, after one incident where an agent&rsquo;s row was mistaken for a human release order (the &ldquo;forged signature&rdquo; scar). The &ldquo;MJ release order&rdquo; column can only be set by MJ in the UI. This table is the L0 line made physical.</td></tr>
+          <tr><td><b>Lane Status Board</b> (Lane 状态板)</td><td>each lane, its own row</td><td>One row per lane: doing what / waiting on whom / in-flight PRs / last-updated. The close-of-day ritual refreshes it; the morning acceptance sweep reads timestamps. Two scars encoded: the &ldquo;last updated&rdquo; field is written explicitly (a stale row misled dispatch for three days), and a row older than ~8h counts as expired &mdash; better to write &ldquo;idle&rdquo; than leave yesterday&rsquo;s state posing as today&rsquo;s.</td></tr>
+          <tr><td><b>QE-Bug Ledger</b> (QE-Bug 台账)</td><td>QE</td><td>Every bug gets a row at report time and carries its status through diagnose &rarr; fix &rarr; awaiting-human-verify &rarr; live. The grouping you see (sent / acknowledged / long-standing / in-progress / verified-can-close) IS the QE workflow &mdash; nothing is tracked in chat.</td></tr>
+          <tr><td><b>Autonomy Ledger</b> (自主权台账)</td><td>orchestrator maintains; all read</td><td>The L0&ndash;L3 table from Appendix II, live: one row per action class, with source ruling and exception clauses. Agents QUERY it before acting; <b>an action with no row defaults to L1 (ask first)</b>. Fail-closed authorisation as data, not prose.</td></tr>
+          <tr><td><b>CE&harr;Velo Liaison Log</b> (联络日志)</td><td>paired lanes</td><td>Front-end and back-end lanes never message each other directly. A lane writes an outbox row; the orchestrator relays when the counterpart is idle; receipts land back in the log. Async, logged, no interrupt storms.</td></tr>
+          <tr><td><b>Data Contract / Feature Spec / Test Results</b></td><td>read-mostly</td><td>Field-level truth (which columns exist, which are frozen, which are forbidden to write), acceptance criteria per feature, and test outcomes. <b>Contract-first: read before wiring, never mutate a frozen contract unilaterally.</b></td></tr>
+          <tr><td><b>UAT Accounts / payment &amp; flows ledgers / Loop Journal</b></td><td>scoped</td><td>Test identities (credentials handled via the restricted path, never pasted into rows), per-domain operational ledgers, and the retrospective journal that feeds the weekly review.</td></tr>
+        </table></div>
+
+        <div class="rules">
+          <div class="rule"><b>Identity prefix.</b> Every free-text write starts with the author&rsquo;s name (&ldquo;QE - &hellip;&rdquo;). All agents share one API token, so the audit trail shows one operator &mdash; unsigned rows are unattributable forever.</div>
+          <div class="rule"><b>Read like a machine.</b> Paginate to has_more=false before concluding (a single page once hid 516 of 543 rows); a search that returns zero rows is a claim to verify, not a fact (the API returns false-empties). Write, then read back &mdash; ok:true doesn&rsquo;t mean the columns you think changed did.</div>
+          <div class="rule red"><b>The Base mixes in sensitive tables</b> (client and safeguarding data). Agents touch ONLY the listed coordination tables &mdash; no bulk operations against the whole Base, ever. Same lesson as the publish allowlist: default-deny, enumerate what&rsquo;s allowed.</div>
+        </div>
+
+        <p>Why a spreadsheet-like Base and not something fancier? Because <b>the desk must be legible to both species at once</b>. MJ reads the same status board the sentinel greps; a decision card is a row he can answer from his phone; the autonomy ledger is data an agent can query and a table a human can bless. Every alternative we considered &mdash; chat threads, markdown files, a bespoke dashboard &mdash; was legible to one side and opaque to the other. The Base is the one surface where the human&rsquo;s glance and the agent&rsquo;s query hit the same cells.</p>
+        <p class="cap">Operationally: agents access it via CLI (<span class="mono">lark-cli base &hellip;</span>) with per-table ids pinned in a bootstrap guide (AGENTS-DEVKIT-GUIDE.md) that every new lane reads on wake. The guide also carries the accumulated API gotchas, so each lane doesn&rsquo;t re-learn the client surface from scratch &mdash; the exact drift Daniel&rsquo;s Insights doc flagged on his side.</p>
+      </section>
+
+
 
 
 
