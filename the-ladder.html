@@ -174,6 +174,42 @@
   .berg .ice.d2 .fd { font-size:11px; }
   @media (max-width:760px){ .berg2 { grid-template-columns:1fr; } }
 
+  .cmmi { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; align-items:end; margin:16px 0 6px; }
+  .cmmi .lv { display:flex; flex-direction:column; }
+  .cmmi .lc { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:11px 11px 10px; min-height:172px; flex:none; }
+  .cmmi .ln { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em; color:var(--faint); }
+  .cmmi .lt { font-weight:800; font-size:13.5px; letter-spacing:-.01em; margin:3px 0 4px; }
+  .cmmi .ld { font-size:11.5px; color:var(--muted); line-height:1.45; }
+  .cmmi .ld em { font-style:italic; color:var(--ink); }
+  .cmmi .lr { display:inline-block; margin-top:8px; font-family:var(--mono); font-size:9px; font-weight:700;
+    letter-spacing:.1em; border-radius:5px; padding:2px 6px; background:var(--line2); color:var(--muted); }
+  .cmmi .step { border-radius:6px 6px 0 0; margin-top:8px; background:#d9d5e3; flex:none; }
+  .cmmi .l1 .step { height:12px; } .cmmi .l2 .step { height:34px; } .cmmi .l3 .step { height:56px; }
+  .cmmi .l4 .step { height:78px; } .cmmi .l5 .step { height:100px; }
+  .cmmi .hi .step { background:linear-gradient(180deg,var(--p500),var(--p800)); }
+  .cmmi .hi .lc { border-color:var(--p300); background:var(--p50); }
+  .cmmi .hi .lt { color:var(--p900); }
+  .cmmi .hi .lr { background:var(--p700); color:#fff; }
+  .cmmi-cap { display:flex; justify-content:space-between; font-family:var(--mono); font-size:9.5px; font-weight:700;
+    letter-spacing:.12em; color:var(--faint); margin:0 2px 14px; }
+  .cmmi-cap .r { color:var(--p600); }
+  @media (max-width:760px){ .cmmi { grid-template-columns:repeat(2,1fr); align-items:stretch; } .cmmi .step { display:none; } }
+
+  .diag { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); margin:16px 0 8px; overflow:hidden; max-width:860px; }
+  .diag .dh { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p600);
+    padding:10px 16px; background:var(--p50); border-bottom:1px solid var(--p100); line-height:1.5; }
+  .diag .dh span { color:var(--muted); font-weight:500; letter-spacing:0; text-transform:none; font-family:var(--font); font-size:12px; }
+  .diag .dq { display:grid; grid-template-columns:auto 1fr auto; gap:14px; align-items:center; padding:10px 16px;
+    border-bottom:1px solid var(--line2); }
+  .diag .dq:last-child { border-bottom:none; }
+  .diag .dq .n { font-family:var(--mono); font-size:10px; font-weight:700; color:var(--p600); }
+  .diag .dq .q { font-size:13px; color:var(--ink); line-height:1.45; }
+  .diag .dq .q b { color:var(--p800); }
+  .diag .dq .v { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.08em; color:var(--muted); white-space:nowrap; text-align:right; }
+  .diag .dq .v em { font-style:normal; color:var(--red); display:block; }
+  .diag .dq .v .ok { color:var(--green); display:block; }
+  @media (max-width:640px){ .diag .dq { grid-template-columns:auto 1fr; } .diag .dq .v { grid-column:2; text-align:left; } }
+
   .animals { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 18px; }
   .animal { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card);
     padding:14px 14px 12px; display:flex; flex-direction:column; }
@@ -1309,6 +1345,40 @@
           <div class="ac go"><div class="k">YOU RETURN</div><div class="d">read one page, make the two decisions only you can — no archaeology</div></div>
         </div>
         <p style="font-size:11.5px;color:var(--faint)">Notice what your absence now costs: nothing routine. The only things waiting for you are the decisions that were always yours anyway — and that is the honest definition of this whole rung.</p>
+
+        <h3>How grown-up is your loop? A yardstick older than the web: CMMI</h3>
+        <p>The software industry hit our exact problem in the late 1980s: the quality of what shipped depended on <em>who was on shift</em>. Carnegie Mellon's Software Engineering Institute answered with the <b>Capability Maturity Model</b> — later <b>CMMI</b>, the version still used to audit organisations today. Strip the jargon and its one idea fits a school-support desk as well as a software house:</p>
+        <div class="golden"><div class="q">Maturity is how little the result depends on who did it. <span style="display:block;font-size:11px;margin-top:6px;color:var(--p300)">— the idea behind CMMI, in one line</span></div></div>
+        <p>Five levels. Read the italic line in each — that is what the level <b>feels like from inside</b> for our kind of work — and notice the badge: you have already met every level, under another name, on the ladder.</p>
+        <div class="cmmi">
+          <div class="lv l1"><div class="lc"><div class="ln">LEVEL 1</div><div class="lt">Initial</div><div class="ld"><em>"It depends who's on shift."</em> Results track the individual and their day. Heroes, firefighting, no two weeks alike.</div><span class="lr">RUNGS 1–2</span></div><div class="step"></div></div>
+          <div class="lv l2"><div class="lc"><div class="ln">LEVEL 2</div><div class="lt">Managed</div><div class="ld"><em>"There's a written way, and I follow it."</em> Repeatable — for the person or team that wrote it down.</div><span class="lr">RUNG 3</span></div><div class="step"></div></div>
+          <div class="lv l3 hi"><div class="lc"><div class="ln">LEVEL 3</div><div class="lt">Defined</div><div class="ld"><em>"One way for everyone — and it's enforced."</em> The standard is shared, tailored, and gated, not merely advised.</div><span class="lr">RUNG 4</span></div><div class="step"></div></div>
+          <div class="lv l4 hi"><div class="lc"><div class="ln">LEVEL 4</div><div class="lt">Quantitatively managed</div><div class="ld"><em>"We measure it — and we'd notice a slip."</em> A few numbers, read regularly, as thermometers.</div><span class="lr">RUNG 5</span></div><div class="step"></div></div>
+          <div class="lv l5 hi"><div class="lc"><div class="ln">LEVEL 5</div><div class="lt">Optimizing</div><div class="ld"><em>"Every failure changes the standard."</em> Improvement is a routine, not an initiative.</div><span class="lr">RUNG 6</span></div><div class="step"></div></div>
+        </div>
+        <div class="cmmi-cap"><span>GREY: THE RESULT STILL DEPENDS ON THE PERSON</span><span class="r">PURPLE: THE RESULT DEPENDS ON THE SYSTEM</span></div>
+        <p>So why bring in a second ladder? Because the rungs describe <b>how you hold the tool</b>; CMMI describes <b>how reliable the outcome is</b> — and it hands you a diagnostic the rungs don't: a way to place <em>one task</em>, honestly, in two minutes.</p>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Is there a task only one person on your team can do properly? What happened the last time they were off?</li>
+            <li>When a new colleague asks "how do we do X here?", do they get a file — or a different answer from each person they ask?</li>
+            <li>If your best routine quietly got 10% worse this month, which number would tell you? Is there one?</li>
+          </ul>
+        </div>
+        <div class="diag">
+          <div class="dh">PLACE ONE TASK <span>— e.g. "replying to a school's timetable-change request". Answer in order. Your first <b>NO</b> is the level.</span></div>
+          <div class="dq"><span class="n">Q1</span><span class="q">Is there a <b>written way</b> to do it — and does the person doing it actually follow it?</span><span class="v"><em>NO → LEVEL 1</em></span></div>
+          <div class="dq"><span class="n">Q2</span><span class="q">Is it the <b>same written way for everyone</b> — and is the expensive step <b>gated</b>, not just advised?</span><span class="v"><em>NO → LEVEL 2</em></span></div>
+          <div class="dq"><span class="n">Q3</span><span class="q">Do you <b>read two or three numbers</b> about it regularly — and would a slip actually show up in them?</span><span class="v"><em>NO → LEVEL 3</em></span></div>
+          <div class="dq"><span class="n">Q4</span><span class="q">When it fails, does the failure <b>change the written way</b> — on the agenda without anyone having to remember to raise it?</span><span class="v"><em>NO → LEVEL 4</em><span class="ok">YES → LEVEL 5</span></span></div>
+        </div>
+        <div class="rules">
+          <div class="rule"><b>Diagnose the task, not the team.</b> "What level are we?" has no honest answer — most teams are Level 3 on emails and Level 1 on scheduling. Place tasks one at a time; the spread is the real map.</div>
+          <div class="rule"><b>Climb one level per task, and never skip.</b> 1→2 is writing it down (rung 3 — one afternoon). 2→3 is one shared file plus a gate on the expensive step. 3→4 is choosing two numbers for the morning page. 4→5 is the mistake-to-rule routine of rung 6. Skipping a level is how a team ends up with dashboards about a process nobody follows.</div>
+          <div class="rule"><b>Heroes are a Level-1 symptom.</b> The colleague who "just knows" is the most valuable person in the room — and the single biggest point of failure. The kindest thing you can do for them is move what they know to Level 2, so their holiday stops being everyone's emergency.</div>
+        </div>
+        <p>One warning before you rush to Level 4. The moment a task has numbers, a trap opens that CMMI's authors knew well — and it is the reason the next part exists.</p>
 
         <h3>The numbers trap: Goodhart's law</h3>
         <p>The morning page aggregates numbers — drafts sent, tickets closed, rounds of rework. Numbers are how one human reads many streams. But the moment you're tempted to <em>manage by</em> those numbers, a fifty-year-old law fires:</p>
