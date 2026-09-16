@@ -288,6 +288,7 @@
   @media (max-width:640px){ .jumps { grid-template-columns:1fr; } }
   .fly { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); padding:16px 16px 10px; margin:18px 0; max-width:880px; box-shadow:var(--shadow); }
   .fly svg { width:100%; height:auto; display:block; }
+  @media (max-width:640px){ .fly { overflow-x:auto; -webkit-overflow-scrolling:touch; } .fly svg { min-width:640px; } .fly .cap { text-align:left; } }
   .fly .cap { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em; color:var(--faint); text-align:center; margin-top:6px; }
   .tpl { border:1px solid var(--p300); border-radius:var(--radius-sm); background:var(--p50); max-width:860px; margin:16px 0; overflow:hidden; }
   .tpl .th { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p600); padding:9px 14px; border-bottom:1px solid var(--p100); }
