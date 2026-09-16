@@ -270,6 +270,34 @@
   td.strong { font-weight:700; }
   .mono { font-family:var(--mono); font-size:.92em; }
 
+  /* ===== right-vs-well strip + flywheel (rung 5 / §14) ===== */
+  .rw { display:grid; grid-template-columns:3fr 2fr; gap:10px; margin:16px 0 8px; max-width:860px; }
+  .rw .half { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 14px; }
+  .rw .half.well { border-color:var(--p300); background:var(--p50); }
+  .rw .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em; color:var(--faint); }
+  .rw .half.well .k { color:var(--p600); }
+  .rw .t { font-weight:800; font-size:14.5px; margin:3px 0 4px; }
+  .rw .d { font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .rw .lv { display:flex; gap:5px; margin-top:8px; }
+  .rw .lv span { font-family:var(--mono); font-size:9.5px; font-weight:700; padding:2px 7px; border-radius:6px; background:#ece9f3; color:var(--muted); }
+  .rw .half.well .lv span { background:var(--p700); color:#fff; }
+  @media (max-width:640px){ .rw { grid-template-columns:1fr; } }
+  .jumps { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0 14px; max-width:860px; }
+  .jump { background:var(--card); border:1px solid var(--line); border-radius:9px; padding:9px 12px; font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .jump b { color:var(--p800); display:block; font-size:13px; margin-bottom:2px; }
+  @media (max-width:640px){ .jumps { grid-template-columns:1fr; } }
+  .fly { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); padding:16px 16px 10px; margin:18px 0; max-width:880px; box-shadow:var(--shadow); }
+  .fly svg { width:100%; height:auto; display:block; }
+  @media (max-width:640px){ .fly { overflow-x:auto; -webkit-overflow-scrolling:touch; } .fly svg { min-width:640px; } .fly .cap { text-align:left; } }
+  .fly .cap { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em; color:var(--faint); text-align:center; margin-top:6px; }
+  .tpl { border:1px solid var(--p300); border-radius:var(--radius-sm); background:var(--p50); max-width:860px; margin:16px 0; overflow:hidden; }
+  .tpl .th { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p600); padding:9px 14px; border-bottom:1px solid var(--p100); }
+  .tpl .tr { display:grid; grid-template-columns:150px 1fr; gap:12px; padding:9px 14px; border-bottom:1px dashed var(--p100); font-size:13px; align-items:baseline; }
+  .tpl .tr:last-child { border-bottom:none; }
+  .tpl .tr .l { font-weight:800; color:var(--p800); }
+  .tpl .tr .v { color:var(--muted); font-style:italic; }
+  @media (max-width:560px){ .tpl .tr { grid-template-columns:1fr; gap:2px; } }
+
   /* ===== SDLC scars strip ===== */
   .sdlc { display:flex; flex-wrap:wrap; margin:22px 0 4px; }
   .stage { flex:1 1 118px; min-width:116px; background:var(--card); border:1px solid var(--line);
@@ -996,8 +1024,9 @@
     <a class="nav" href="#alignment"><span class="n">12</span>Staying aligned</a>
     <div class="grp">Closing</div>
     <a class="nav" href="#termmap"><span class="n">13</span>The term map</a>
-    <a class="nav" href="#lessons"><span class="n">14</span>Three lessons</a>
-    <a class="nav" href="#start"><span class="n">15</span>Start tomorrow</a>
+    <a class="nav" href="#flywheel"><span class="n">14</span>Doing it right vs doing it well</a>
+    <a class="nav" href="#lessons"><span class="n">15</span>Three lessons</a>
+    <a class="nav" href="#start"><span class="n">16</span>Start tomorrow</a>
     <div class="side-foot">Purple Ruler · Team training<br>
       <b>Same tool, six ways to hold it.</b></div>
   </aside>
@@ -1358,6 +1387,17 @@
           <div class="lv l5 hi"><div class="lc"><div class="ln">LEVEL 5</div><div class="lt">Optimizing</div><div class="ld"><em>"Every failure changes the standard."</em> Improvement is a routine, not an initiative.</div><span class="lr">RUNG 6</span></div><div class="step"></div></div>
         </div>
         <div class="cmmi-cap"><span>GREY: THE RESULT STILL DEPENDS ON THE PERSON</span><span class="r">PURPLE: THE RESULT DEPENDS ON THE SYSTEM</span></div>
+
+        <h3>Levels 1–3 do it right. Levels 4–5 do it well.</h3>
+        <p>Read the five levels once more and a line appears between 3 and 4. Below the line, each level asks <em>where the method lives</em> — in a head, in a file, in a gate. Above it, the questions change: <em>does the system know how good it is</em>, and <em>does it change itself when it isn't</em>. That is the difference between <b>doing it right</b> — the method runs and mistakes can't get through — and <b>doing it well</b> — the method is measured and improves.</p>
+        <div class="rw">
+          <div class="half"><div class="k">LEVELS 1–3 · DOING IT RIGHT</div><div class="t">The method exists, is shared, is enforced.</div><div class="d">Results stop depending on who did it. This is the pass mark — and it is also the part an AI can run on its own by next year.</div><div class="lv"><span>L1 · in a head</span><span>L2 · in a file</span><span>L3 · in a gate</span></div></div>
+          <div class="half well"><div class="k">LEVELS 4–5 · DOING IT WELL</div><div class="t">The system reads itself, then rewrites itself.</div><div class="d">Two numbers say whether it's better than last month; every failure edits the method. This is the part that needs a person who owns a system.</div><div class="lv"><span>L4 · measured</span><span>L5 · self-correcting</span></div></div>
+        </div>
+        <div class="jumps">
+          <div class="jump"><b>Jump one · rung 3 → 4 (Level 2 → 3)</b>judgment moves from your head into the system. The rule stops being advice and becomes a step that must happen.</div>
+          <div class="jump"><b>Jump two · Level 3 → 4 (rung 4 → 5)</b>the system goes from <em>enforced</em> to <em>visible</em>. For the first time it can tell you whether it is any good — and that is where OKRs plug in (§14).</div>
+        </div>
         <p>So why bring in a second ladder? Because the rungs describe <b>how you hold the tool</b>; CMMI describes <b>how reliable the outcome is</b> — and it hands you a diagnostic the rungs don't: a way to place <em>one task</em>, honestly, in two minutes.</p>
         <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
           <ul>
@@ -1377,6 +1417,21 @@
           <div class="rule"><b>Diagnose the task, not the team.</b> "What level are we?" has no honest answer — most teams are Level 3 on emails and Level 1 on scheduling. Place tasks one at a time; the spread is the real map.</div>
           <div class="rule"><b>Climb one level per task, and never skip.</b> 1→2 is writing it down (rung 3 — one afternoon). 2→3 is one shared file plus a gate on the expensive step. 3→4 is choosing two numbers for the morning page. 4→5 is the mistake-to-rule routine of rung 6. Skipping a level is how a team ends up with dashboards about a process nobody follows.</div>
           <div class="rule"><b>Heroes are a Level-1 symptom.</b> The colleague who "just knows" is the most valuable person in the room — and the single biggest point of failure. The kindest thing you can do for them is move what they know to Level 2, so their holiday stops being everyone's emergency.</div>
+        </div>
+        <h3>What Level 4 and Level 5 actually look like here</h3>
+        <p>"Quantitatively managed" and "optimizing" sound like audit language. In our own system they are ordinary, slightly boring routines — which is exactly the point. Three real examples, with a Level-3 one for contrast so you can feel the step:</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Level</th><th>A real example from our system</th><th>Why it is this level, not the one below</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">3 · Defined</td><td>A code change cannot be merged until it passes the three-screen check (desktop / tablet / phone). The gate is automatic.</td><td>The rule is enforced — a wrong change simply can't get in. But nobody could tell you whether this month is better or worse than last month.</td></tr>
+            <tr><td class="strong">4 · Quantitatively managed</td><td><b>The size ratchet.</b> Every week the system records how big each page's code is. Grow past the recorded mark and the check goes red; extra room has to be requested in writing and is paid back on a date.</td><td>A number is watching, not a person. "The code feels heavier" became "6,650 lines, and you are 40 over". A slip shows up the same day, whoever caused it.</td></tr>
+            <tr><td class="strong">4 · Quantitatively managed</td><td><b>The review ledger.</b> Every review verdict is filed with a count — how many rounds, and which <em>shape</em> of fault (a check with no teeth, a drift from the spec, a rule that fails open…).</td><td>The same shape appearing three times in a row is caught by the count, not by someone's memory. That is a thermometer reading, not a score.</td></tr>
+            <tr><td class="strong">5 · Optimizing</td><td><b>The 4 : 1 convergence rate.</b> For every four feature changes, one change must pay down debt — refactor, delete, strengthen a guard. The ratio is checked, not hoped for.</td><td>"We'll tidy up when there's time" became a rhythm the system enforces on itself. Debt can only shrink.</td></tr>
+            <tr><td class="strong">5 · Optimizing</td><td><b>Mistake becomes rule.</b> When a review fault is the third of the same shape, the check that catches it is promoted into the shared rulebook — and the <em>next</em> person's change is stopped by it automatically.</td><td>This week's failure edited next week's written method for everyone. The system changed its own standard without a meeting.</td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules">
+          <div class="rule"><b>One line to remember.</b> Level 4 is "a number is watching this for you." Level 5 is "when that number goes red, the rule rewrites itself."</div>
         </div>
         <p>One warning before you rush to Level 4. The moment a task has numbers, a trap opens that CMMI's authors knew well — and it is the reason the next part exists.</p>
 
@@ -1760,6 +1815,140 @@ qualifies, say "nothing to uninstall this week."</pre></div>
         <h2>The term map</h2>
         <p class="lead">Every <span style="border-bottom:1.5px dotted var(--p500)">dotted-underlined</span> word in this page opens a small card: what it means in plain words, and which other terms it's related to — follow the related chips and you can walk the whole vocabulary like a map. Here it is in one picture, grouped by where each word lives on the ladder. <b>Click any node.</b></p>
         <div class="tmap" id="tmap"></div>
+      </section>
+
+      <section id="flywheel">
+        <h2>Doing it right, doing it well — and the flywheel we push together</h2>
+        <p class="lead">Rung 5 gave you two ladders and a warning about numbers. This part is about <b>you</b>: which side of the line you want to work on, how the OKRs you already run connect to the maturity levels, and what "success" honestly means for a system you own.</p>
+        <div class="askbox"><span class="tag">✋ ASK YOURSELF</span>
+          <ul>
+            <li>Of the tasks you did this week, how many were "run the method" — and how many were "decide whether the method is any good"?</li>
+            <li>If your best routine was handed to a new colleague tomorrow, would they get your results — and would either of you know?</li>
+            <li>What is the one number that would tell you your own system got worse this month?</li>
+          </ul>
+        </div>
+
+        <h3>Two kinds of work — the same line, drawn twice</h3>
+        <p>In <em>Homo Deus</em>, Yuval Noah Harari draws a hard line through the coming workforce: on one side, people who <b>run and improve the systems</b>; on the other, people whose work the systems can do without them. It is an uncomfortable line, and it is exactly the line between Levels 1–3 and Levels 4–5. Doing it right — following the written, enforced method — is what an AI teammate will do on its own, reliably, by next year. Doing it well — deciding what "good" means, reading the numbers, changing the standard — is what an AI cannot do <em>for</em> you, because it has no purpose of its own. It is also the same line the ladder already drew in grey and purple: judgment in a head, or judgment in a system.</p>
+        <div class="rules">
+          <div class="rule"><b>The ask, in one sentence.</b> Own one system, and move it above the line: not "I did my tasks right", but "my workflow measures itself and got better this quarter, and here is the number."</div>
+          <div class="rule"><b>This is not a ranking of people.</b> Everyone here does both kinds of work every day. It is a question of where your <em>attention</em> goes — and the ladder exists so that more of it can go above the line.</div>
+        </div>
+
+        <h3>How OKRs and CMMI fit: the O is the input to Level 4</h3>
+        <p>Level 4 says "read two or three numbers and you'd notice a slip" — but it never says <em>which</em> numbers. That is the gap the OKR fills. The <b>O</b> defines what "good" means for one workflow; the <b>KR</b>s are the two or three numbers; and the <b>baseline</b> — the first honest reading — is the moment the workflow actually enters Level 4. Then, at the other end, Level 5 hands something back: the KRs that forced you to rewrite the method are your evidence of Level 5, and the rewritten method sets next quarter's O. One loop, turning.</p>
+        <div class="fly">
+          <svg viewBox="0 0 900 470" role="img" aria-label="The OKR–CMMI flywheel: O defines good, KRs measure, baseline first, Level 4 sees the slip, Level 5 rewrites the method, which sets the next O">
+            <defs>
+              <marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#6b4ab8"/></marker>
+            </defs>
+            <!-- ring -->
+            <circle cx="450" cy="235" r="150" fill="none" stroke="#ece6f8" stroke-width="26"/>
+            <path d="M450,85 A150,150 0 1,1 449,85" fill="none" stroke="#6b4ab8" stroke-width="3" stroke-dasharray="7 6" marker-end="url(#fa)"/>
+            <text x="450" y="241" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#8a8693">ONE QUARTER</text>
+            <text x="450" y="258" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="11" font-weight="700" letter-spacing="2" fill="#8a8693">ONE TURN</text>
+            <!-- left label -->
+            <text x="60" y="40" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#6b4ab8">OKR · WHAT GOOD MEANS</text>
+            <text x="620" y="40" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#6b4ab8">CMMI · HOW MATURE THE SYSTEM IS</text>
+            <line x1="450" y1="30" x2="450" y2="440" stroke="#e8e6ef" stroke-width="1" stroke-dasharray="3 5"/>
+            <!-- node: O (top) -->
+            <g transform="translate(450,60)">
+              <rect x="-120" y="-30" width="240" height="60" rx="12" fill="#4b2e83"/>
+              <text x="0" y="-6" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#a98fd8">O · OBJECTIVE</text>
+              <text x="0" y="14" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="13" font-weight="700" fill="#fff">"what good looks like" · can't be gamed</text>
+            </g>
+            <!-- node: KR (left) -->
+            <g transform="translate(190,180)">
+              <rect x="-120" y="-34" width="240" height="68" rx="12" fill="#fff" stroke="#a98fd8" stroke-width="1.5"/>
+              <text x="0" y="-11" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#6b4ab8">KR · 2–3 NUMBERS</text>
+              <text x="0" y="8" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="12.5" font-weight="700" fill="#191324">thermometers, never quotas</text>
+              <text x="0" y="24" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="11" fill="#615c70">this is the input Level 4 was missing</text>
+            </g>
+            <!-- node: baseline (bottom-left) -->
+            <g transform="translate(190,330)">
+              <rect x="-120" y="-34" width="240" height="68" rx="12" fill="#fff" stroke="#c2710a" stroke-width="1.5"/>
+              <text x="0" y="-11" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#c2710a">BASELINE · WEEK ONE</text>
+              <text x="0" y="8" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="12.5" font-weight="700" fill="#191324">measure before you improve</text>
+              <text x="0" y="24" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="11" fill="#615c70">a KR without a baseline is a wish</text>
+            </g>
+            <!-- node: L4 (right) -->
+            <g transform="translate(710,180)">
+              <rect x="-120" y="-34" width="240" height="68" rx="12" fill="#f6f2fc" stroke="#6b4ab8" stroke-width="1.5"/>
+              <text x="0" y="-11" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#6b4ab8">LEVEL 4 · MEASURED</text>
+              <text x="0" y="8" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="12.5" font-weight="700" fill="#191324">read weekly — a slip shows up</text>
+              <text x="0" y="24" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="11" fill="#615c70">three readings in a row = you are here</text>
+            </g>
+            <!-- node: L5 (bottom-right) -->
+            <g transform="translate(710,330)">
+              <rect x="-120" y="-34" width="240" height="68" rx="12" fill="#f6f2fc" stroke="#6b4ab8" stroke-width="1.5"/>
+              <text x="0" y="-11" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#6b4ab8">LEVEL 5 · SELF-CORRECTING</text>
+              <text x="0" y="8" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="12.5" font-weight="700" fill="#191324">a red reading rewrites the method</text>
+              <text x="0" y="24" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="11" fill="#615c70">the rewritten method sets next quarter's O</text>
+            </g>
+            <!-- node: next O (bottom) -->
+            <g transform="translate(450,420)">
+              <rect x="-110" y="-24" width="220" height="48" rx="12" fill="#fff" stroke="#a98fd8" stroke-width="1.5" stroke-dasharray="4 3"/>
+              <text x="0" y="-3" text-anchor="middle" font-family="ui-monospace,Menlo,monospace" font-size="10" font-weight="700" letter-spacing="2" fill="#6b4ab8">NEXT O</text>
+              <text x="0" y="14" text-anchor="middle" font-family="Geist,-apple-system,sans-serif" font-size="11.5" fill="#615c70">the flywheel has turned once</text>
+            </g>
+            <!-- arrows between nodes -->
+            <path d="M330,68 C270,80 220,110 200,146" fill="none" stroke="#6b4ab8" stroke-width="2" marker-end="url(#fa)"/>
+            <path d="M190,214 L190,296" fill="none" stroke="#6b4ab8" stroke-width="2" marker-end="url(#fa)"/>
+            <path d="M310,318 C400,290 500,240 590,200" fill="none" stroke="#6b4ab8" stroke-width="2" marker-end="url(#fa)"/>
+            <path d="M710,214 L710,296" fill="none" stroke="#6b4ab8" stroke-width="2" marker-end="url(#fa)"/>
+            <path d="M600,352 C560,380 520,400 560,420" fill="none" stroke="#6b4ab8" stroke-width="2" marker-end="url(#fa)"/>
+            <!-- edge labels -->
+            <text x="238" y="98" font-family="Geist,-apple-system,sans-serif" font-size="10.5" fill="#615c70">defines which numbers matter</text>
+            <text x="200" y="262" font-family="Geist,-apple-system,sans-serif" font-size="10.5" fill="#615c70">first honest reading</text>
+            <text x="418" y="292" font-family="Geist,-apple-system,sans-serif" font-size="10.5" fill="#615c70">enters Level 4</text>
+            <text x="720" y="262" font-family="Geist,-apple-system,sans-serif" font-size="10.5" fill="#615c70">a KR goes red</text>
+            <text x="574" y="403" font-family="Geist,-apple-system,sans-serif" font-size="10.5" fill="#615c70">new standard</text>
+          </svg>
+          <div class="cap">LEVELS 1–3 ARE NOT ON THE RING · THEY ARE THE TICKET IN — NO WRITTEN, ENFORCED METHOD MEANS NO READABLE NUMBER, AND THE OKR IS ONLY A WISH</div>
+        </div>
+        <div class="shifts">
+          <div class="shift"><div class="n">1</div><div><div class="t">The O defines "good". Level 4 can't.</div><div class="d">Without an O, Level 4 is "pick a few numbers that look nice" — and that is the front door of the nail factory. Write the O first, in words, for <em>one</em> workflow.</div></div></div>
+          <div class="shift"><div class="n">2</div><div><div class="t">The KRs are the two or three numbers. Thermometers, not quotas.</div><div class="d">A strange reading is a question to investigate. Nobody is asked to "improve" a KR directly — the work aims at the O.</div></div></div>
+          <div class="shift"><div class="n">3</div><div><div class="t">Baseline first. Always.</div><div class="d">The only job in week one is to measure where you are. A KR without a baseline is a wish; a target set before the baseline is a guess dressed as a plan. (Our own rule for any "make it cheaper / faster" ticket is identical: measure before you touch.)</div></div></div>
+          <div class="shift"><div class="n">4</div><div><div class="t">The milestone is a <em>level</em>, not a number.</div><div class="d">Success is not "KR hit X". Success is "this workflow climbed from Level 3 to Level 4 — it has a baseline and three consecutive readings." Hitting X is a result; climbing a level is a capability, and the capability is what we keep.</div></div></div>
+          <div class="shift"><div class="n">5</div><div><div class="t">Level 5 is the OKR's output end.</div><div class="d">At quarter's end, count the KRs that forced you to change the written method. That count is your Level-5 evidence — and each change is the seed of next quarter's O. Feed it back in; the wheel turns.</div></div></div>
+        </div>
+
+        <h3>The climb board — how we see the flywheel turning together</h3>
+        <p>One row per workflow, one dot per level. It makes "we are pushing this together" visible in a way no speech can: you see whose workflow is climbing, where a baseline is still missing, and where a Level-5 rewrite happened last month. Static example below, anonymised; the live version lives on the shared board.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Owner</th><th>Workflow</th><th>Level now</th><th>O (this quarter)</th><th>KR · baseline → latest</th><th>Level-5 evidence</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Lane A</td><td>Replying to school timetable-change requests</td><td>3 → <b>4</b></td><td>Schools get a correct, warm answer within a day</td><td>Replies inside 24h · <span class="mono">71% → 84%</span><br>Rework rounds · <span class="mono">1.6 → 0.9</span></td><td>—</td></tr>
+            <tr><td class="strong">Lane B</td><td>Weekly finance reconciliation</td><td><b>4</b></td><td>The month closes without a manual chase</td><td>Unmatched lines at close · <span class="mono">14 → 5</span></td><td>1 rule rewritten (Sept): "unmatched over 7 days escalates itself"</td></tr>
+            <tr><td class="strong">Lane C</td><td>New-starter onboarding pack</td><td>2 → <b>3</b></td><td>A new colleague is productive by day three</td><td>baseline not yet taken</td><td>— (not on the ring yet: get the method enforced first)</td></tr>
+          </tbody>
+        </table></div>
+        <div class="rules">
+          <div class="rule"><b>Read the board like a thermometer, not a league table.</b> A red or stalled row is a question — "what does this workflow need to climb?" — and the answer is usually a file or a gate, not more effort.</div>
+          <div class="rule red"><b>Never tie a row to a reward.</b> The day it becomes a quota, every dot moves right and every workflow gets worse. That is the flip from rung 5, and it happens on one decision.</div>
+        </div>
+
+        <h3>Your turn: one workflow, this quarter</h3>
+        <p>Fill this in for a single workflow you own. Not the biggest one — the one where you already suspect the method lives in your head.</p>
+        <div class="tpl">
+          <div class="th">THIS QUARTER · ONE WORKFLOW · ONE LEVEL UP</div>
+          <div class="tr"><span class="l">Workflow</span><span class="v">the task, in one line</span></div>
+          <div class="tr"><span class="l">Level now</span><span class="v">place it with the four questions in rung 5 — your first NO is the level</span></div>
+          <div class="tr"><span class="l">Level by quarter end</span><span class="v">exactly one higher — never skip</span></div>
+          <div class="tr"><span class="l">O</span><span class="v">what "good" looks like for this workflow, in words a colleague would recognise</span></div>
+          <div class="tr"><span class="l">KR 1 · KR 2 (· KR 3)</span><span class="v">the two or three numbers that would show a slip</span></div>
+          <div class="tr"><span class="l">Baseline (week 1)</span><span class="v">the first honest reading of each KR — before anything is improved</span></div>
+          <div class="tr"><span class="l">Level-5 evidence</span><span class="v">which written rule changed because of a reading — leave blank until it happens</span></div>
+        </div>
+
+        <div class="golden">
+          <div class="q">"Doing it right is the ticket. Doing it well is the job. <em>We push the flywheel together — one workflow, one level, one honest number at a time.</em>"</div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT 14</span>
+          <p>Your value isn't the tasks you got right — it's the system you made better, and the number that proves it.
+          <span class="sub">Levels 1–3 make the result independent of you. Levels 4–5 are where you are needed most — and the OKR is how you show up there.</span></p>
+        </div>
       </section>
 
       <section id="lessons">
