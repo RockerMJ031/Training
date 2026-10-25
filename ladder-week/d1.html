@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 1 · Foundations &amp; the Prompt · The Ladder Week · Purple Ruler Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Same tokens as the-ladder.html — one look across the series. */
+  :root {
+    --p900:#2c1a52; --p800:#3a2266; --p700:#4b2e83; --p600:#5a3a9e; --p500:#6b4ab8;
+    --p300:#a98fd8; --p100:#ece6f8; --p50:#f6f2fc;
+    --ink:#191324; --muted:#615c70; --faint:#8a8693;
+    --bg:#fbfafd; --card:#ffffff; --line:#e8e6ef; --line2:#efedf5;
+    --green:#1f9d62; --amber:#c2710a; --red:#cf2e25;
+    --radius:18px; --radius-sm:10px;
+    --shadow:0 1px 2px rgba(28,18,55,.05),0 22px 48px -28px rgba(44,26,82,.30);
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+  body { background:var(--bg); color:var(--ink); font-family:var(--font);
+    letter-spacing:-.011em; -webkit-font-smoothing:antialiased; line-height:1.6; }
+  a { color:var(--p600); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  a:focus-visible { outline:2px solid var(--p500); outline-offset:2px; border-radius:4px; }
+  code { font-family:var(--mono); font-size:.86em; background:var(--p50); border:1px solid var(--line);
+    padding:1px 6px; border-radius:6px; color:var(--p700); white-space:nowrap; }
+  pre { font-family:var(--mono); font-size:12.5px; line-height:1.6; background:var(--p900); color:#f1ecfb;
+    border-radius:var(--radius-sm); padding:16px 18px; overflow-x:auto; margin:14px 0 18px; max-width:780px;
+    white-space:pre-wrap; overflow-wrap:anywhere; }
+  pre .c { color:#b7a8dc; }
+  .app { display:flex; min-height:100vh; }
+  .side { width:264px; flex:none; background:linear-gradient(185deg,var(--p700),var(--p900));
+    color:#fff; padding:22px 14px 18px; position:sticky; top:0; height:100vh; overflow-y:auto;
+    display:flex; flex-direction:column; scrollbar-width:thin; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:15.5px;
+    letter-spacing:-.02em; padding:4px 8px 16px; color:#fff; }
+  .brand .m { width:30px; height:30px; border-radius:8px; background:#fff; display:grid;
+    place-items:center; color:var(--p700); font-weight:800; font-size:15px; flex:none; }
+  .grp { font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:rgba(255,255,255,.48); padding:16px 10px 6px; }
+  .nav { display:flex; align-items:baseline; gap:10px; padding:6px 11px; border-radius:10px;
+    color:rgba(255,255,255,.74); font-weight:600; font-size:13px; transition:.13s; }
+  .nav:hover { background:rgba(255,255,255,.10); color:#fff; text-decoration:none; }
+  .nav .n { font-family:var(--mono); font-size:10.5px; color:rgba(255,255,255,.45); width:20px; flex:none; }
+  .nav .min { margin-left:auto; font-family:var(--mono); font-size:9.5px; color:rgba(255,255,255,.4); }
+  .side-foot { margin-top:auto; padding:14px 10px 4px; border-top:1px solid rgba(255,255,255,.16);
+    font-size:11px; color:rgba(255,255,255,.55); line-height:1.5; }
+  .side-foot b { color:rgba(255,255,255,.85); }
+  .side-foot a { color:rgba(255,255,255,.85); }
+  .main { flex:1; min-width:0; }
+  .wrap { max-width:940px; margin:0 auto; padding:0 44px 120px; }
+  .topbar { display:none; }
+  @media (max-width: 920px) {
+    .side { display:none; }
+    .topbar { display:flex; position:sticky; top:0; z-index:20; align-items:center; gap:12px;
+      background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff; padding:12px 16px; }
+    .topbar .m { width:26px; height:26px; border-radius:7px; background:#fff; display:grid;
+      place-items:center; color:var(--p700); font-weight:800; font-size:13px; flex:none; }
+    .topbar .t { font-weight:800; font-size:14px; }
+    .topbar a { color:#fff; margin-left:auto; font-size:12px; font-weight:600; white-space:nowrap; }
+    .wrap { padding:0 16px 90px; }
+  }
+  .hero { padding:56px 0 40px; border-bottom:1px solid var(--line); }
+  .eyebrow { font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(34px,5.4vw,56px); font-weight:800; letter-spacing:-.035em;
+    line-height:1.04; margin-bottom:18px; }
+  .hero h1 .dim { color:var(--p300); }
+  .hero .thesis { font-size:18px; color:var(--muted); max-width:640px; margin-bottom:26px; }
+  .hero .thesis b { color:var(--ink); }
+  .plan { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+  @media (max-width:760px){ .plan { grid-template-columns:repeat(2,1fr); } }
+  .plan .q { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:11px 12px 10px; box-shadow:var(--shadow); }
+  .plan .q .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em;
+    color:var(--p500); text-transform:uppercase; margin-bottom:5px; }
+  .plan .q p { font-size:12.5px; font-weight:600; line-height:1.4; margin:0; }
+  .plan .q .mn { display:block; font-family:var(--mono); font-size:10px; color:var(--faint); margin-top:4px; font-weight:600; }
+  section { padding-top:56px; }
+  .act { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--p500); display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .act::after { content:''; height:1px; flex:1; background:var(--line); }
+  h2 { font-size:clamp(25px,3.2vw,32px); font-weight:800; letter-spacing:-.028em; line-height:1.15; margin-bottom:14px; }
+  h3 { font-size:18px; font-weight:700; letter-spacing:-.015em; margin:30px 0 10px; }
+  p { margin-bottom:12px; max-width:72ch; }
+  .lead { font-size:16.5px; color:var(--muted); }
+  .lead b { color:var(--ink); }
+  .cap { font-size:12.5px; color:var(--faint); margin-top:-4px; }
+  .insight { display:flex; gap:16px; background:var(--p50); border:1px solid var(--p100);
+    border-radius:var(--radius); padding:18px 20px; margin:24px 0; max-width:780px; }
+  .insight .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:#fff; background:var(--p700); border-radius:7px; padding:5px 9px; height:fit-content; flex:none; margin-top:2px; }
+  .insight p { margin:0; font-size:16px; font-weight:700; letter-spacing:-.015em; line-height:1.5; color:var(--p900); }
+  .insight p .sub { display:block; font-weight:500; font-size:13px; color:var(--muted); margin-top:5px; }
+  .askbox { background:#fffaf2; border:1px solid #f1e2c6; border-left:4px solid var(--amber);
+    border-radius:var(--radius-sm); padding:14px 18px 12px; margin:18px 0 22px; max-width:780px; }
+  .askbox .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:var(--amber); display:block; margin-bottom:7px; }
+  .askbox ul { list-style:none; margin:0; padding:0; }
+  .askbox li { font-size:14.5px; font-style:italic; color:var(--ink); padding:4px 0 4px 26px; position:relative; line-height:1.55; }
+  .askbox li::before { content:"?"; position:absolute; left:4px; top:4px; font-family:var(--mono);
+    font-weight:700; font-style:normal; color:var(--amber); }
+  .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); background:var(--card); }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
+  th { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--p600); text-align:left; padding:10px 14px;
+    background:var(--p50); border-bottom:2px solid var(--p100); white-space:nowrap; }
+  td { padding:10px 14px; border-bottom:1px solid var(--line2); vertical-align:top; line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  td.strong { font-weight:700; }
+  /* concept cards */
+  .concepts { display:grid; gap:12px; margin:16px 0 8px; max-width:860px; }
+  .concept { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden; }
+  .concept .hd { display:flex; align-items:baseline; gap:12px; padding:12px 18px 10px; background:var(--p50); border-bottom:1px solid var(--p100); }
+  .concept .hd .n { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p500); }
+  .concept .hd .w { font-weight:800; font-size:17px; letter-spacing:-.015em; color:var(--p900); }
+  .concept .hd .cmd { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--p600); white-space:nowrap; }
+  .concept .rows { display:grid; grid-template-columns:120px 1fr; }
+  .concept .rows > div { padding:9px 18px; border-bottom:1px solid var(--line2); font-size:13.5px; line-height:1.5; }
+  .concept .rows > div:nth-last-child(-n+2) { border-bottom:none; }
+  .concept .rows .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); text-transform:uppercase; padding-top:11px; }
+  @media (max-width:640px){ .concept .rows { grid-template-columns:1fr; } .concept .rows .k { padding-bottom:0; border-bottom:none; }
+    .concept .hd { flex-wrap:wrap; } .concept .hd .cmd { margin-left:0; flex-basis:100%; } }
+  /* pitfalls */
+  .pits { counter-reset:pit; display:grid; gap:10px; margin:16px 0 8px; max-width:860px; }
+  .pit { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 16px 12px 52px; position:relative; }
+  .pit::before { counter-increment:pit; content:counter(pit,decimal-leading-zero); position:absolute; left:16px; top:13px;
+    font-family:var(--mono); font-size:11px; font-weight:700; color:var(--p500); }
+  .pit .sym { font-weight:800; font-size:14.5px; letter-spacing:-.01em; margin-bottom:4px; }
+  .pit .why, .pit .fix { font-size:13px; line-height:1.5; color:var(--muted); }
+  .pit .why b, .pit .fix b { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); margin-right:6px; }
+  .pit .fix { color:var(--ink); margin-top:3px; }
+  .pit .fix b { color:var(--green); }
+  details.more { margin:10px 0 4px; max-width:860px; }
+  details.more summary { cursor:pointer; list-style:none; font-weight:700; font-size:13.5px; color:var(--p700);
+    padding:10px 14px; border:1px dashed var(--p300); border-radius:var(--radius-sm); background:var(--p50); }
+  details.more summary::-webkit-details-marker { display:none; }
+  details.more summary::before { content:'▸ '; font-family:var(--mono); }
+  details.more[open] summary::before { content:'▾ '; }
+  details.more summary .sub { font-weight:500; color:var(--muted); font-size:12px; }
+  details.more .pits { margin-top:10px; }
+  /* three asks */
+  .asks { display:grid; gap:10px; margin:14px 0 10px; max-width:860px; }
+  .ask { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 16px; }
+  .ask .lv { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em; color:var(--faint); }
+  .ask.good { border-color:var(--p300); background:var(--p50); }
+  .ask.good .lv { color:var(--p600); }
+  .ask .txt { font-size:13.5px; font-style:italic; margin:4px 0 6px; line-height:1.5; }
+  .ask .out { font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .ask .out b { color:var(--ink); }
+  /* term cards */
+  .terms { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 8px; }
+  @media (max-width:760px){ .terms { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .terms { grid-template-columns:1fr; } }
+  .term { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:11px 13px 10px; }
+  .term .w { font-weight:800; font-size:13.5px; letter-spacing:-.01em; margin-bottom:3px; color:var(--p900); }
+  .term .d { font-size:12px; color:var(--muted); line-height:1.5; }
+  /* trainer notes */
+  details.trainer { border:1.5px dashed var(--p300); border-radius:var(--radius); background:var(--p50); padding:0; margin:40px 0 0; max-width:860px; }
+  details.trainer summary { cursor:pointer; list-style:none; padding:16px 20px; font-weight:800; font-size:15px; color:var(--p900); display:flex; align-items:center; gap:10px; }
+  details.trainer summary::-webkit-details-marker { display:none; }
+  details.trainer summary::before { content:'▸'; font-family:var(--mono); color:var(--p500); }
+  details.trainer[open] summary::before { content:'▾'; }
+  details.trainer summary .sub { font-weight:500; font-size:12.5px; color:var(--muted); }
+  details.trainer .body { padding:0 20px 18px; }
+  details.trainer .body h4 { font-size:13.5px; font-weight:800; margin:14px 0 6px; color:var(--p800); }
+  details.trainer .body ul, details.trainer .body ol { padding-left:20px; font-size:13.5px; line-height:1.55; }
+  details.trainer .body li { margin-bottom:4px; }
+  /* refs */
+  .refs { font-size:12.5px; color:var(--muted); line-height:1.6; }
+  .refs ol { padding-left:22px; }
+  .refs li { margin-bottom:5px; overflow-wrap:anywhere; }
+  .refs .dt { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  blockquote { border-left:3px solid var(--p300); padding:4px 0 4px 16px; margin:12px 0 14px; color:var(--p900); font-size:14.5px; max-width:720px; }
+  blockquote .src { display:block; font-size:12px; color:var(--faint); margin-top:4px; font-style:normal; }
+  .homework { background:linear-gradient(135deg,var(--p700),var(--p900)); color:#fff; border-radius:var(--radius); padding:20px 24px; margin:16px 0 8px; max-width:780px; }
+  .homework .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em; color:var(--p300); margin-bottom:8px; }
+  .homework p { color:#fff; margin:0; font-size:16px; font-weight:700; line-height:1.5; }
+  .homework p .sub { display:block; font-weight:500; font-size:13px; color:rgba(255,255,255,.75); margin-top:6px; }
+  .steps { counter-reset:st; display:grid; gap:8px; margin:12px 0 14px; max-width:780px; }
+  .step { position:relative; padding:10px 14px 10px 44px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); font-size:13.5px; line-height:1.5; }
+  .step::before { counter-increment:st; content:counter(st); position:absolute; left:14px; top:10px; width:20px; height:20px; border-radius:6px;
+    background:var(--p700); color:#fff; font-family:var(--mono); font-size:10.5px; font-weight:700; display:grid; place-items:center; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="m">PR</div><div class="t">Day 1 · Foundations &amp; the Prompt</div><a href="index.html">Week ↗</a></div>
+
+<div class="app">
+  <aside class="side" aria-label="Contents">
+    <a class="brand" href="index.html"><div class="m">PR</div>The Ladder · Week</a>
+    <div class="grp">Day 1 · 60 minutes</div>
+    <a class="nav" href="#why"><span class="n">00</span>Why this week<span class="min">2′</span></a>
+    <a class="nav" href="#rung1"><span class="n">01</span>Rung 1 in three minutes<span class="min">3′</span></a>
+    <a class="nav" href="#words"><span class="n">02</span>Five words you need<span class="min">15′</span></a>
+    <a class="nav" href="#pitfalls"><span class="n">03</span>Pitfalls &amp; fixes<span class="min">8′</span></a>
+    <a class="nav" href="#rung2"><span class="n">04</span>Rung 2 · Asking well<span class="min">10′</span></a>
+    <a class="nav" href="#cases"><span class="n">05</span>Two cases from our desk<span class="min">10′</span></a>
+    <a class="nav" href="#handson"><span class="n">06</span>Hands-on<span class="min">5′</span></a>
+    <a class="nav" href="#homework"><span class="n">07</span>Homework<span class="min">1′</span></a>
+    <a class="nav" href="#terms"><span class="n">08</span>Term cards</a>
+    <a class="nav" href="#refs"><span class="n">09</span>Sources</a>
+    <a class="nav" href="#trainer"><span class="n">10</span>Trainer notes</a>
+    <div class="side-foot">Purple Ruler · Team training<br>
+      <b>Day 1 of 5</b> · <a href="../the-ladder.html">The Ladder (reference page)</a></div>
+  </aside>
+
+  <main class="main">
+    <div class="wrap">
+
+      <header class="hero">
+        <div class="eyebrow">Purple Ruler · The Ladder Week · Day 1 of 5</div>
+        <h1>Foundations <span class="dim">&amp; the prompt</span></h1>
+        <p class="thesis">Before anyone can <b>ask well</b>, they need to know what they are talking to. Today: the five words that explain almost everything that happens in a Claude Code session, the twelve ways a session goes wrong and what to do about each, and then rung 2 of <a href="../the-ladder.html">the Ladder</a> — <b>asking well, by hand</b>. You leave with one reusable prompt that you ran yourself.</p>
+        <div class="plan">
+          <div class="q"><div class="k">00–01</div><p>Why this week · Rung 1 recap<span class="mn">5 min</span></p></div>
+          <div class="q"><div class="k">02</div><p>Five words you need<span class="mn">15 min</span></p></div>
+          <div class="q"><div class="k">03</div><p>Pitfalls &amp; fixes<span class="mn">8 min</span></p></div>
+          <div class="q"><div class="k">04–05</div><p>Rung 2 · Asking well · Two cases<span class="mn">20 min</span></p></div>
+          <div class="q"><div class="k">06</div><p>Hands-on in Claude Code<span class="mn">5 min</span></p></div>
+          <div class="q"><div class="k">07–08</div><p>Homework · Term cards<span class="mn">2 min</span></p></div>
+        </div>
+      </header>
+
+      <!-- 00 -->
+      <section id="why">
+        <div class="act">00 · Why this week · 2 min</div>
+        <h2>Five days, one ladder, one hour a day</h2>
+        <p class="lead">Everyone here already uses AI. <a href="../the-ladder.html">The Ladder</a> showed six rungs — chatbox → prompt → context → harness → loop → environment — and argued that the gap between a quick answer and a working system is <b>which rung you hold the tool from</b>. This week we climb it one rung a day, together, in Claude Code, on our own work.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Day</th><th>Rung</th><th>You leave with</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">D1 · today</td><td>Foundations + Rung 2 · The prompt</td><td>One reusable prompt you ran yourself, pasted to the group</td></tr>
+            <tr><td class="strong">D2</td><td>Rung 3 · Context</td><td>Your own first CLAUDE.md</td></tr>
+            <tr><td class="strong">D3</td><td>Rung 4 · The harness</td><td>One rule that can’t be broken (“draft, never send”)</td></tr>
+            <tr><td class="strong">D4</td><td>Rung 5 · The loop</td><td>A hand-over note a colleague can work from cold</td></tr>
+            <tr><td class="strong">D5</td><td>Rung 6 · The environment</td><td>One of this week’s mistakes turned into a rule in a file</td></tr>
+          </tbody>
+        </table></div>
+        <p class="cap">Every day has the same shape: recap → concept → a real case from our own desk → five minutes hands-on → one line of homework → term cards.</p>
+      </section>
+
+      <!-- 01 -->
+      <section id="rung1">
+        <div class="act">01 · Rung 1 recap · 3 min</div>
+        <h2>Rung 1 · The chatbox: everything evaporates</h2>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>You explained the same thing to the AI on Monday, on Wednesday, and again on Friday?</li>
+            <li>A great answer last week — and you can’t find it, so you start over?</li>
+          </ul>
+        </div>
+        <p>Rung 1 is where everyone starts: open a chat, type a question, get an answer, close the tab. It works. The problem is not the answers — it is that <b>nothing survives</b>. Every explanation, every correction, every “no, our schools call it a placement, not a booking” is gone the moment the session ends. The tool stays a stranger.</p>
+        <p>The whole of this week is about moving things <b>out of the chat and into something that lasts</b>: first a reusable prompt (today), then a file (tomorrow), then rules the tool cannot break (Day 3). But first, five words.</p>
+      </section>
+
+      <!-- 02 -->
+      <section id="words">
+        <div class="act">02 · Concepts · 15 min</div>
+        <h2>Five words you need before you type</h2>
+        <p class="lead">Almost every confusing thing a Claude Code session does — getting slow, “forgetting”, costing more than expected, answering differently today than yesterday — comes back to one of these five. Each gets <b>one plain definition, one everyday analogy, and when you will actually meet it</b>.</p>
+
+        <div class="concepts">
+
+          <div class="concept">
+            <div class="hd"><span class="n">WORD 1</span><span class="w">Context</span><span class="cmd">/compact · /clear · /resume</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>The session’s <b>working memory</b>: everything said so far, every file it read, every command output. It has a fixed size. It fills up. When it is nearly full, Claude Code either <b>summarises</b> it (<code>/compact</code>) or you <b>wipe</b> it and start again (<code>/clear</code>).</div>
+              <div class="k">Analogy</div><div>A whiteboard in a meeting room. Useful while there is space. When it is full you either photograph it and wipe it (compact — you keep a <i>picture</i>, not the board) or walk into a fresh room (clear — nothing comes with you except what you wrote down on paper).</div>
+              <div class="k">When you meet it</div><div>The <b>ctx %</b> field on the status bar. A session that gets slower and starts contradicting itself. Being told “ctx is over 50% — write your progress to a file first”. The official guidance puts it bluntly: <i>“Claude’s context window fills up fast, and performance degrades as it fills.”</i> [1]</div>
+              <div class="k">House rule</div><div><b>Before you compact, write the state down.</b> The summary is lossy; the file is not. <code>/clear</code> costs nothing; <code>/compact</code> on a big session is itself a big request [3].</div>
+            </div>
+          </div>
+
+          <div class="concept">
+            <div class="hd"><span class="n">WORD 2</span><span class="w">Model</span><span class="cmd">/model</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div><b>Which brain</b> is answering this session. There is always more than one on offer, they differ in depth, speed and price, and the list changes over time — so the truth is never a slide, it is <b>two places you can look right now</b>: status-bar field 4 tells you which one you are on; <code>/model</code> with no argument opens the picker and lists what you can switch to [4]. For how to choose, use the docs’ own words rather than folklore: <i>“Sonnet handles most coding tasks well and costs less than Opus. Reserve Opus for complex architectural decisions or multi-step reasoning”</i>, and Haiku is for <i>“fast, simple tasks”</i> [3][4].</div>
+              <div class="k">Analogy</div><div>A firm’s staff list. Different people cost different amounts per hour and are good at different things — and the list on the wall today is the only one that counts, not the one you remember from last year.</div>
+              <div class="k">When you meet it</div><div>Field 4 of the status bar. Answer quality that swings for no reason. A usage window that empties faster than you expected. Switching: <code>/model &lt;name&gt;</code> switches at once; in the picker, Enter also saves it as your default [4]. On the day this page was written the docs resolve <code>opus</code>, <code>sonnet</code> and <code>haiku</code> to Opus 5.5, Sonnet 5.5 and Haiku 5.5 [4] — check the picker, not this sentence.</div>
+            </div>
+          </div>
+
+          <div class="concept">
+            <div class="hd"><span class="n">WORD 3</span><span class="w">Effort</span><span class="cmd">/effort · inside /model</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div><b>How long it thinks before it answers.</b> Levels run low → medium → high → xhigh → max. Higher = slower, more expensive, steadier on hard judgment; lower = quick and cheap for routine drafting. <i>“Effort controls how much adaptive reasoning the model does.”</i> [4] Default is high on most models, medium on the current 5.5 family.</div>
+              <div class="k">Analogy</div><div>“Answer me now, off the top of your head” versus “take the afternoon and come back with a memo”. Same person, different depth, different cost.</div>
+              <div class="k">When you meet it</div><div>Choosing a level in the <code>/model</code> picker. A reply that takes minutes when you wanted seconds. The 7-day usage window running low — effort is the first dial to turn down.</div>
+            </div>
+          </div>
+
+          <div class="concept">
+            <div class="hd"><span class="n">WORD 4</span><span class="w">Token &amp; usage</span><span class="cmd">/usage</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>A <b>token</b> is the unit everything is counted in — roughly three-quarters of an English word. Everything you send <i>and</i> everything the model sends back is tokens, and the whole conversation is re-sent on every turn. Your plan gives you two <b>rolling windows</b>: a 5-hour one and a 7-day one.</div>
+              <div class="k">Analogy</div><div>Mobile-plan minutes with a daily cap and a weekly cap — except a long conversation is a <i>conference call that redials everyone each time you speak</i>, which is why long sessions cost more per question than short ones [3].</div>
+              <div class="k">When you meet it</div><div><code>/usage</code>. Fields 6 and 7 of the status bar (5h / 7d). The message “You’ve hit your weekly limit”. The two daily glances the Ladder page recommends: ctx, and the usage windows [9].</div>
+            </div>
+          </div>
+
+          <div class="concept">
+            <div class="hd"><span class="n">WORD 5</span><span class="w">Prompt vs instruction file</span><span class="cmd">/init · /memory</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>A <b>prompt</b> is what you say <i>this time</i>. An <b>instruction file</b> — <code>CLAUDE.md</code> — is what is true <i>every time</i>; Claude Code reads it at the start of every session, automatically. <i>“Each Claude Code session begins with a fresh context window.”</i> [2] The file is how anything survives that.</div>
+              <div class="k">Analogy</div><div>A request versus the staff handbook. You do not re-explain the dress code in every email; you point at the handbook.</div>
+              <div class="k">When you meet it</div><div>The moment you paste the same paragraph for the third time (today’s INSIGHT). <code>/init</code> on a new folder creates a starter file; <code>/memory</code> opens it for editing. Tomorrow’s whole session is this file.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="insight"><span class="tag">INSIGHT D1·1</span>
+          <p>Context fills, models differ, effort costs, tokens are the bill, and files are the only thing that lasts.
+            <span class="sub">Five words. If a session surprises you, one of them is the reason.</span></p>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section id="pitfalls">
+        <div class="act">03 · Pitfalls &amp; fixes · 8 min</div>
+        <h2>Twelve ways a session goes wrong — and what to do</h2>
+        <p class="lead">Each one is <b>symptom → why → fix</b>. Most of the “why”s are one of the five words above. The first eight are the ones to know by heart; four more are folded underneath.</p>
+        <div class="pits">
+          <div class="pit"><div class="sym">The long session gets slow and strange, then starts forgetting</div>
+            <div class="why"><b>WHY</b>Context is nearly full; compaction summarised away the detail you were relying on.</div>
+            <div class="fix"><b>FIX</b>Have it write progress to a file, then <code>/clear</code> and start the new session from that file. After two failed corrections on the same point, the docs say the same: clear and write a better first prompt [1].</div></div>
+          <div class="pit"><div class="sym">You asked it to change one thing; it changed five</div>
+            <div class="why"><b>WHY</b>The request had no boundary, and the permission mode let edits through without asking.</div>
+            <div class="fix"><b>FIX</b>Say the boundary out loud: “only X, nothing else”. For anything bigger than a sentence, switch to plan mode first (Shift+Tab until the status bar says plan mode) and approve the plan before it touches anything [1][5].</div></div>
+          <div class="pit"><div class="sym">You asked it to “send” the email — and it sent it</div>
+            <div class="why"><b>WHY</b>The verb was <i>send</i>, a sending tool was connected, and nothing stood in the way.</div>
+            <div class="fix"><b>FIX</b>Today: say “draft only, do not send”. Day 3: make it a rule the tool cannot break — a deny on send-type actions — because a line in a file is advice and a hook is a lock [1].</div></div>
+          <div class="pit"><div class="sym">Same question, two different answers</div>
+            <div class="why"><b>WHY</b>No example and no fixed format were given, so it guessed twice; the model is not deterministic.</div>
+            <div class="fix"><b>FIX</b>Give one example of a good result and name the format. Facts that never change go into CLAUDE.md, not into the prompt.</div></div>
+          <div class="pit"><div class="sym">You pasted something sensitive (a pupil’s name, a password)</div>
+            <div class="why"><b>WHY</b>Everything in the context can end up in transcripts, memory files and logs — on your machine and in the tool’s history.</div>
+            <div class="fix"><b>FIX</b>Never paste it. Use placeholders (“the pupil”, “the school”). This whole week runs with a zero-names, zero-credentials rule — practise it in the hands-on.</div></div>
+          <div class="pit"><div class="sym">It said “Done!” — and it wasn’t</div>
+            <div class="why"><b>WHY</b>It reported what it intended to do, and nobody checked. <i>“Claude stops when the work looks done.”</i> [1]</div>
+            <div class="fix"><b>FIX</b>Ask for evidence, not a claim: the command output, the screenshot, the read-back. The docs: <i>“Have Claude show evidence rather than asserting success.”</i> [1] Our house version: “no error” is not “verified”.</div></div>
+          <div class="pit"><div class="sym">You complained about the format but never showed one</div>
+            <div class="why"><b>WHY</b>It can only guess what “nicer” means.</div>
+            <div class="fix"><b>FIX</b>One example beats three adjectives. Paste a result you liked and say “like this”.</div></div>
+          <div class="pit"><div class="sym">You used the wrong model and paid for it</div>
+            <div class="why"><b>WHY</b>Opus was left as the default for a bulk, routine job — or Haiku was asked for a judgment call.</div>
+            <div class="fix"><b>FIX</b>Match the model to the job, and look at status-bar field 4 before you start. Unexpectedly high spend “usually traces back to long sessions that were never cleared or to Opus left as the default model.” [3]</div></div>
+        </div>
+        <details class="more"><summary>Four more we see every week <span class="sub">· 09–12</span></summary>
+        <div class="pits" style="counter-reset:pit 8">
+          <div class="pit"><div class="sym">You assumed it remembered yesterday</div>
+            <div class="why"><b>WHY</b>Sessions do not share memory unless something was written to a file.</div>
+            <div class="fix"><b>FIX</b><code>/resume</code> to pick up the old session, or — better — write the conclusion into a file and start clean.</div></div>
+          <div class="pit"><div class="sym">One message, five jobs; it did two well and lost three</div>
+            <div class="why"><b>WHY</b>The task was too big for one pass and nothing said which part mattered.</div>
+            <div class="fix"><b>FIX</b>One job per ask. Or ask for the plan first and tick the parts off.</div></div>
+          <div class="pit"><div class="sym">The draft came back wrong, so you blamed the AI</div>
+            <div class="why"><b>WHY</b>Nobody checked what it was actually given. <i>“Claude can infer intent, but it can’t read your mind.”</i> [1]</div>
+            <div class="fix"><b>FIX</b>Re-read your own ask against the five elements of rung 2 (next section): role, background, example, format, don’ts. Which one was missing?</div></div>
+          <div class="pit"><div class="sym">ctx is past half and you keep going</div>
+            <div class="why"><b>WHY</b>Compaction will hit in the middle of the task and take half the state with it.</div>
+            <div class="fix"><b>FIX</b>House habit: past 50%, write progress to a file <i>before</i> continuing. See case B below — it happened today.</div></div>
+        </div>
+        </details>
+      </section>
+
+      <!-- 04 -->
+      <section id="rung2">
+        <div class="act">04 · Rung 2 · 10 min</div>
+        <h2>Rung 2 · The prompt: asking well, by hand</h2>
+        <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
+          <ul>
+            <li>Do your best prompts live in a notes file or a sticky note you paste from — and drift a little every time?</li>
+            <li>When a draft comes back wrong, do you blame the AI — or check what you actually gave it?</li>
+            <li>Does a colleague doing the same job get different quality from the same tool? Why would that be?</li>
+          </ul>
+        </div>
+        <p class="lead">Rung 2 is the discovery that <b>how you ask changes everything</b>. A good ask has five parts. You will not need all five every time — but when a result disappoints, one of them is missing.</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Element</th><th>What it is</th><th>One line you might write</th></tr></thead>
+          <tbody>
+            <tr><td class="strong">Role</td><td>Who it is being, for whom</td><td>“You draft replies for our school-support team.”</td></tr>
+            <tr><td class="strong">Background</td><td>The three facts that change the answer</td><td>“The school is asking about a start date we have not confirmed yet.”</td></tr>
+            <tr><td class="strong">Example</td><td>One good result to copy the shape of</td><td>“Here is a reply we sent last term that was about right: …”</td></tr>
+            <tr><td class="strong">Format</td><td>Length, structure, language</td><td>“Under 150 words, British English, warm, sign off as the team.”</td></tr>
+            <tr><td class="strong">Don’ts</td><td>The lines it must not cross</td><td>“Never promise a schedule change — those go to operations.”</td></tr>
+          </tbody>
+        </table></div>
+        <p>The official guidance says the same thing in engineering clothes: scope the task, point to sources, reference an existing pattern, describe the symptom and what “fixed” looks like [1]. And give it something it can check itself against — a test, an example, a screenshot — because <i>“Give Claude a check it can run … It’s the difference between a session you watch and one you walk away from.”</i> [1]</p>
+        <div class="insight"><span class="tag">INSIGHT 02</span>
+          <p>A good prompt is a draft of a rule. If you’ve pasted it three times, it wants to be a file.
+            <span class="sub">The third paste is the signal. That’s the moment rung 3 — tomorrow — is calling.</span></p>
+        </div>
+      </section>
+
+      <!-- 05 -->
+      <section id="cases">
+        <div class="act">05 · Two cases from our desk · 10 min</div>
+        <h2>Case A · One school email, three ways of asking</h2>
+        <p class="cap">The email is a composite. No school, pupil or colleague is named — and that is also the rule for your own hands-on.</p>
+        <p>A school writes: <i>“Can we confirm the start date for the new pupil, and can the Tuesday session move to Thursday?”</i> Three colleagues ask the same tool for a reply.</p>
+        <div class="asks">
+          <div class="ask"><div class="lv">RUNG 1 ASK</div>
+            <div class="txt">“Reply to this email.”</div>
+            <div class="out"><b>What comes back:</b> a confident, friendly reply that <i>confirms the start date</i> (we hadn’t) and <i>agrees to move the session to Thursday</i> (not ours to agree). Three guesses, three chances to be wrong. Ten minutes of editing — or worse, sent as is.</div></div>
+          <div class="ask"><div class="lv">RUNG 2 ASK · ROLE + FORMAT</div>
+            <div class="txt">“You draft replies for our school-support team. Warm, professional, British English, under 150 words. Reply to this email.”</div>
+            <div class="out"><b>What comes back:</b> the right tone and length — but it still confirms the date and agrees to the move, because nothing told it those are not ours to promise.</div></div>
+          <div class="ask good"><div class="lv">RUNG 2 ASK · ALL FIVE</div>
+            <div class="txt">“You draft replies for our school-support team. Background: the start date is not yet confirmed by operations; session changes are decided by operations, not by us. Here is one reply from last term that had the right feel: [example]. Under 150 words, British English, warm. Never confirm a date or a schedule change — say we will come back within two working days. Draft only; do not send.”</div>
+            <div class="out"><b>What comes back:</b> nearly sendable. Acknowledges both questions, promises a reply within two working days, commits to nothing. The difference was never the AI — it was the <b>background</b> and the <b>don’ts</b>.</div></div>
+        </div>
+
+        <h2 style="margin-top:36px">Case B · “Write it down first, then compact”</h2>
+        <p>This morning, one of our AI work-lanes (the Architect lane) had its context past 50% in the middle of a task. The coordinator’s instruction was, word for word: <i>first write your progress to the status board and the hand-over file; when that is done, reply with one line — “saved” — and the sentinel will run <code>/compact</code> for you.</i></p>
+        <p>Why that order and not the other way round? Because <code>/compact</code> produces a <b>summary written by the model</b>: it keeps what it judges important and drops the rest, with no way to tell afterwards what was dropped. A hand-over file is written <i>by the lane, before the loss</i>, and is read back from disk by the next session. The summary is lossy; the file is not. The same habit, scaled down, is the fix for pitfalls 1 and 12 above — and tomorrow it becomes a file called CLAUDE.md.</p>
+        <blockquote>“Anytime we see Claude do something incorrectly we add it to the CLAUDE.md, so Claude knows not to do it next time.”
+          <span class="src">— Boris Cherny, who leads Claude Code at Anthropic, on his team’s shared instruction file [7]</span></blockquote>
+      </section>
+
+      <!-- 06 -->
+      <section id="handson">
+        <div class="act">06 · Hands-on · 5 min · in Claude Code, not the website</div>
+        <h2>Write one prompt you will actually reuse</h2>
+        <p class="lead">Pick <b>the one thing you do most weeks</b> — a reply, a summary, a status note, a checklist. Write it as a five-element prompt, run it once, and paste <b>both the prompt and the result</b> to the Lark group. Zero names, zero credentials.</p>
+        <div class="steps">
+          <div class="step">Open a terminal, go to any folder you own, type <code>claude</code>. Check the status bar: which model, how full is ctx? (Fresh session: it should read near 0%.)</div>
+          <div class="step">Paste the template below and fill the brackets. Keep the <b>Don’ts</b> line — it is the one most people skip.</div>
+          <div class="step">Read the result against your ask. Which element did it ignore? Fix that one line and run it again. One correction, not five.</div>
+          <div class="step">Paste prompt + result to the group. Save the prompt somewhere you will find it tomorrow — you will need it for homework.</div>
+        </div>
+<pre><span class="c">## paste into Claude Code and fill the brackets</span>
+You are [role — e.g. an assistant drafting for our school-support team].
+Task: [the one thing — e.g. draft a reply to the email below].
+Background: [three facts that change the answer — no names].
+Here is one example of a good result: [paste one].
+Format: [length, structure, British English, tone].
+Do not: [one to three lines — e.g. never confirm dates; draft only, do not send].
+Show me the result, then list any assumption you made.
+<span class="c">## the email / input goes here</span></pre>
+        <p class="cap">If you have nothing to hand, use Case A’s email above — it is already anonymised.</p>
+      </section>
+
+      <!-- 07 -->
+      <section id="homework">
+        <div class="act">07 · Homework · one line</div>
+        <div class="homework"><div class="tag">BEFORE TOMORROW</div>
+          <p>Open a fresh session tomorrow, paste the same prompt, and write down what you had to explain <i>again</i>.
+            <span class="sub">That list is the first draft of your CLAUDE.md. Bring it to Day 2.</span></p></div>
+      </section>
+
+      <!-- 08 -->
+      <section id="terms">
+        <div class="act">08 · Term cards</div>
+        <h2>Today’s words</h2>
+        <p class="cap">Same vocabulary as the Ladder page’s term map — nothing new invented here.</p>
+        <div class="terms">
+          <div class="term"><div class="w">Context (window)</div><div class="d">The session’s working memory: everything said, read and run so far. Fixed size; fills up.</div></div>
+          <div class="term"><div class="w">ctx %</div><div class="d">Status-bar field showing how full the context is. Past 50%: write progress to a file.</div></div>
+          <div class="term"><div class="w">/compact</div><div class="d">Summarises the conversation so far to free space. Lossy. Write down first.</div></div>
+          <div class="term"><div class="w">/clear</div><div class="d">Starts a fresh conversation with empty context. Costs nothing. Use between unrelated tasks.</div></div>
+          <div class="term"><div class="w">Model</div><div class="d">Which brain answers. Read it off status-bar field 4; see the list and switch with /model. Pick by the docs’ rule, not by habit.</div></div>
+          <div class="term"><div class="w">Effort</div><div class="d">How long it thinks before answering: low → max. More = slower, costlier, steadier.</div></div>
+          <div class="term"><div class="w">Token</div><div class="d">The billing unit, about ¾ of a word. The whole conversation is re-sent every turn.</div></div>
+          <div class="term"><div class="w">Usage window</div><div class="d">Your rolling 5-hour and 7-day allowance. /usage shows both; the status bar shows them as fields 6–7.</div></div>
+          <div class="term"><div class="w">Prompt</div><div class="d">What you say this time. Five elements: role, background, example, format, don’ts.</div></div>
+          <div class="term"><div class="w">CLAUDE.md</div><div class="d">The instruction file read at the start of every session. What is true every time. Day 2.</div></div>
+          <div class="term"><div class="w">Plan mode</div><div class="d">A permission mode where Claude reads and proposes but changes nothing until you approve. Shift+Tab.</div></div>
+          <div class="term"><div class="w">Status bar</div><div class="d">The one-line dashboard at the bottom of every session: lane, repo, model, ctx, usage, mode.</div></div>
+        </div>
+      </section>
+
+      <!-- 09 -->
+      <section id="refs">
+        <div class="act">09 · Sources</div>
+        <h2>Where today’s claims come from</h2>
+        <div class="refs"><ol>
+          <li>Anthropic, <i>Best practices for Claude Code</i> — <a href="https://code.claude.com/docs/en/best-practices">code.claude.com/docs/en/best-practices</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>How Claude remembers your project</i> (CLAUDE.md &amp; memory) — <a href="https://code.claude.com/docs/en/memory">code.claude.com/docs/en/memory</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Manage costs effectively</i> (tokens, /usage, /compact, model choice) — <a href="https://code.claude.com/docs/en/costs">code.claude.com/docs/en/costs</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Model configuration</i> (/model, aliases, effort levels) — <a href="https://code.claude.com/docs/en/model-config">code.claude.com/docs/en/model-config</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Common workflows</i> (plan mode, /resume, prompt recipes) — <a href="https://code.claude.com/docs/en/common-workflows">code.claude.com/docs/en/common-workflows</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>S. De Simone, <i>“Claude Code creator shares his workflow”</i>, InfoQ — <a href="https://www.infoq.com/news/2026/01/claude-code-creator-workflow/">infoq.com/news/2026/01/claude-code-creator-workflow</a> <span class="dt">2026-01-10</span>; links Boris Cherny’s original thread <a href="https://x.com/bcherny/status/2007179832300581177">x.com/bcherny/status/2007179832300581177</a></li>
+          <li>M. Nuñez, <i>“The creator of Claude Code just revealed his workflow…”</i>, VentureBeat — <a href="https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are">venturebeat.com/…/the-creator-of-claude-code-just-revealed-his-workflow</a> <span class="dt">2026-01-04</span></li>
+          <li>Anthropic, <i>Code w/ Claude 2026 — live coding session with Boris Cherny and Jarred Sumner</i> — <a href="https://claude.com/code-with-claude/session/sf-live-coding-session-with-boris-cherny-and-jarred-sumner">claude.com/code-with-claude/…</a> <span class="dt">2026-05-06</span></li>
+          <li>Purple Ruler, <i>The Ladder</i> — <a href="../the-ladder.html#promptcraft">§03 Rung 2 · The prompt</a> and <a href="../the-ladder.html#cockpit">§09 Commands &amp; status bar</a> (internal)</li>
+        </ol></div>
+      </section>
+
+      <!-- 10 -->
+      <details class="trainer" id="trainer">
+        <summary>Trainer notes <span class="sub">· for the person running the hour · collapsed by default</span></summary>
+        <div class="body">
+          <h4>Minute plan (60)</h4>
+          <ul>
+            <li><b>0–2</b> §00 — show the week table; say the shape of every day once.</li>
+            <li><b>2–5</b> §01 — two SOUND FAMILIAR questions, hands up, move on. Don’t re-teach the Ladder.</li>
+            <li><b>5–20</b> §02 — five words, three minutes each. Read definition, tell the analogy in your own words, ask “when did you last meet this?”. Have a live Claude Code session on screen and point at status-bar fields 4, 5, 6–7 while you talk.</li>
+            <li><b>20–28</b> §03 — don’t read all twelve. Pick 1, 3, 6, 12; ask the room which others they recognise. The page is the reference.</li>
+            <li><b>28–38</b> §04 — five elements table. Ask: “which one do you always skip?” (It is Don’ts.)</li>
+            <li><b>38–48</b> §05 — Case A: read the three asks aloud; let them say where ask 2 still fails before you do. Case B: tell it as a story — the point is <i>order</i>.</li>
+            <li><b>48–53</b> §06 — everyone types. You walk the room. Nobody uses the website.</li>
+            <li><b>53–58</b> three people read out prompt + result. Praise a good Don’ts line.</li>
+            <li><b>58–60</b> §07 homework, one sentence. Point at D2.</li>
+          </ul>
+          <h4>Questions to ask the room</h4>
+          <ul>
+            <li>After Word 1: “What does your ctx say right now? Who has never looked?”</li>
+            <li>After Word 2: “Which of your weekly tasks is intern-grade work you’ve been sending to the partner?”</li>
+            <li>After Case A: “Which sentence in ask 3 stopped the wrong promise?” (The Don’ts line.)</li>
+            <li>After Case B: “If we compacted first and wrote the file second, what would the file be written from?”</li>
+          </ul>
+          <h4>Questions learners usually ask</h4>
+          <ul>
+            <li><b>“Should I just always use Opus?”</b> No — most drafting is Sonnet work; Opus for judgment calls. The bill and the 7-day window are shared across your week.</li>
+            <li><b>“Is compact or clear better?”</b> Neither is “better”. Clear when nothing needs to survive (cheapest, cleanest). Compact when you must keep continuity — and write down first.</li>
+            <li><b>“Where does what I paste go?”</b> Into the session transcript on your machine and possibly into memory files. Treat the prompt box like an email: nothing you wouldn’t forward.</li>
+            <li><b>“It asked me for permission — what do I click?”</b> Read what it wants to do. If it is a file edit in your own folder, fine. If it is sending, deleting or paying, say no today; Day 3 covers how to make that automatic.</li>
+            <li><b>“Can it remember my prompt for next time?”</b> Not on its own. That is literally tomorrow’s session.</li>
+            <li><b>“What is effort, really — is it the same as model?”</b> No. Model is <i>who</i> answers; effort is <i>how long they think</i>. Both move cost.</li>
+          </ul>
+          <h4>Things to have ready</h4>
+          <ul>
+            <li>A live Claude Code session with the status bar visible, ctx near 0%.</li>
+            <li>The Case A email in a text file so people can paste it for the hands-on.</li>
+            <li>The Lark group open for the paste-ins; remind everyone: zero names, zero credentials.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </main>
+</div>
+<script>
+  // highlight current section in the sidebar (same behaviour as the-ladder.html)
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.side .nav'));
+    var ids = links.map(function (a) { return a.getAttribute('href').slice(1); });
+    function update() {
+      var y = window.scrollY + 120, cur = ids[0];
+      ids.forEach(function (id) { var el = document.getElementById(id); if (el && el.offsetTop <= y) cur = id; });
+      links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + cur); });
+    }
+    window.addEventListener('scroll', update, { passive: true }); update();
+  })();
+</script>
+</body>
+</html>

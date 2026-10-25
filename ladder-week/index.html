@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Ladder · Week · Five days, one hour a day · Purple Ruler Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p900:#2c1a52; --p800:#3a2266; --p700:#4b2e83; --p600:#5a3a9e; --p500:#6b4ab8;
+    --p300:#a98fd8; --p100:#ece6f8; --p50:#f6f2fc;
+    --ink:#191324; --muted:#615c70; --faint:#8a8693;
+    --bg:#fbfafd; --card:#ffffff; --line:#e8e6ef; --line2:#efedf5;
+    --green:#1f9d62; --amber:#c2710a;
+    --radius:18px; --radius-sm:10px;
+    --shadow:0 1px 2px rgba(28,18,55,.05),0 22px 48px -28px rgba(44,26,82,.30);
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--ink); font-family:var(--font); letter-spacing:-.011em;
+    -webkit-font-smoothing:antialiased; line-height:1.6; }
+  a { color:var(--p600); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .top { background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff; padding:14px 20px; display:flex; align-items:center; gap:12px; }
+  .top .m { width:28px; height:28px; border-radius:7px; background:#fff; display:grid; place-items:center; color:var(--p700); font-weight:800; font-size:14px; flex:none; }
+  .top .t { font-weight:800; font-size:14.5px; }
+  .top a { color:rgba(255,255,255,.85); margin-left:auto; font-size:12.5px; font-weight:600; white-space:nowrap; }
+  .wrap { max-width:940px; margin:0 auto; padding:0 44px 100px; }
+  @media (max-width:720px){ .wrap { padding:0 16px 80px; } }
+  .hero { padding:60px 0 36px; border-bottom:1px solid var(--line); }
+  .eyebrow { font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--p500); margin-bottom:18px; }
+  h1 { font-size:clamp(36px,5.4vw,58px); font-weight:800; letter-spacing:-.035em; line-height:1.04; margin-bottom:16px; }
+  h1 .dim { color:var(--p300); }
+  .thesis { font-size:18px; color:var(--muted); max-width:640px; }
+  .thesis b { color:var(--ink); }
+  .days { display:grid; gap:12px; margin:36px 0 10px; }
+  .day { display:grid; grid-template-columns:72px 1fr; gap:16px; border:1px solid var(--line); border-radius:var(--radius);
+    background:var(--card); padding:18px 20px; box-shadow:var(--shadow); color:var(--ink); }
+  a.day:hover { text-decoration:none; border-color:var(--p300); }
+  .day .n { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--p500); }
+  .day .n b { display:block; font-size:22px; letter-spacing:-.02em; color:var(--p900); margin-top:2px; }
+  .day .t { font-weight:800; font-size:17px; letter-spacing:-.015em; margin-bottom:4px; }
+  .day .d { font-size:13.5px; color:var(--muted); line-height:1.5; }
+  .day .d b { color:var(--ink); }
+  .day .st { display:inline-block; margin-top:8px; font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; border-radius:6px; padding:3px 8px; }
+  .day .st.live { background:var(--green); color:#fff; }
+  .day .st.soon { background:var(--line2); color:var(--muted); }
+  .day.soon { opacity:.78; }
+  @media (max-width:520px){ .day { grid-template-columns:1fr; gap:6px; } }
+  .shape { margin-top:40px; border:1px solid var(--p100); background:var(--p50); border-radius:var(--radius); padding:18px 20px; max-width:780px; }
+  .shape .k { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em; color:var(--p500); margin-bottom:8px; }
+  .shape ol { padding-left:20px; font-size:14px; line-height:1.6; }
+  .foot { margin-top:36px; font-size:12.5px; color:var(--faint); }
+</style>
+</head>
+<body>
+<div class="top"><div class="m">PR</div><div class="t">The Ladder · Week</div><a href="../the-ladder.html">The Ladder (reference) ↗</a></div>
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow">Purple Ruler · Team Training · The AI-Native Series</div>
+    <h1>The Ladder <span class="dim">/ week</span></h1>
+    <p class="thesis"><a href="../the-ladder.html">The Ladder</a> described six rungs in one sitting. This week we <b>climb them</b>: five days, one hour a day, everyone, in Claude Code, on our own work. Each day ends with something you made and can paste to the group.</p>
+  </header>
+
+  <div class="days">
+    <a class="day" href="d1.html">
+      <div class="n">DAY<b>1</b></div>
+      <div><div class="t">Foundations &amp; the prompt</div>
+        <div class="d">The five words you need before you type — <b>context, model, effort, token, instruction file</b> — twelve ways a session goes wrong and what to do, then rung 2: asking well, by hand. Hands-on: one reusable prompt you ran yourself.</div>
+        <span class="st live">LIVE</span></div>
+    </a>
+    <div class="day soon">
+      <div class="n">DAY<b>2</b></div>
+      <div><div class="t">Rung 3 · Context: write it down once</div>
+        <div class="d">CLAUDE.md, memory and project files — and why the third paste is the signal. Hands-on: the first version of your own role’s CLAUDE.md.</div>
+        <span class="st soon">COMING</span></div>
+    </div>
+    <div class="day soon">
+      <div class="n">DAY<b>3</b></div>
+      <div><div class="t">Rung 4 · The harness: rules that can’t be broken</div>
+        <div class="d">Plan mode, permissions, hooks, self-verification, review gates. Hands-on: set one rule — “draft, never send” — and trigger it.</div>
+        <span class="st soon">COMING</span></div>
+    </div>
+    <div class="day soon">
+      <div class="n">DAY<b>4</b></div>
+      <div><div class="t">Rung 5 · The loop: work that governs itself</div>
+        <div class="d">Hand-over files, saving before compact, subagents, the decision desk, notify-and-respond. Hands-on: write a hand-over note a colleague can work from cold.</div>
+        <span class="st soon">COMING</span></div>
+    </div>
+    <div class="day soon">
+      <div class="n">DAY<b>5</b></div>
+      <div><div class="t">Rung 6 · The environment: mistakes become rules</div>
+        <div class="d">Compound engineering, /insights, the weekly review. Hands-on: turn one of this week’s mistakes into a rule in a file.</div>
+        <span class="st soon">COMING</span></div>
+    </div>
+  </div>
+
+  <div class="shape"><div class="k">THE SHAPE OF EVERY DAY · 60 MIN</div>
+    <ol>
+      <li>Recap yesterday’s homework (5)</li>
+      <li>Concept (20)</li>
+      <li>A real case from our own desk, anonymised (10)</li>
+      <li>Five minutes hands-on in Claude Code — something you can paste to the group (5)</li>
+      <li>One line of homework</li>
+      <li>Term cards</li>
+    </ol></div>
+  <p class="foot">Purple Ruler · Team training · Same vocabulary as the Ladder page. No school, pupil or colleague is named anywhere in this series.</p>
+</div>
+</body>
+</html>
