@@ -189,6 +189,67 @@
   .step::before { counter-increment:st; content:counter(st); position:absolute; left:14px; top:10px; width:20px; height:20px; border-radius:6px;
     background:var(--p700); color:#fff; font-family:var(--mono); font-size:10.5px; font-weight:700; display:grid; place-items:center; }
 </style>
+<style>
+  /* ---- v2 additions: figures, cards, cases ---- */
+  figure.fig { margin:14px 0 18px; max-width:820px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); padding:14px 16px 10px; }
+  figure.fig svg { width:100%; height:auto; display:block; font-family:var(--font); }
+  figure.fig figcaption { font-size:12.5px; color:var(--muted); margin-top:8px; line-height:1.5; }
+  figure.fig figcaption b { color:var(--ink); }
+  .fig2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:860px; }
+  @media (max-width:760px){ .fig2 { grid-template-columns:1fr; } }
+  .fig2 figure.fig { margin:0; }
+  .svgt { font-size:11px; fill:var(--muted); }
+  .svgT { font-size:12px; font-weight:700; fill:var(--ink); }
+  .svgM { font-family:var(--mono); font-size:10px; font-weight:700; fill:var(--p600); letter-spacing:.08em; }
+  .svgp { fill:none; stroke:var(--p600); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+  .svgg { fill:none; stroke:var(--line); stroke-width:1; }
+  .svgax { fill:none; stroke:var(--faint); stroke-width:1.2; }
+  .svgr { fill:none; stroke:var(--red); stroke-width:2.5; stroke-linecap:round; stroke-dasharray:5 4; }
+  .svgfill { fill:var(--p100); }
+  .svgbox { fill:var(--card); stroke:var(--p300); stroke-width:1.2; }
+  .svgbox2 { fill:var(--p50); stroke:var(--p100); stroke-width:1; }
+  .svgbad { fill:#fdf1f0; stroke:#e5b9b5; stroke-width:1.2; }
+  .svgok { fill:#edf8f1; stroke:#b9e3c8; stroke-width:1.2; }
+  .ctr { display:grid; gap:10px; margin:14px 0 8px; max-width:860px; }
+  .ci { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 16px; display:grid; grid-template-columns:40px 1fr; gap:12px; }
+  .ci .n { font-family:var(--mono); font-size:11px; font-weight:700; color:#fff; background:var(--p700); border-radius:8px; height:28px; display:grid; place-items:center; }
+  .ci .t { font-weight:800; font-size:14.5px; letter-spacing:-.01em; margin-bottom:3px; }
+  .ci .d { font-size:13px; color:var(--muted); line-height:1.5; }
+  .ci .d b { color:var(--ink); }
+  .ci .so { display:block; font-size:11.5px; color:var(--faint); margin-top:4px; }
+  .ci figure.fig { grid-column:1 / -1; margin:6px 0 0; padding:10px 12px 6px; }
+  .cases { display:grid; gap:14px; margin:14px 0 8px; max-width:860px; }
+  .case { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden; }
+  .case .hd { display:flex; gap:12px; align-items:baseline; padding:12px 18px 10px; background:var(--p50); border-bottom:1px solid var(--p100); flex-wrap:wrap; }
+  .case .hd .n { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p500); }
+  .case .hd .t { font-weight:800; font-size:16px; letter-spacing:-.015em; color:var(--p900); }
+  .case .hd .w { margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--faint); }
+  .case .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; }
+  @media (max-width:760px){ .case .g3 { grid-template-columns:1fr; } }
+  .case .g3 > div { padding:12px 16px; border-right:1px solid var(--line2); font-size:13px; line-height:1.5; }
+  .case .g3 > div:last-child { border-right:none; }
+  @media (max-width:760px){ .case .g3 > div { border-right:none; border-bottom:1px solid var(--line2); } .case .g3 > div:last-child { border-bottom:none; } }
+  .case .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; display:block; margin-bottom:5px; }
+  .case .bad .k { color:var(--red); } .case .good .k { color:var(--green); } .case .why .k { color:var(--p600); }
+  .case .q { font-style:italic; color:var(--ink); }
+  .case .bad { background:#fffafa; } .case .good { background:#f7fcf9; }
+  .ba { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0 8px; max-width:860px; }
+  @media (max-width:640px){ .ba { grid-template-columns:1fr; } }
+  .bac { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:11px 14px; font-size:13px; line-height:1.5; }
+  .bac .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--p600); display:block; margin-bottom:4px; }
+  .bac .b { color:var(--red); font-style:italic; display:block; margin-bottom:4px; }
+  .bac .g { color:var(--ink); font-style:italic; display:block; }
+  .bac .b::before { content:"✗ "; font-style:normal; } .bac .g::before { content:"✓ "; color:var(--green); font-style:normal; }
+  .concept .rows .k { white-space:nowrap; }
+  .step, .ci, .ci > div, .case .g3 > div { min-width:0; }
+  .step code, .ci code { white-space:normal; overflow-wrap:anywhere; }
+  .cmp { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 6px; }
+  @media (max-width:640px){ .cmp { grid-template-columns:1fr; } }
+  .cmp > div { border-radius:var(--radius-sm); padding:10px 12px; font-size:12.5px; line-height:1.5; }
+  .cmp .hi { background:#fdf1f0; border:1px solid #e5b9b5; } .cmp .lo { background:#edf8f1; border:1px solid #b9e3c8; }
+  .cmp .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; display:block; margin-bottom:4px; }
+  .cmp .hi .k { color:var(--red); } .cmp .lo .k { color:var(--green); }
+</style>
 </head>
 <body>
 
@@ -199,16 +260,18 @@
     <a class="brand" href="index.html"><div class="m">PR</div>The Ladder · Week</a>
     <div class="grp">Day 1 · 60 minutes</div>
     <a class="nav" href="#why"><span class="n">00</span>Why this week<span class="min">2′</span></a>
-    <a class="nav" href="#rung1"><span class="n">01</span>Rung 1 in three minutes<span class="min">3′</span></a>
-    <a class="nav" href="#words"><span class="n">02</span>Five words you need<span class="min">15′</span></a>
-    <a class="nav" href="#pitfalls"><span class="n">03</span>Pitfalls &amp; fixes<span class="min">8′</span></a>
-    <a class="nav" href="#rung2"><span class="n">04</span>Rung 2 · Asking well<span class="min">10′</span></a>
-    <a class="nav" href="#cases"><span class="n">05</span>Two cases from our desk<span class="min">10′</span></a>
-    <a class="nav" href="#handson"><span class="n">06</span>Hands-on<span class="min">5′</span></a>
-    <a class="nav" href="#homework"><span class="n">07</span>Homework<span class="min">1′</span></a>
-    <a class="nav" href="#terms"><span class="n">08</span>Term cards</a>
-    <a class="nav" href="#refs"><span class="n">09</span>Sources</a>
-    <a class="nav" href="#trainer"><span class="n">10</span>Trainer notes</a>
+    <a class="nav" href="#rung1"><span class="n">01</span>Rung 1 in two minutes<span class="min">2′</span></a>
+    <a class="nav" href="#words"><span class="n">02</span>Nine term cards<span class="min">18′</span></a>
+    <a class="nav" href="#hooks"><span class="n">03</span>What a hook physically does<span class="min">4′</span></a>
+    <a class="nav" href="#skills"><span class="n">04</span>Skills: auto or by hand?<span class="min">3′</span></a>
+    <a class="nav" href="#pitfalls"><span class="n">05</span>Pitfalls &amp; fixes<span class="min">4′</span></a>
+    <a class="nav" href="#rung2"><span class="n">06</span>Rung 2 · Asking well<span class="min">5′</span></a>
+    <a class="nav" href="#cases"><span class="n">07</span>Five cases from our desk<span class="min">10′</span></a>
+    <a class="nav" href="#handson"><span class="n">08</span>Hands-on<span class="min">5′</span></a>
+    <a class="nav" href="#homework"><span class="n">09</span>Homework<span class="min">1′</span></a>
+    <a class="nav" href="#terms"><span class="n">10</span>Term cards</a>
+    <a class="nav" href="#refs"><span class="n">11</span>Sources</a>
+    <a class="nav" href="#trainer"><span class="n">12</span>Trainer notes</a>
     <div class="side-foot">Purple Ruler · Team training<br>
       <b>Day 1 of 5</b> · <a href="../the-ladder.html">The Ladder (reference page)</a></div>
   </aside>
@@ -219,14 +282,14 @@
       <header class="hero">
         <div class="eyebrow">Purple Ruler · The Ladder Week · Day 1 of 5</div>
         <h1>Foundations <span class="dim">&amp; the prompt</span></h1>
-        <p class="thesis">Before anyone can <b>ask well</b>, they need to know what they are talking to. Today: the five words that explain almost everything that happens in a Claude Code session, the twelve ways a session goes wrong and what to do about each, and then rung 2 of <a href="../the-ladder.html">the Ladder</a> — <b>asking well, by hand</b>. You leave with one reusable prompt that you ran yourself.</p>
+        <p class="thesis">Before anyone can <b>ask well</b>, they need to know what they are talking to. Today: nine words that explain almost everything a Claude Code session does — each with a picture, a counter-intuitive fact, and what it looks like in a real project — then the ways a session goes off the rails, and rung 2 of <a href="../the-ladder.html">the Ladder</a>: <b>asking well, by hand</b>. You leave with one reusable prompt that you ran yourself.</p>
         <div class="plan">
-          <div class="q"><div class="k">00–01</div><p>Why this week · Rung 1 recap<span class="mn">5 min</span></p></div>
-          <div class="q"><div class="k">02</div><p>Five words you need<span class="mn">15 min</span></p></div>
-          <div class="q"><div class="k">03</div><p>Pitfalls &amp; fixes<span class="mn">8 min</span></p></div>
-          <div class="q"><div class="k">04–05</div><p>Rung 2 · Asking well · Two cases<span class="mn">20 min</span></p></div>
-          <div class="q"><div class="k">06</div><p>Hands-on in Claude Code<span class="mn">5 min</span></p></div>
-          <div class="q"><div class="k">07–08</div><p>Homework · Term cards<span class="mn">2 min</span></p></div>
+          <div class="q"><div class="k">00–01</div><p>Why · Rung 1 recap<span class="mn">4 min</span></p></div>
+          <div class="q"><div class="k">02</div><p>Nine term cards<span class="mn">18 min</span></p></div>
+          <div class="q"><div class="k">03–04</div><p>Hooks · Skills<span class="mn">7 min</span></p></div>
+          <div class="q"><div class="k">05–06</div><p>Pitfalls · Rung 2<span class="mn">9 min</span></p></div>
+          <div class="q"><div class="k">07</div><p>Five cases<span class="mn">10 min</span></p></div>
+          <div class="q"><div class="k">08–09</div><p>Hands-on · Homework<span class="mn">6 min</span></p></div>
         </div>
       </header>
 
@@ -234,23 +297,26 @@
       <section id="why">
         <div class="act">00 · Why this week · 2 min</div>
         <h2>Five days, one ladder, one hour a day</h2>
-        <p class="lead">Everyone here already uses AI. <a href="../the-ladder.html">The Ladder</a> showed six rungs — chatbox → prompt → context → harness → loop → environment — and argued that the gap between a quick answer and a working system is <b>which rung you hold the tool from</b>. This week we climb it one rung a day, together, in Claude Code, on our own work.</p>
-        <div class="table-scroll"><table>
-          <thead><tr><th>Day</th><th>Rung</th><th>You leave with</th></tr></thead>
-          <tbody>
-            <tr><td class="strong">D1 · today</td><td>Foundations + Rung 2 · The prompt</td><td>One reusable prompt you ran yourself, pasted to the group</td></tr>
-            <tr><td class="strong">D2</td><td>Rung 3 · Context</td><td>Your own first CLAUDE.md</td></tr>
-            <tr><td class="strong">D3</td><td>Rung 4 · The harness</td><td>One rule that can’t be broken (“draft, never send”)</td></tr>
-            <tr><td class="strong">D4</td><td>Rung 5 · The loop</td><td>A hand-over note a colleague can work from cold</td></tr>
-            <tr><td class="strong">D5</td><td>Rung 6 · The environment</td><td>One of this week’s mistakes turned into a rule in a file</td></tr>
-          </tbody>
-        </table></div>
-        <p class="cap">Every day has the same shape: recap → concept → a real case from our own desk → five minutes hands-on → one line of homework → term cards.</p>
+        <p class="lead">Everyone here already uses AI. <a href="../the-ladder.html">The Ladder</a> showed six rungs and argued that the gap between a quick answer and a working system is <b>which rung you hold the tool from</b>. This week we climb it one rung a day, together, in Claude Code, on our own work.</p>
+        <figure class="fig">
+          <svg viewBox="0 0 820 230" role="img" aria-label="Five days climbing five rungs of the ladder">
+            <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b4ab8"/></marker></defs>
+            <g class="svgg"><line x1="40" y1="200" x2="780" y2="200"/></g>
+            <rect x="60" y="150" width="120" height="50" rx="8" class="svgbox"/><text x="120" y="172" text-anchor="middle" class="svgM">DAY 1</text><text x="120" y="190" text-anchor="middle" class="svgt">Foundations + Prompt</text>
+            <rect x="200" y="120" width="120" height="80" rx="8" class="svgbox2"/><text x="260" y="146" text-anchor="middle" class="svgM">DAY 2</text><text x="260" y="164" text-anchor="middle" class="svgt">Context</text><text x="260" y="180" text-anchor="middle" class="svgt">CLAUDE.md</text>
+            <rect x="340" y="90" width="120" height="110" rx="8" class="svgbox2"/><text x="400" y="116" text-anchor="middle" class="svgM">DAY 3</text><text x="400" y="134" text-anchor="middle" class="svgt">Harness</text><text x="400" y="150" text-anchor="middle" class="svgt">rules that lock</text>
+            <rect x="480" y="60" width="120" height="140" rx="8" class="svgbox2"/><text x="540" y="86" text-anchor="middle" class="svgM">DAY 4</text><text x="540" y="104" text-anchor="middle" class="svgt">Loop</text><text x="540" y="120" text-anchor="middle" class="svgt">hand-over · compact</text>
+            <rect x="620" y="30" width="120" height="170" rx="8" class="svgbox2"/><text x="680" y="56" text-anchor="middle" class="svgM">DAY 5</text><text x="680" y="74" text-anchor="middle" class="svgt">Environment</text><text x="680" y="90" text-anchor="middle" class="svgt">mistakes → rules</text>
+            <path d="M120,140 C150,110 190,100 250,105 S350,70 400,75 S500,40 540,45 S640,15 680,18" class="svgp" marker-end="url(#arr)"/>
+            <text x="60" y="222" class="svgt">Each day ends with something you made and can paste to the group.</text>
+          </svg>
+          <figcaption><b>Figure 1 · The week.</b> Today is the bottom step on purpose: vocabulary first, then one hand-written prompt. Everything after builds on both.</figcaption>
+        </figure>
       </section>
 
       <!-- 01 -->
       <section id="rung1">
-        <div class="act">01 · Rung 1 recap · 3 min</div>
+        <div class="act">01 · Rung 1 recap · 2 min</div>
         <h2>Rung 1 · The chatbox: everything evaporates</h2>
         <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
           <ul>
@@ -258,132 +324,523 @@
             <li>A great answer last week — and you can’t find it, so you start over?</li>
           </ul>
         </div>
-        <p>Rung 1 is where everyone starts: open a chat, type a question, get an answer, close the tab. It works. The problem is not the answers — it is that <b>nothing survives</b>. Every explanation, every correction, every “no, our schools call it a placement, not a booking” is gone the moment the session ends. The tool stays a stranger.</p>
-        <p>The whole of this week is about moving things <b>out of the chat and into something that lasts</b>: first a reusable prompt (today), then a file (tomorrow), then rules the tool cannot break (Day 3). But first, five words.</p>
+        <p>Rung 1 is where everyone starts: open a chat, type, get an answer, close the tab. The answers are fine; the problem is that <b>nothing survives</b>. The docs say it plainly: <i>“Each new session starts with a fresh context window, without the conversation history from previous sessions.”</i> [17] The whole week is about moving things <b>out of the chat and into something that lasts</b> — a reusable prompt today, a file tomorrow, rules the tool cannot break on Day 3.</p>
       </section>
 
       <!-- 02 -->
       <section id="words">
-        <div class="act">02 · Concepts · 15 min</div>
-        <h2>Five words you need before you type</h2>
-        <p class="lead">Almost every confusing thing a Claude Code session does — getting slow, “forgetting”, costing more than expected, answering differently today than yesterday — comes back to one of these five. Each gets <b>one plain definition, one everyday analogy, and when you will actually meet it</b>.</p>
+        <div class="act">02 · Nine term cards · 18 min</div>
+        <h2>Nine words you need before you type</h2>
+        <p class="lead">Each card has the same five rows: <b>definition</b> (the official sentence), <b>analogy</b>, <b>counter-intuitive</b> (the thing people get wrong), <b>in a real project</b> (Anthropic’s own teams), and <b>at Purple Ruler</b> (what it corresponds to in our repos — zero names, zero credentials).</p>
 
         <div class="concepts">
 
+          <!-- T1 -->
           <div class="concept">
-            <div class="hd"><span class="n">WORD 1</span><span class="w">Context</span><span class="cmd">/compact · /clear · /resume</span></div>
+            <div class="hd"><span class="n">T1</span><span class="w">Context window</span><span class="cmd">/context · ctx % on the status bar</span></div>
             <div class="rows">
-              <div class="k">Definition</div><div>The session’s <b>working memory</b>: everything said so far, every file it read, every command output. It has a fixed size. It fills up. When it is nearly full, Claude Code either <b>summarises</b> it (<code>/compact</code>) or you <b>wipe</b> it and start again (<code>/clear</code>).</div>
-              <div class="k">Analogy</div><div>A whiteboard in a meeting room. Useful while there is space. When it is full you either photograph it and wipe it (compact — you keep a <i>picture</i>, not the board) or walk into a fresh room (clear — nothing comes with you except what you wrote down on paper).</div>
-              <div class="k">When you meet it</div><div>The <b>ctx %</b> field on the status bar. A session that gets slower and starts contradicting itself. Being told “ctx is over 50% — write your progress to a file first”. The official guidance puts it bluntly: <i>“Claude’s context window fills up fast, and performance degrades as it fills.”</i> [1]</div>
-              <div class="k">House rule</div><div><b>Before you compact, write the state down.</b> The summary is lossy; the file is not. <code>/clear</code> costs nothing; <code>/compact</code> on a big session is itself a big request [3].</div>
+              <div class="k">Definition</div><div><i>“Claude’s context window holds your conversation history, file contents, command outputs, CLAUDE.md, auto memory, loaded skills, and system instructions.”</i> [17] Before you type anything, CLAUDE.md, auto memory, MCP tool names and skill descriptions are already in it [16]. Numbers: auto memory loads only its first 200 lines or 25 KB [17]; after compaction the five most recently touched files are re-read, over 5,000 tokens as a path only [16]; current models compact automatically near their limit instead of ending your session [16].</div>
+              <div class="k">Analogy</div><div>A whiteboard in a meeting room. Useful while there is space. When it is full you photograph it and wipe it (compact — you keep a <i>picture</i>), or you walk into a fresh room (clear — nothing comes except what you wrote on paper).</div>
+              <div class="k">Counter-intuitive</div><div>A big window is not permission to ignore it: <i>“LLM performance degrades as context fills”</i> [1]; Anthropic’s engineers call it an <i>“attention budget”</i> and note that as context grows <i>“the model’s ability to accurately recall information from that context decreases”</i> [14]. And the summary <i>“keeps your requests and key code snippets, but detailed instructions from early in the conversation may be lost”</i> [17] — so rules you need to keep go in CLAUDE.md, not in the chat. One enormous file or tool output can make compaction spin; Claude Code stops with a thrashing error rather than loop forever [17].</div>
+              <div class="k">In a real project</div><div>Run <code>/context</code> to see who is using the space. Anthropic’s own pattern is to hand investigation to a <b>subagent</b> that reads in its own window and returns a summary, keep MCP tool definitions deferred, and load skills on demand [17][16].</div>
+              <div class="k">At Purple Ruler</div><div>The hand-over file every lane writes before it compacts (case B), and the rule “ctx past 50 % → write state to disk first”.</div>
+            </div>
+            <div class="fig2" style="padding:0 16px 14px">
+              <figure class="fig">
+                <svg viewBox="0 0 400 210" role="img" aria-label="Context cup filling, then compact pours half away">
+                  <text x="12" y="18" class="svgM">THE CUP</text>
+                  <path d="M40,40 L40,180 Q40,196 56,196 L124,196 Q140,196 140,180 L140,40" class="svgax"/>
+                  <rect x="42" y="92" width="96" height="102" rx="6" class="svgfill"/>
+                  <text x="90" y="84" text-anchor="middle" class="svgt">ctx 78%</text>
+                  <text x="90" y="135" text-anchor="middle" class="svgt">prompt · files</text><text x="90" y="151" text-anchor="middle" class="svgt">outputs · chat</text>
+                  <path d="M160,118 L222,118" class="svgp" marker-end="url(#arr)"/><text x="191" y="108" text-anchor="middle" class="svgM">/compact</text>
+                  <path d="M250,40 L250,180 Q250,196 266,196 L334,196 Q350,196 350,180 L350,40" class="svgax"/>
+                  <rect x="252" y="150" width="96" height="44" rx="6" class="svgfill"/>
+                  <text x="300" y="140" text-anchor="middle" class="svgt">ctx 28%</text>
+                  <text x="300" y="176" text-anchor="middle" class="svgt">summary</text>
+                  <text x="300" y="62" text-anchor="middle" class="svgt" style="fill:#cf2e25">details gone</text>
+                  <text x="300" y="78" text-anchor="middle" class="svgt" style="fill:#cf2e25">(you can’t see which)</text>
+                </svg>
+                <figcaption><b>Figure 2 · Compact is lossy.</b> The summary keeps what the model judged important. A file you wrote keeps what <i>you</i> judged important.</figcaption>
+              </figure>
+              <figure class="fig">
+                <svg viewBox="0 0 400 210" role="img" aria-label="Timeline of a session: startup loads, file reads grow context, subagent keeps reads outside, compact replaces with summary">
+                  <text x="12" y="18" class="svgM">ONE SESSION, START TO COMPACT</text>
+                  <line x1="20" y1="170" x2="385" y2="170" class="svgax"/>
+                  <rect x="24" y="130" width="56" height="40" class="svgbox2"/><text x="52" y="188" text-anchor="middle" class="svgt">startup</text><text x="52" y="152" text-anchor="middle" class="svgt" style="font-size:9.5px">CLAUDE.md</text><text x="52" y="163" text-anchor="middle" class="svgt" style="font-size:9.5px">memory·tools</text>
+                  <rect x="88" y="100" width="56" height="70" class="svgbox2"/><text x="116" y="188" text-anchor="middle" class="svgt">read files</text>
+                  <rect x="152" y="70" width="56" height="100" class="svgbox2"/><text x="180" y="188" text-anchor="middle" class="svgt">more reads</text>
+                  <rect x="216" y="70" width="56" height="100" class="svgbox2"/><text x="244" y="188" text-anchor="middle" class="svgt">subagent</text>
+                  <rect x="226" y="30" width="36" height="34" rx="4" class="svgbox" style="stroke-dasharray:3 3"/><text x="244" y="51" text-anchor="middle" class="svgt" style="font-size:9px">its own</text><text x="244" y="60" text-anchor="middle" class="svgt" style="font-size:9px">window</text>
+                  <rect x="280" y="126" width="56" height="44" class="svgfill"/><text x="308" y="188" text-anchor="middle" class="svgt">/compact</text>
+                  <text x="308" y="118" text-anchor="middle" class="svgt" style="font-size:9.5px">summary</text>
+                  <text x="350" y="142" class="svgt" style="font-size:9.5px">back from</text><text x="350" y="153" class="svgt" style="font-size:9.5px">disk:</text><text x="350" y="164" class="svgt" style="font-size:9.5px">CLAUDE.md</text>
+                </svg>
+                <figcaption><b>Figure 3 · What survives compaction.</b> Root CLAUDE.md, auto memory and the plan come back from disk; five recent files are re-read; nested CLAUDE.md and path-scoped rules are summarised away — keep must-survive rules in the root file [16].</figcaption>
+              </figure>
+            </div>
+            <div class="rows" style="border-top:1px solid var(--line2)">
+              <div class="k">When to compact</div><div>Official current advice [16][1]: it compacts <b>automatically</b> near the limit. Better: compact <b>earlier, with a focus</b> — <code>/compact focus on the auth bug fix</code> <i>before</i> starting a long new task, so the summary keeps what you chose; <code>/rewind</code> to summarise only part of the conversation; <code>/autocompact 500k</code> to move the threshold. Between <b>unrelated</b> tasks don’t compact, <code>/clear</code>: <i>“Old conversation crowds out the files you need next and costs tokens on every message.”</i> [16] After two failed corrections it is not compact either — it is <code>/clear</code> plus a better first prompt [1]. And tell CLAUDE.md what compaction must keep: <i>“When compacting, always preserve the full list of modified files and any test commands.”</i> [1]</div>
             </div>
           </div>
 
+          <!-- T2 -->
           <div class="concept">
-            <div class="hd"><span class="n">WORD 2</span><span class="w">Model</span><span class="cmd">/model</span></div>
+            <div class="hd"><span class="n">T2</span><span class="w">Model</span><span class="cmd">/model · status-bar field 4</span></div>
             <div class="rows">
-              <div class="k">Definition</div><div><b>Which brain</b> is answering this session. There is always more than one on offer, they differ in depth, speed and price, and the list changes over time — so the truth is never a slide, it is <b>two places you can look right now</b>: status-bar field 4 tells you which one you are on; <code>/model</code> with no argument opens the picker and lists what you can switch to [4]. For how to choose, use the docs’ own words rather than folklore: <i>“Sonnet handles most coding tasks well and costs less than Opus. Reserve Opus for complex architectural decisions or multi-step reasoning”</i>, and Haiku is for <i>“fast, simple tasks”</i> [3][4].</div>
-              <div class="k">Analogy</div><div>A firm’s staff list. Different people cost different amounts per hour and are good at different things — and the list on the wall today is the only one that counts, not the one you remember from last year.</div>
-              <div class="k">When you meet it</div><div>Field 4 of the status bar. Answer quality that swings for no reason. A usage window that empties faster than you expected. Switching: <code>/model &lt;name&gt;</code> switches at once; in the picker, Enter also saves it as your default [4]. On the day this page was written the docs resolve <code>opus</code>, <code>sonnet</code> and <code>haiku</code> to Opus 5.5, Sonnet 5.5 and Haiku 5.5 [4] — check the picker, not this sentence.</div>
+              <div class="k">Definition</div><div><b>Which brain</b> is answering. The official aliases: <code>sonnet</code> <i>“for daily coding tasks”</i>; <code>opus</code> <i>“for complex reasoning tasks”</i>; <code>haiku</code> <i>“the fast and efficient Haiku model for simple tasks”</i>; <code>fable</code> <i>“for your hardest and longest-running tasks”</i>, <i>“suited to tasks larger than a single sitting”</i> — root-cause investigations, outage debugging, architecture decisions; <code>opusplan</code> plans on Opus, executes on Sonnet [4]. The list changes; the picker is the truth, not this card.</div>
+              <div class="k">Analogy</div><div>A firm’s staff list. Different people cost different amounts per hour and are good at different things — and the list on the wall today is the only one that counts.</div>
+              <div class="k">Counter-intuitive</div><div>① Bigger is not better: <i>“Sonnet handles most coding tasks well and costs less than Opus. Reserve Opus for complex architectural decisions or multi-step reasoning.”</i> [3] Across enterprises the average is about $13 per developer per active day, 90 % under $30 — and <i>“unexpectedly high spend … usually traces back to long sessions that were never cleared or to Opus left as the default model”</i> [3]. ② Switch to Opus and your <b>subagents follow</b> — research and test runs then cost Opus prices too [4]. ③ A <i>weekly</i> limit is shared by all models, so switching does nothing; an <i>Opus</i> limit can be worked around by switching family [3].</div>
+              <div class="k">In a real project</div><div>Anthropic’s guidance for parallel work: <i>“Use Sonnet for teammates”</i>, and <code>model: haiku</code> in a subagent definition for simple delegated tasks [3]. Their growth-marketing team runs two specialised sub-agents over ad CSVs — <i>“hundreds of new ads in minutes instead of hours”</i> [15].</div>
+              <div class="k">At Purple Ruler</div><div>Fourteen lanes, each with its own model shown on the status bar; the orchestrator plans on the strong model and dispatches routine lanes on the cheaper one — same shape as <code>opusplan</code>.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 200" role="img" aria-label="Four models as a staircase by task complexity, with a cost warning">
+                <text x="20" y="22" class="svgM">PICK BY THE JOB, NOT BY HABIT</text>
+                <line x1="60" y1="170" x2="780" y2="170" class="svgax"/><text x="420" y="192" text-anchor="middle" class="svgt">task complexity →   (and, roughly, cost per answer →)</text>
+                <rect x="80" y="120" width="140" height="50" rx="8" class="svgok"/><text x="150" y="142" text-anchor="middle" class="svgT">Haiku</text><text x="150" y="160" text-anchor="middle" class="svgt">fast · simple tasks</text>
+                <rect x="250" y="95" width="140" height="75" rx="8" class="svgbox2"/><text x="320" y="118" text-anchor="middle" class="svgT">Sonnet</text><text x="320" y="136" text-anchor="middle" class="svgt">daily work · most tasks</text><text x="320" y="154" text-anchor="middle" class="svgt">“use for teammates”</text>
+                <rect x="420" y="70" width="140" height="100" rx="8" class="svgbox2"/><text x="490" y="94" text-anchor="middle" class="svgT">Opus</text><text x="490" y="112" text-anchor="middle" class="svgt">complex reasoning</text><text x="490" y="130" text-anchor="middle" class="svgt">architecture decisions</text>
+                <rect x="590" y="40" width="160" height="130" rx="8" class="svgbox"/><text x="670" y="64" text-anchor="middle" class="svgT">Fable</text><text x="670" y="82" text-anchor="middle" class="svgt">longer than one sitting</text><text x="670" y="100" text-anchor="middle" class="svgt">outages · root causes</text><text x="670" y="118" text-anchor="middle" class="svgt">not any plan’s default</text>
+                <rect x="420" y="30" width="140" height="28" rx="6" class="svgbad"/><text x="490" y="48" text-anchor="middle" class="svgt" style="fill:#cf2e25">left as default = bill #1</text>
+              </svg>
+              <figcaption><b>Figure 4 · The staircase.</b> Alias descriptions from the docs [4]; the warning is the docs’ own diagnosis of surprise bills [3].</figcaption>
+            </figure>
+          </div>
+
+          <!-- T3 -->
+          <div class="concept">
+            <div class="hd"><span class="n">T3</span><span class="w">Effort</span><span class="cmd">/effort · inside /model</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>How much work it puts into the whole answer — <i>“The effort parameter affects all tokens in the response”</i>: thinking, the text, and the tool calls. Low effort tends to <i>“combine multiple operations into fewer tool calls … proceed directly to action without preamble”</i>; high effort tends to <i>“make more tool calls … explain the plan before taking action”</i>. <i>“Effort is a behavioral signal, not a strict token budget.”</i> [11] The Claude Code table reads like a supervision scale: <code>low</code> <i>“Quick exchanges where you review each result”</i>; <code>medium</code> <i>“day-to-day engineering work with a clear scope”</i>; <code>high</code> <i>“Work where verification matters or edge cases are likely”</i>; <code>xhigh</code> <i>“Deeper reasoning at higher token spend”</i>; <code>max</code> <i>“Hard problems you want Claude to work through without you … test before adopting it broadly”</i> [4]. Defaults: medium on Opus 5.5 / Sonnet 5.5 / Haiku 5.5, high elsewhere [4].</div>
+              <div class="k">Analogy</div><div><b>Briefing a new colleague.</b> Standing next to them, correcting any slip at once — you want a quick answer now. Walking into a two-hour meeting without looking back — you want them to think it through before touching anything. The right amount of thinking follows <b>how far you step away</b>, not how important the task feels.</div>
+              <div class="k">Counter-intuitive</div><div>① <code>max</code> <i>“adds significant cost for relatively small quality gains, and on some structured-output or less intelligence-sensitive tasks it can lead to overthinking”</i> [11]. ② Low is not dumb: on Fable 5 <i>“lower effort settings … often exceed xhigh performance on prior models”</i> [11]. ③ On Opus 5 <i>“changing effort does not reliably shorten responses”</i> — ask for length directly [11]. ④ The longer you step away the <i>less</i> you can use low: Haiku 5.5 at low is <i>“more likely to skip a search, stop early, or skip a check”</i> in long agent tasks [11]. ⑤ Saying “think less” in the prompt is unreliable on Sonnet 5.5 / Haiku 5.5 — turn the dial [10]. ⑥ Research-grade: on four task families <b>more</b> reasoning <b>lowered</b> accuracy — counting with distractors, regression with misleading features, deduction with many constraints, risk assessment; Claude models <i>“become increasingly distracted by irrelevant information”</i> [13]. The Opus 4.6 release recommended <i>“dialing effort down from its default setting (high) to medium”</i> where it over-thinks [12].</div>
+              <div class="k">In a real project</div><div><code>/effort</code> or the arrows inside <code>/model</code>; a skill or subagent can carry its own effort in frontmatter; <code>/usage</code> literally suggests <i>“Switch from max to high effort”</i> when that is where your tokens go [3][11].</div>
+              <div class="k">At Purple Ruler</div><div>Lanes run routine registration at medium and architecture rulings at high; case D shows the same small edit on two settings.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 10px">
+              <svg viewBox="0 0 820 320" role="img" aria-label="2 by 2 matrix: how far you step away (the permission mode) versus how hard the task is, with effort level in each cell">
+                <text x="20" y="22" class="svgM">EFFORT FOLLOWS HOW FAR YOU STEP AWAY — THE X-AXIS IS THE PERMISSION MODE (T8)</text>
+                <line x1="110" y1="60" x2="110" y2="260" class="svgax"/><line x1="110" y1="260" x2="790" y2="260" class="svgax"/>
+                <text x="130" y="282" class="svgt">Manual · “reviewing every action yourself”</text><text x="400" y="282" class="svgt">acceptEdits · “iterating on code you’re reviewing”</text><text x="640" y="282" class="svgt">auto · “long tasks”</text>
+                <text x="450" y="302" text-anchor="middle" class="svgM">LOW ← MEDIUM ← HIGH / XHIGH   (the effort table [4] uses the same words)</text>
+                <text x="26" y="160" transform="rotate(-90 26 160)" text-anchor="middle" class="svgt">↑ how hard the task is</text>
+                <rect x="120" y="70" width="325" height="90" rx="8" class="svgbox2"/><text x="132" y="92" class="svgT">hard · you’re watching</text><text x="132" y="112" class="svgt">medium / high — it thinks, you catch slips</text><text x="132" y="130" class="svgt">e.g. a tricky reply, you reading along</text><text x="132" y="148" class="svgM">MEDIUM → HIGH</text>
+                <rect x="455" y="70" width="325" height="90" rx="8" class="svgbox"/><text x="467" y="92" class="svgT">hard · you’re away</text><text x="467" y="112" class="svgt">high / xhigh + plan mode first — it must get it right alone</text><text x="467" y="130" class="svgt">e.g. “analyse this quote request and propose terms”</text><text x="467" y="148" class="svgM">HIGH → XHIGH + PLAN</text>
+                <rect x="120" y="168" width="325" height="84" rx="8" class="svgok"/><text x="132" y="190" class="svgT">easy · you’re watching</text><text x="132" y="210" class="svgt">low — “quick exchanges where you review each result”</text><text x="132" y="228" class="svgt">e.g. “which day is the Year 9 session this week?”</text><text x="132" y="246" class="svgM">LOW</text>
+                <rect x="455" y="168" width="325" height="84" rx="8" class="svgbad"/><text x="467" y="190" class="svgT">easy · you’re away  ← the trap</text><text x="467" y="210" class="svgt">high here = slow, dear, and it “improves” things you</text><text x="467" y="228" class="svgt">didn’t ask about. Keep it low–medium and scope the ask.</text><text x="467" y="246" class="svgM">LOW → MEDIUM · SCOPE IT</text>
+              </svg>
+              <figcaption><b>Figure 5 · Effort × supervision.</b> Columns are the permission modes’ own “best for” text [18]; cells use the effort table’s words [4]. The bottom-right cell is where “more effort” quietly becomes “more edits you didn’t want” [11][13].</figcaption>
+            </figure>
+            <div class="fig2" style="padding:0 16px 14px">
+              <figure class="fig">
+                <svg viewBox="0 0 400 180" role="img" aria-label="Inverted U: accuracy rises then falls as thinking length grows">
+                  <line x1="40" y1="150" x2="380" y2="150" class="svgax"/><line x1="40" y1="150" x2="40" y2="20" class="svgax"/>
+                  <text x="210" y="172" text-anchor="middle" class="svgt">thinking length →</text><text x="18" y="90" transform="rotate(-90 18 90)" text-anchor="middle" class="svgt">accuracy</text>
+                  <path d="M50,120 C90,40 130,30 170,42 C230,60 300,100 370,135" class="svgp"/>
+                  <circle cx="150" cy="34" r="4" fill="#6b4ab8"/><text x="150" y="24" text-anchor="middle" class="svgt">sweet spot</text>
+                  <text x="250" y="96" class="svgt" style="fill:#cf2e25">distracted ·</text><text x="250" y="110" class="svgt" style="fill:#cf2e25">over-fitted</text>
+                </svg>
+                <figcaption><b>Figure 6 · The inverted U.</b> Shape from the four task families in the research paper [13]; the peak moves with the task.</figcaption>
+              </figure>
+              <figure class="fig">
+                <svg viewBox="0 0 400 180" role="img" aria-label="Three things effort changes: thinking, text, tool calls">
+                  <text x="12" y="18" class="svgM">WHAT THE DIAL MOVES</text>
+                  <rect x="20" y="36" width="110" height="120" rx="8" class="svgbox2"/><text x="75" y="60" text-anchor="middle" class="svgT">thinking</text><text x="75" y="84" text-anchor="middle" class="svgt">how often</text><text x="75" y="100" text-anchor="middle" class="svgt">how deep</text><text x="75" y="136" text-anchor="middle" class="svgM">↑ with effort</text>
+                  <rect x="145" y="36" width="110" height="120" rx="8" class="svgbox2"/><text x="200" y="60" text-anchor="middle" class="svgT">text</text><text x="200" y="84" text-anchor="middle" class="svgt">preamble, plan,</text><text x="200" y="100" text-anchor="middle" class="svgt">summaries</text><text x="200" y="136" text-anchor="middle" class="svgM">↑ with effort</text>
+                  <rect x="270" y="36" width="110" height="120" rx="8" class="svgbox2"/><text x="325" y="60" text-anchor="middle" class="svgT">tool calls</text><text x="325" y="84" text-anchor="middle" class="svgt">more and smaller</text><text x="325" y="100" text-anchor="middle" class="svgt">vs fewer, combined</text><text x="325" y="136" text-anchor="middle" class="svgM">↑ with effort</text>
+                </svg>
+                <figcaption><b>Figure 7 · Not just “thinking”.</b> Effort moves all three [11] — which is why high effort on a one-word edit shows up as extra edits (case D).</figcaption>
+              </figure>
             </div>
           </div>
 
+          <!-- T4 -->
           <div class="concept">
-            <div class="hd"><span class="n">WORD 3</span><span class="w">Effort</span><span class="cmd">/effort · inside /model</span></div>
+            <div class="hd"><span class="n">T4</span><span class="w">Token &amp; usage</span><span class="cmd">/usage · status-bar fields 6–7</span></div>
             <div class="rows">
-              <div class="k">Definition</div><div><b>How long it thinks before it answers.</b> Levels run low → medium → high → xhigh → max. Higher = slower, more expensive, steadier on hard judgment; lower = quick and cheap for routine drafting. <i>“Effort controls how much adaptive reasoning the model does.”</i> [4] Default is high on most models, medium on the current 5.5 family.</div>
-              <div class="k">Analogy</div><div>“Answer me now, off the top of your head” versus “take the afternoon and come back with a memo”. Same person, different depth, different cost.</div>
-              <div class="k">When you meet it</div><div>Choosing a level in the <code>/model</code> picker. A reply that takes minutes when you wanted seconds. The 7-day usage window running low — effort is the first dial to turn down.</div>
+              <div class="k">Definition</div><div>A <b>token</b> is the unit everything is counted in — roughly three-quarters of an English word. <i>“Claude Code sends your full conversation with every request”</i>, so <i>“a one-line question in a session that has been open all day still draws usage for the whole conversation”</i> [3]. A cache makes re-reading the same prefix cheaper; come back after the cache lifetime and the first message re-processes everything [3]. Numbers: average about $13 per developer per active day, $150–250 a month; background functions under $0.04 a session; <code>/usage</code> shows 24 h / 7 d and recommends changes for anything over 10 % of your usage [3].</div>
+              <div class="k">Analogy</div><div>Mobile-plan minutes with a daily cap and a weekly cap — except a long conversation is a <i>conference call that redials everyone each time you speak</i>.</div>
+              <div class="k">Counter-intuitive</div><div>① <i>“/compact reads the conversation it summarizes, so compacting a large context is itself a large request. When you want a fresh start instead of continuity, /clear costs nothing.”</i> [3] ② It spends while idle: scheduled loops, cross-session messages and goal check-ins each resend the whole context [3]. ③ Thinking is billed as output, and <i>“the billed output token count does not match the visible token count”</i> — you see a summary, you pay for the full reasoning [10]. ④ One debugging session can cost more than a day of chat [3].</div>
+              <div class="k">In a real project</div><div><code>/usage</code> attribution shows what skills, subagents and MCP servers cost; a hook can grep a log before Claude sees it — tens of thousands of tokens down to hundreds [3]; keep CLAUDE.md under 200 lines, move occasional instructions to skills [3]. Anthropic’s inference team cut research from an hour to 10–20 minutes by asking instead of reading — an <i>“80% reduction in research time”</i> [15]: spend tokens where they replace your time.</div>
+              <div class="k">At Purple Ruler</div><div>The two daily glances the Ladder page recommends: ctx, and the usage windows [9]. Lanes <code>/clear</code> between unrelated tickets; the orchestrator’s skill list is the single biggest standing cost (T9).</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 200" role="img" aria-label="Bars growing each turn: every message resends the whole conversation; four idle sources; compact versus clear">
+                <text x="20" y="22" class="svgM">EVERY TURN RESENDS EVERYTHING BEFORE IT</text>
+                <line x1="40" y1="160" x2="520" y2="160" class="svgax"/>
+                <rect x="60" y="140" width="50" height="20" class="svgfill"/><text x="85" y="178" text-anchor="middle" class="svgt">turn 1</text>
+                <rect x="130" y="140" width="50" height="20" class="svgfill"/><rect x="130" y="118" width="50" height="20" class="svgbox2"/><text x="155" y="178" text-anchor="middle" class="svgt">turn 2</text>
+                <rect x="200" y="140" width="50" height="20" class="svgfill"/><rect x="200" y="118" width="50" height="20" class="svgbox2"/><rect x="200" y="96" width="50" height="20" class="svgbox2"/><text x="225" y="178" text-anchor="middle" class="svgt">turn 3</text>
+                <rect x="270" y="140" width="50" height="20" class="svgfill"/><rect x="270" y="118" width="50" height="20" class="svgbox2"/><rect x="270" y="96" width="50" height="20" class="svgbox2"/><rect x="270" y="74" width="50" height="20" class="svgbox2"/><text x="295" y="178" text-anchor="middle" class="svgt">turn 4</text>
+                <rect x="340" y="140" width="50" height="20" class="svgfill"/><rect x="340" y="118" width="50" height="20" class="svgbox2"/><rect x="340" y="96" width="50" height="20" class="svgbox2"/><rect x="340" y="74" width="50" height="20" class="svgbox2"/><rect x="340" y="52" width="50" height="20" class="svgbox2"/><text x="365" y="178" text-anchor="middle" class="svgt">turn 5</text>
+                <rect x="410" y="140" width="50" height="20" class="svgfill"/><rect x="410" y="118" width="50" height="20" class="svgbox2"/><rect x="410" y="96" width="50" height="20" class="svgbox2"/><rect x="410" y="74" width="50" height="20" class="svgbox2"/><rect x="410" y="52" width="50" height="20" class="svgbox2"/><rect x="410" y="30" width="50" height="20" class="svgbox2"/><text x="435" y="178" text-anchor="middle" class="svgt">turn 6</text>
+                <rect x="560" y="36" width="240" height="60" rx="8" class="svgbad"/><text x="572" y="54" class="svgM">IDLE STILL SPENDS</text><text x="572" y="72" class="svgt">scheduled loops · cross-session messages</text><text x="572" y="88" class="svgt">goal check-ins · background summaries</text>
+                <rect x="560" y="106" width="240" height="60" rx="8" class="svgok"/><text x="572" y="124" class="svgM">COMPACT VS CLEAR</text><text x="572" y="142" class="svgt">/compact = one big request (re-reads it all)</text><text x="572" y="158" class="svgt">/clear = costs nothing</text>
+              </svg>
+              <figcaption><b>Figure 8 · Why long sessions cost more per question.</b> All three panels from the costs page [3].</figcaption>
+            </figure>
+          </div>
+
+          <!-- T5 -->
+          <div class="concept">
+            <div class="hd"><span class="n">T5</span><span class="w">Prompt</span><span class="cmd">what you say this time</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div><i>“Claude responds well to clear, explicit instructions.”</i> <i>“Providing context or motivation behind your instructions … can give Claude more information about your goals.”</i> Examples are <i>“one of the most reliable ways to steer Claude’s output format, tone, and structure”</i>; tags separate instructions from input; one sentence of role is enough [19].</div>
+              <div class="k">Analogy</div><div>A request to a colleague — one you will not be in the room to clarify.</div>
+              <div class="k">Counter-intuitive</div><div>① Current models are <i>“trained for precise instruction following”</i>: <i>“If you say ‘can you suggest some changes,’ Claude will sometimes provide suggestions rather than implementing them”</i> [19]. ② Old-style shouting backfires — the official fixes are <i>“Remove over-prompting”</i>, <i>“soften any aggressive language”</i>, and <i>“Use effort as a fallback”</i> [19]. ③ <i>“Tell Claude what to do instead of what not to do.”</i> [19] ④ Write <i>“Avoid over-engineering. Only make changes that are directly requested”</i> or it will tidy things you didn’t mention [19]. ⑤ Opus 4.6 has <i>“a strong tendency to use subagents”</i> even for a simple search [19]. ⑥ The middle of a long prompt is recalled worst (Figure 9). ⑦ <i>“Vague prompts can be useful when you’re exploring”</i> [1].</div>
+              <div class="k">In a real project</div><div>The four before/after pairs in §06 are the docs’ own [1]; for big features, <i>“have Claude interview you”</i> and write SPEC.md, then execute in a fresh session [1]; Anthropic’s security team: pseudocode first, then test-driven, <i>“checking in periodically”</i> [15].</div>
+              <div class="k">At Purple Ruler</div><div>Every lane’s dispatch note starts with role, background and the don’ts; case A is the shape.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 170" role="img" aria-label="U shape: recall high at start and end of the prompt, low in the middle">
+                <line x1="50" y1="140" x2="770" y2="140" class="svgax"/><line x1="50" y1="140" x2="50" y2="20" class="svgax"/>
+                <text x="410" y="162" text-anchor="middle" class="svgt">where the information sits in the prompt →</text><text x="22" y="80" transform="rotate(-90 22 80)" text-anchor="middle" class="svgt">recall</text>
+                <path d="M60,34 C200,40 300,120 410,122 C520,120 620,40 760,34" class="svgp"/>
+                <text x="70" y="26" class="svgM">START · the rule that must not break</text><text x="760" y="26" text-anchor="end" class="svgM">END · the format you want</text><text x="410" y="108" text-anchor="middle" class="svgt" style="fill:#cf2e25">middle: easiest to miss</text>
+              </svg>
+              <figcaption><b>Figure 9 · Lost in the middle.</b> Attention-budget effect described by Anthropic engineering [14]; the U-shape is reported by the needle-in-a-haystack studies that article cites — “by research”, not a product guarantee.</figcaption>
+            </figure>
+          </div>
+
+          <!-- T6 -->
+          <div class="concept">
+            <div class="hd"><span class="n">T6</span><span class="w">Instruction file</span><span class="cmd">CLAUDE.md · rules · auto memory · /init · /memory · /doctor</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>CLAUDE.md is <i>“instructions you write”</i>; auto memory is <i>“notes Claude writes itself based on your corrections and preferences”</i>. Both: <i>“Claude treats them as context, not enforced configuration. To block an action regardless of what Claude decides, use a PreToolUse hook instead.”</i> [2] Layers: organisation policy → <code>~/.claude/CLAUDE.md</code> (you, all projects) → <code>./CLAUDE.md</code> (team, in git) → <code>./CLAUDE.local.md</code> (you, ignored by git) → subdirectory CLAUDE.md (loaded on demand) → <code>.claude/rules/*.md</code> (can be scoped to paths); all <i>“concatenated … rather than overriding”</i> [2].</div>
+              <div class="k">Analogy</div><div>The staff handbook versus a request. You don’t re-explain the dress code in every email.</div>
+              <div class="k">Counter-intuitive</div><div>① <i>“Bloated CLAUDE.md files cause Claude to ignore your actual instructions!”</i>; aim under 200 lines; <i>“If you emphasize many lines, none of them stands out.”</i> [1] ② Two rules that conflict: it <i>“may pick one arbitrarily”</i> [2]. ③ Nested CLAUDE.md and path-scoped rules are summarised away at compaction — must-survive rules go in the project root [16]. ④ It is not a lock (T9, §03).</div>
+              <div class="k">In a real project</div><div>Three things about CLAUDE.md in project work: it loads every session and comes back from disk after compact [16]; it holds only what the model <b>can’t guess</b> — commands, style that differs from defaults, how to run tests, repo etiquette, gotchas — not tutorials, not things that change often [1]; it is <b>maintained like code</b>: read it when something goes wrong, prune it, change a line and watch whether behaviour moves; <code>/doctor</code> proposes cuts [1]. New data scientists at Anthropic have Claude <i>“read the codebase’s CLAUDE.md files”</i> first [15]; Boris Cherny’s team keeps one in git and adds a line whenever Claude gets something wrong [7].</div>
+              <div class="k">At Purple Ruler</div><div>Each repo has one — our staff handbook for the tool. One real line: <i>“never put a key, a secret or private data into a static asset”</i>. Zero credentials, zero names, lives in git; a <code>.claude/rules/</code> folder holds the file-type-specific ones.</div>
+            </div>
+            <div class="fig2" style="padding:0 16px 14px">
+              <figure class="fig">
+                <svg viewBox="0 0 400 230" role="img" aria-label="Six layers of instruction files: who writes, for whom, survives compaction">
+                  <text x="12" y="18" class="svgM">SIX LAYERS, ALL CONCATENATED</text>
+                  <rect x="16" y="28" width="368" height="26" rx="6" class="svgbox2"/><text x="24" y="45" class="svgt">org policy · IT writes · everyone</text>
+                  <rect x="16" y="60" width="368" height="26" rx="6" class="svgbox2"/><text x="24" y="77" class="svgt">~/.claude/CLAUDE.md · you · all your projects</text>
+                  <rect x="16" y="92" width="368" height="26" rx="6" class="svgbox"/><text x="24" y="109" class="svgt">./CLAUDE.md · team · in git · back after compact ✓</text>
+                  <rect x="16" y="124" width="368" height="26" rx="6" class="svgbox2"/><text x="24" y="141" class="svgt">./CLAUDE.local.md · you · git-ignored</text>
+                  <rect x="16" y="156" width="368" height="26" rx="6" class="svgbox2" style="stroke-dasharray:4 3"/><text x="24" y="173" class="svgt">sub-dir CLAUDE.md · on demand · summarised at compact ✗</text>
+                  <rect x="16" y="188" width="368" height="26" rx="6" class="svgbox2" style="stroke-dasharray:4 3"/><text x="24" y="205" class="svgt">.claude/rules/*.md (paths:) · on demand · summarised ✗</text>
+                </svg>
+                <figcaption><b>Figure 10 · Who writes what, and what survives.</b> From the memory and context-window pages [2][16].</figcaption>
+              </figure>
+              <figure class="fig">
+                <svg viewBox="0 0 400 230" role="img" aria-label="Line going down: as CLAUDE.md length grows, rule-following falls; include and exclude columns">
+                  <line x1="30" y1="100" x2="180" y2="100" class="svgax"/><line x1="30" y1="100" x2="30" y2="20" class="svgax"/>
+                  <text x="105" y="116" text-anchor="middle" class="svgt">file length →</text><text x="16" y="60" transform="rotate(-90 16 60)" text-anchor="middle" class="svgt" style="font-size:9.5px">followed</text>
+                  <path d="M36,30 C80,32 110,60 140,80 C160,90 172,94 178,96" class="svgp"/>
+                  <rect x="200" y="20" width="184" height="100" rx="8" class="svgok"/><text x="292" y="36" text-anchor="middle" class="svgM">INCLUDE</text>
+                  <text x="208" y="54" class="svgt" style="font-size:10px">commands it can’t guess</text><text x="208" y="68" class="svgt" style="font-size:10px">style that differs from defaults</text><text x="208" y="82" class="svgt" style="font-size:10px">test runners · repo etiquette</text><text x="208" y="96" class="svgt" style="font-size:10px">gotchas · env quirks</text><text x="208" y="110" class="svgt" style="font-size:10px">project-specific decisions</text>
+                  <rect x="30" y="128" width="354" height="92" rx="8" class="svgbad"/><text x="207" y="144" text-anchor="middle" class="svgM">EXCLUDE</text>
+                  <text x="40" y="162" class="svgt" style="font-size:10px">anything readable from the code · standard conventions</text><text x="40" y="178" class="svgt" style="font-size:10px">API docs (link instead) · things that change often</text><text x="40" y="194" class="svgt" style="font-size:10px">long explanations · file-by-file descriptions</text><text x="40" y="210" class="svgt" style="font-size:10px">“write clean code”</text>
+                </svg>
+                <figcaption><b>Figure 11 · Shorter is stronger.</b> The two lists are the official include / exclude table [1].</figcaption>
+              </figure>
             </div>
           </div>
 
+          <!-- T7 -->
           <div class="concept">
-            <div class="hd"><span class="n">WORD 4</span><span class="w">Token &amp; usage</span><span class="cmd">/usage</span></div>
+            <div class="hd"><span class="n">T7</span><span class="w">Compact / clear</span><span class="cmd">/compact · /clear · /rewind · /btw</span></div>
             <div class="rows">
-              <div class="k">Definition</div><div>A <b>token</b> is the unit everything is counted in — roughly three-quarters of an English word. Everything you send <i>and</i> everything the model sends back is tokens, and the whole conversation is re-sent on every turn. Your plan gives you two <b>rolling windows</b>: a 5-hour one and a 7-day one.</div>
-              <div class="k">Analogy</div><div>Mobile-plan minutes with a daily cap and a weekly cap — except a long conversation is a <i>conference call that redials everyone each time you speak</i>, which is why long sessions cost more per question than short ones [3].</div>
-              <div class="k">When you meet it</div><div><code>/usage</code>. Fields 6 and 7 of the status bar (5h / 7d). The message “You’ve hit your weekly limit”. The two daily glances the Ladder page recommends: ctx, and the usage windows [9].</div>
+              <div class="k">Definition</div><div><code>/compact</code> replaces the conversation with a structured summary; <code>/clear</code> starts a fresh one with empty context; <code>/rewind</code> can summarise only a stretch; <code>/btw</code> asks a side question that never enters history [1][16].</div>
+              <div class="k">Analogy</div><div>Photograph-and-wipe versus a new room (Figure 2).</div>
+              <div class="k">Counter-intuitive</div><div>Compact is not free and not neutral: it is a large request [3] and a <i>model-written</i> summary [17]. Clear is free and loses nothing you wrote to disk. After two failed corrections the right move is <b>clear</b>, not compact [1].</div>
+              <div class="k">In a real project</div><div>See “When to compact” under T1: early, with a focus, before a long task; clear between unrelated tasks; a Compact Instructions section in CLAUDE.md [16][17].</div>
+              <div class="k">At Purple Ruler</div><div>Case B: write the hand-over file, reply “saved”, then the sentinel compacts — never the other order.</div>
             </div>
           </div>
 
+          <!-- T8 -->
           <div class="concept">
-            <div class="hd"><span class="n">WORD 5</span><span class="w">Prompt vs instruction file</span><span class="cmd">/init · /memory</span></div>
+            <div class="hd"><span class="n">T8</span><span class="w">Permission mode &amp; plan mode</span><span class="cmd">Shift+Tab · /permissions</span></div>
             <div class="rows">
-              <div class="k">Definition</div><div>A <b>prompt</b> is what you say <i>this time</i>. An <b>instruction file</b> — <code>CLAUDE.md</code> — is what is true <i>every time</i>; Claude Code reads it at the start of every session, automatically. <i>“Each Claude Code session begins with a fresh context window.”</i> [2] The file is how anything survives that.</div>
-              <div class="k">Analogy</div><div>A request versus the staff handbook. You do not re-explain the dress code in every email; you point at the handbook.</div>
-              <div class="k">When you meet it</div><div>The moment you paste the same paragraph for the third time (today’s INSIGHT). <code>/init</code> on a new folder creates a starter file; <code>/memory</code> opens it for editing. Tomorrow’s whole session is this file.</div>
+              <div class="k">Definition</div><div>The <b>step-away dial</b>. Official “best for” text: <b>Manual</b> <i>“Reviewing every action yourself, sensitive work”</i>; <b>acceptEdits</b> <i>“Iterating on code you’re reviewing”</i>; <b>plan</b> <i>“Exploring a codebase before changing it”</i> (Claude reads and proposes, edits nothing until you approve); <b>auto</b> <i>“Long tasks, reducing prompt fatigue”</i> — a classifier blocks the risky actions (downloading and executing code like <code>curl | bash</code>, sending sensitive data to external endpoints, production deploys and migrations, mass deletion on cloud storage, force push); <b>dontAsk</b> for locked-down CI; <b>bypassPermissions</b> <i>“Isolated containers and VMs only”</i> [18].</div>
+              <div class="k">Analogy</div><div>How far you walk from the new colleague’s desk. This is the x-axis of Figure 5: Manual ↔ low effort, acceptEdits ↔ medium, auto on a long task ↔ high / xhigh.</div>
+              <div class="k">Counter-intuitive</div><div><i>“Auto mode reduces permission prompts but does not guarantee safety. Use it for tasks where you trust the general direction, not as a replacement for review on sensitive operations.”</i> [18] And plan mode has a cost of its own: <i>“If you could describe the diff in one sentence, skip the plan.”</i> [1]</div>
+              <div class="k">In a real project</div><div>Pre-approve the commands you trust with <code>/permissions</code>, cycle modes with Shift+Tab, start a big change in plan mode and approve the plan before anything touches disk [1][18].</div>
+              <div class="k">At Purple Ruler</div><div>Lanes run in auto mode behind hooks (§03) — the dial is turned up <i>because</i> the locks are there, not instead of them.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 150" role="img" aria-label="A dial from ask-me-every-step to block-only-the-dangerous, with the modes along it">
+                <text x="20" y="22" class="svgM">THE STEP-AWAY DIAL</text>
+                <path d="M80,120 A330,330 0 0 1 740,120" class="svgax"/>
+                <circle cx="80" cy="120" r="6" fill="#6b4ab8"/><text x="80" y="142" text-anchor="middle" class="svgt">Manual</text><text x="80" y="104" text-anchor="middle" class="svgt" style="font-size:9.5px">ask me every step</text>
+                <circle cx="245" cy="42" r="6" fill="#6b4ab8"/><text x="245" y="30" text-anchor="middle" class="svgt">acceptEdits</text>
+                <circle cx="410" cy="22" r="6" fill="#6b4ab8"/><text x="410" y="12" text-anchor="middle" class="svgt">plan (read, propose, don’t touch)</text>
+                <circle cx="575" cy="42" r="6" fill="#6b4ab8"/><text x="575" y="30" text-anchor="middle" class="svgt">auto · classifier blocks the risky</text>
+                <circle cx="740" cy="120" r="6" fill="#cf2e25"/><text x="740" y="142" text-anchor="middle" class="svgt">bypass</text><text x="740" y="104" text-anchor="middle" class="svgt" style="font-size:9.5px">containers only</text>
+                <text x="410" y="90" text-anchor="middle" class="svgt">further right = you are further away = effort and locks must carry more</text>
+              </svg>
+              <figcaption><b>Figure 12 · One dial, six positions.</b> Labels from the permission-modes page [18].</figcaption>
+            </figure>
+          </div>
+
+          <!-- T9 -->
+          <div class="concept">
+            <div class="hd"><span class="n">T9</span><span class="w">Hook · skill · subagent</span><span class="cmd">three extensions, three jobs</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div><b>Hook</b> — a lock: <i>“Unlike CLAUDE.md instructions which are advisory, hooks are deterministic and guarantee the action happens”</i> [1] (§03). <b>Skill</b> — a folder of instructions loaded on demand: descriptions are always in context, the body only when invoked [20] (§04). <b>Subagent</b> — a helper with its own context window that returns a summary; by default it inherits your session’s model, so set <code>model: haiku</code> for simple jobs [4][17].</div>
+              <div class="k">Analogy</div><div>A lock on the door · a binder you open when needed · an assistant you send to the archive so the files never land on your desk.</div>
+              <div class="k">Counter-intuitive</div><div>Subagents’ requests still count against <i>your</i> usage [3]; agent teams run at roughly 7× the tokens of a single session [3]; the orchestrator can over-use subagents for things a simple search would do [19].</div>
+              <div class="k">In a real project</div><div>Anthropic’s advice: <i>“Use subagents for investigation”</i> so the main window stays clean [1]; skills for workflows you invoke by name; hooks for <i>“actions that must happen every time with zero exceptions”</i> [1].</div>
+              <div class="k">At Purple Ruler</div><div>bash-guard (a hook, §03), the lark-* skills (§04), and the orchestrator dispatching fourteen lanes — each lane is, in effect, a subagent with a status-bar line of its own.</div>
             </div>
           </div>
         </div>
 
         <div class="insight"><span class="tag">INSIGHT D1·1</span>
-          <p>Context fills, models differ, effort costs, tokens are the bill, and files are the only thing that lasts.
-            <span class="sub">Five words. If a session surprises you, one of them is the reason.</span></p>
+          <p>Context fills, models differ, effort follows how far you step away, tokens are the bill, files are the only thing that lasts — and only a hook is a lock.
+            <span class="sub">Nine words. If a session surprises you, one of them is the reason.</span></p>
         </div>
       </section>
 
       <!-- 03 -->
-      <section id="pitfalls">
-        <div class="act">03 · Pitfalls &amp; fixes · 8 min</div>
-        <h2>Twelve ways a session goes wrong — and what to do</h2>
-        <p class="lead">Each one is <b>symptom → why → fix</b>. Most of the “why”s are one of the five words above. The first eight are the ones to know by heart; four more are folded underneath.</p>
-        <div class="pits">
-          <div class="pit"><div class="sym">The long session gets slow and strange, then starts forgetting</div>
-            <div class="why"><b>WHY</b>Context is nearly full; compaction summarised away the detail you were relying on.</div>
-            <div class="fix"><b>FIX</b>Have it write progress to a file, then <code>/clear</code> and start the new session from that file. After two failed corrections on the same point, the docs say the same: clear and write a better first prompt [1].</div></div>
-          <div class="pit"><div class="sym">You asked it to change one thing; it changed five</div>
-            <div class="why"><b>WHY</b>The request had no boundary, and the permission mode let edits through without asking.</div>
-            <div class="fix"><b>FIX</b>Say the boundary out loud: “only X, nothing else”. For anything bigger than a sentence, switch to plan mode first (Shift+Tab until the status bar says plan mode) and approve the plan before it touches anything [1][5].</div></div>
-          <div class="pit"><div class="sym">You asked it to “send” the email — and it sent it</div>
-            <div class="why"><b>WHY</b>The verb was <i>send</i>, a sending tool was connected, and nothing stood in the way.</div>
-            <div class="fix"><b>FIX</b>Today: say “draft only, do not send”. Day 3: make it a rule the tool cannot break — a deny on send-type actions — because a line in a file is advice and a hook is a lock [1].</div></div>
-          <div class="pit"><div class="sym">Same question, two different answers</div>
-            <div class="why"><b>WHY</b>No example and no fixed format were given, so it guessed twice; the model is not deterministic.</div>
-            <div class="fix"><b>FIX</b>Give one example of a good result and name the format. Facts that never change go into CLAUDE.md, not into the prompt.</div></div>
-          <div class="pit"><div class="sym">You pasted something sensitive (a pupil’s name, a password)</div>
-            <div class="why"><b>WHY</b>Everything in the context can end up in transcripts, memory files and logs — on your machine and in the tool’s history.</div>
-            <div class="fix"><b>FIX</b>Never paste it. Use placeholders (“the pupil”, “the school”). This whole week runs with a zero-names, zero-credentials rule — practise it in the hands-on.</div></div>
-          <div class="pit"><div class="sym">It said “Done!” — and it wasn’t</div>
-            <div class="why"><b>WHY</b>It reported what it intended to do, and nobody checked. <i>“Claude stops when the work looks done.”</i> [1]</div>
-            <div class="fix"><b>FIX</b>Ask for evidence, not a claim: the command output, the screenshot, the read-back. The docs: <i>“Have Claude show evidence rather than asserting success.”</i> [1] Our house version: “no error” is not “verified”.</div></div>
-          <div class="pit"><div class="sym">You complained about the format but never showed one</div>
-            <div class="why"><b>WHY</b>It can only guess what “nicer” means.</div>
-            <div class="fix"><b>FIX</b>One example beats three adjectives. Paste a result you liked and say “like this”.</div></div>
-          <div class="pit"><div class="sym">You used the wrong model and paid for it</div>
-            <div class="why"><b>WHY</b>Opus was left as the default for a bulk, routine job — or Haiku was asked for a judgment call.</div>
-            <div class="fix"><b>FIX</b>Match the model to the job, and look at status-bar field 4 before you start. Unexpectedly high spend “usually traces back to long sessions that were never cleared or to Opus left as the default model.” [3]</div></div>
+      <section id="hooks">
+        <div class="act">03 · What a hook physically does · 4 min</div>
+        <h2>A hook is a lock — the model never gets a vote</h2>
+        <p class="lead">Day 3 goes deep on this; today you only need the <b>mechanism</b>, because it explains why “I told it not to” keeps failing and why one of our pitfalls (the email that got sent) has a permanent fix.</p>
+        <p><b>Definition.</b> Hooks are <i>“user-defined shell commands, HTTP endpoints, MCP tool calls, LLM prompts, or subagents that execute automatically at specific points in Claude Code’s lifecycle”</i> [21]. The point we care about is <b>PreToolUse</b>: <i>“Before a tool call executes. Can block it.”</i> [21] Compare the instruction file: <i>“Claude treats them as context, not enforced configuration. To block an action regardless of what Claude decides, use a PreToolUse hook instead.”</i> [2]</p>
+        <figure class="fig">
+          <svg viewBox="0 0 820 215" role="img" aria-label="Three steps: a prompt is advice executed by the model, CLAUDE.md is a rule executed by the model, a hook is a lock executed by the Claude Code program">
+            <text x="20" y="22" class="svgM">ADVICE → RULE → LOCK</text>
+            <line x1="40" y1="185" x2="780" y2="185" class="svgax"/>
+            <rect x="60" y="120" width="200" height="65" rx="8" class="svgbox2"/>
+            <text x="160" y="142" text-anchor="middle" class="svgT">Prompt</text>
+            <text x="160" y="159" text-anchor="middle" class="svgt">this once · “draft only, do not send”</text>
+            <text x="160" y="175" text-anchor="middle" class="svgt" style="font-size:10px">who executes: the model</text>
+            <rect x="310" y="85" width="200" height="100" rx="8" class="svgbox2"/>
+            <text x="410" y="108" text-anchor="middle" class="svgT">CLAUDE.md</text>
+            <text x="410" y="125" text-anchor="middle" class="svgt">every session · in git</text>
+            <text x="410" y="141" text-anchor="middle" class="svgt" style="fill:#cf2e25">“context, not enforced configuration”</text>
+            <text x="410" y="175" text-anchor="middle" class="svgt" style="font-size:10px">who executes: the model (may not listen)</text>
+            <rect x="560" y="45" width="200" height="140" rx="8" class="svgbox"/>
+            <text x="660" y="69" text-anchor="middle" class="svgT">Hook</text>
+            <text x="660" y="86" text-anchor="middle" class="svgt">every tool call · before it runs</text>
+            <text x="660" y="102" text-anchor="middle" class="svgt">script says no ⇒ call never happens</text>
+            <text x="660" y="118" text-anchor="middle" class="svgt" style="fill:#1f9d62">“deterministic” [1]</text>
+            <text x="660" y="175" text-anchor="middle" class="svgt" style="font-size:10px">who executes: the Claude Code program</text>
+            <path d="M262,150 L306,135" class="svgp" marker-end="url(#arr)"/><path d="M512,110 L556,95" class="svgp" marker-end="url(#arr)"/>
+            <text x="60" y="207" class="svgt">Left two: the model reads a sentence and decides. Right: a program runs your script and decides — the model is not asked.</text>
+          </svg>
+          <figcaption><b>Figure 13 · Advice, rule, lock.</b> Same three levels as the Ladder’s rungs 2–4. Only the third one is executed by something other than the model [1][2][21].</figcaption>
+        </figure>
+
+        <h3>Physically, in three steps</h3>
+        <div class="steps">
+          <div class="step">Claude decides to call a tool — say Bash with <code>rm -rf /tmp/build</code>, or the mailbox tool’s <i>send</i>.</div>
+          <div class="step">Before running it, Claude Code serialises the call to JSON and writes it to your script’s <b>stdin</b>: <code>{"tool_name":"Bash","tool_input":{"command":"rm -rf /tmp/build"}}</code>.</div>
+          <div class="step">Claude Code reads your script’s <b>exit code</b>. <i>“Success: your hook exits 0”</i> ⇒ the tool runs. <i>“Blocking error: your hook exits 2”</i> ⇒ <i>“Claude Code stops the action”</i>, and <i>“the message that comes with the block is your hook’s stderr”</i> — that sentence is handed back to the model, which then changes approach. Any other exit code is a non-blocking error: the action proceeds. And <i>“Claude never sees stderr from a hook that exits 0.”</i> [21] Finer control: exit 0 and print JSON with <code>permissionDecision</code> = allow / deny / ask / defer [21].</div>
         </div>
-        <details class="more"><summary>Four more we see every week <span class="sub">· 09–12</span></summary>
-        <div class="pits" style="counter-reset:pit 8">
-          <div class="pit"><div class="sym">You assumed it remembered yesterday</div>
-            <div class="why"><b>WHY</b>Sessions do not share memory unless something was written to a file.</div>
-            <div class="fix"><b>FIX</b><code>/resume</code> to pick up the old session, or — better — write the conclusion into a file and start clean.</div></div>
-          <div class="pit"><div class="sym">One message, five jobs; it did two well and lost three</div>
-            <div class="why"><b>WHY</b>The task was too big for one pass and nothing said which part mattered.</div>
-            <div class="fix"><b>FIX</b>One job per ask. Or ask for the plan first and tick the parts off.</div></div>
-          <div class="pit"><div class="sym">The draft came back wrong, so you blamed the AI</div>
-            <div class="why"><b>WHY</b>Nobody checked what it was actually given. <i>“Claude can infer intent, but it can’t read your mind.”</i> [1]</div>
-            <div class="fix"><b>FIX</b>Re-read your own ask against the five elements of rung 2 (next section): role, background, example, format, don’ts. Which one was missing?</div></div>
-          <div class="pit"><div class="sym">ctx is past half and you keep going</div>
-            <div class="why"><b>WHY</b>Compaction will hit in the middle of the task and take half the state with it.</div>
-            <div class="fix"><b>FIX</b>House habit: past 50%, write progress to a file <i>before</i> continuing. See case B below — it happened today.</div></div>
+        <figure class="fig">
+          <svg viewBox="0 0 820 300" role="img" aria-label="Swimlane: the model asks for a tool, the Claude Code program feeds JSON to your script, exit 0 runs the tool, exit 2 with stderr blocks it and the reason goes back to the model">
+            <text x="20" y="20" class="svgM">THE PHYSICAL PATH OF ONE TOOL CALL</text>
+            <rect x="20" y="32" width="780" height="76" rx="8" class="svgbox2"/><text x="790" y="50" text-anchor="end" class="svgM" style="font-size:9px">LANE 1 · CLAUDE (THE MODEL)</text>
+            <rect x="20" y="116" width="780" height="76" rx="8" class="svgbox2"/><text x="790" y="134" text-anchor="end" class="svgM" style="font-size:9px">LANE 2 · CLAUDE CODE (THE PROGRAM)</text>
+            <rect x="20" y="200" width="780" height="76" rx="8" class="svgbox2"/><text x="790" y="218" text-anchor="end" class="svgM" style="font-size:9px">LANE 3 · YOUR SCRIPT</text>
+            <rect x="40" y="58" width="190" height="40" rx="6" class="svgbox"/><text x="135" y="75" text-anchor="middle" class="svgt">“I’ll run Bash:</text><text x="135" y="90" text-anchor="middle" class="svgt" style="font-family:JetBrains Mono,monospace;font-size:10px">rm -rf /tmp/build”</text>
+            <path d="M135,100 L135,138" class="svgp" marker-end="url(#arr)"/>
+            <rect x="40" y="142" width="190" height="40" rx="6" class="svgbox"/><text x="135" y="159" text-anchor="middle" class="svgt">PreToolUse fires:</text><text x="135" y="174" text-anchor="middle" class="svgt">write JSON → script stdin</text>
+            <path d="M135,184 L135,222" class="svgp" marker-end="url(#arr)"/>
+            <rect x="40" y="226" width="190" height="40" rx="6" class="svgbox"/><text x="135" y="243" text-anchor="middle" class="svgt">reads .tool_input.command</text><text x="135" y="258" text-anchor="middle" class="svgt">matches a rule?</text>
+            <path d="M232,238 L300,238" class="svgp" marker-end="url(#arr)"/>
+            <rect x="304" y="226" width="150" height="40" rx="6" class="svgok"/><text x="379" y="243" text-anchor="middle" class="svgt" style="fill:#1f9d62;font-weight:700">exit 0</text><text x="379" y="258" text-anchor="middle" class="svgt">no match</text>
+            <path d="M379,224 L379,186" class="svgp" marker-end="url(#arr)"/>
+            <rect x="304" y="142" width="150" height="40" rx="6" class="svgok"/><text x="379" y="159" text-anchor="middle" class="svgt">tool runs</text><text x="379" y="174" text-anchor="middle" class="svgt">output → model</text>
+            <path d="M456,238 L520,238" class="svgp" marker-end="url(#arr)"/>
+            <rect x="524" y="226" width="256" height="40" rx="6" class="svgbad"/><text x="652" y="243" text-anchor="middle" class="svgt" style="fill:#cf2e25;font-weight:700">exit 2 + stderr</text><text x="652" y="258" text-anchor="middle" class="svgt">“[bash-guard] denied: rule-id ⇒ use …”</text>
+            <path d="M652,224 L652,186" class="svgp" marker-end="url(#arr)"/>
+            <rect x="524" y="142" width="256" height="40" rx="6" class="svgbad"/><text x="652" y="159" text-anchor="middle" class="svgt">tool does NOT run</text><text x="652" y="174" text-anchor="middle" class="svgt">stderr text pasted back to the model</text>
+            <path d="M652,140 L652,102" class="svgp" marker-end="url(#arr)"/>
+            <rect x="524" y="58" width="256" height="40" rx="6" class="svgbox"/><text x="652" y="75" text-anchor="middle" class="svgt">reads the reason,</text><text x="652" y="90" text-anchor="middle" class="svgt">tries another way (one the rule allows)</text>
+            <text x="379" y="78" text-anchor="middle" class="svgt" style="font-size:10px;fill:#4b2e83;font-weight:700">whether the tool runs is decided in lane 2,</text><text x="379" y="92" text-anchor="middle" class="svgt" style="font-size:10px;fill:#4b2e83;font-weight:700">never in lane 1 — there is nothing to “persuade”</text>
+          </svg>
+          <figcaption><b>Figure 14 · Three lanes, one call.</b> The model only ever sees the <i>result</i>: either the tool’s output or your stderr sentence. Steps and quotes from the hooks page [21].</figcaption>
+        </figure>
+
+        <h3>The official example, verbatim shape</h3>
+        <p>In <code>settings.json</code>, a PreToolUse hook on <code>Bash</code> runs a small script; the script reads the command with <code>jq</code> and denies anything containing <code>rm -rf</code> [21]:</p>
+<pre><span class="c">#!/bin/bash  — block-rm.sh (official walkthrough, path changed)</span>
+command=$(jq -r '.tool_input.command')
+if echo "$command" | grep -q 'rm -rf'; then
+  echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse",
+         "permissionDecision":"deny",
+         "permissionDecisionReason":"rm -rf is blocked"}}'
+fi
+exit 0</pre>
+        <p class="cap">Official step 5: <i>“When the script denies a call, Claude Code reads the JSON decision, blocks the tool call, and shows Claude the reason.”</i> [21]</p>
+
+        <h3>Two real locks at Purple Ruler (zero names, zero credentials)</h3>
+        <div class="ctr">
+          <div class="ci"><div class="n">A</div><div>
+            <div class="t">The “send” lock — pitfall 3, solved for good</div>
+            <div class="d">The coordinator’s global <code>settings.json</code> carries one PreToolUse hook whose matcher is the <b>four sending tools</b> of the shared-mailbox integration: reply, reply-all, forward, send. However the prompt is phrased — “send it”, “fire it off”, “just reply” — the call is stopped <i>before it happens</i>; Claude can only draft. <b>This is the physical object behind Day 3’s sentence “make it a rule the tool cannot break”.</b><span class="so">Case C below shows the same email with and without this lock.</span></div>
+          </div></div>
+          <div class="ci"><div class="n">B</div><div>
+            <div class="t">bash-guard — every shell command goes through it</div>
+            <div class="d">A 247-line script in the repo’s <code>tools/hooks/</code>. Rules live in a separate file — <b>id · regex · the fix to use instead · exemptions · scope</b> — e.g. block <code>rm -rf</code>, block <code>git reset --hard</code> inside a code repo. Structure follows the official example: <code>allow(){ exit 0; }</code>; a denial prints one line to stderr — <i>[bash-guard] denied: &lt;rule id&gt; ⇒ use &lt;fix&gt;</i> — then <code>exit 2</code>. Two things worth saying aloud: ① <b>if the guard itself is broken it also denies</b> (jq missing, rules file gone, stdin not JSON ⇒ still exit 2, with a different sentence so the reader can tell “you broke a rule” from “the lock is broken”) — fail-closed; ② it has <code>--selfcheck</code>, run at the start of every gate pre-check, so a lock cannot silently stop working. Measured: an <code>rm -rf</code> probe is denied with rc=2; <code>ls</code> passes with rc=0.<span class="so">Why the stderr sentence names the fix: the model reads it and takes that route — the lock also teaches.</span></div>
+          </div></div>
         </div>
-        </details>
+        <div class="insight"><span class="tag">INSIGHT D1·2</span>
+          <p>A sentence in a file is read by the model. A hook is run by the program. Only the second one is a lock.
+            <span class="sub">If something must never happen, don’t write it bigger — move it to lane 2.</span></p>
+        </div>
       </section>
 
       <!-- 04 -->
+      <section id="skills">
+        <div class="act">04 · Skills: auto or by hand? · 3 min</div>
+        <h2>Which skills should fire on a keyword — and which must not</h2>
+        <p><b>Mechanism.</b> <i>“Skill descriptions are loaded into context so Claude knows what’s available, but full skill content only loads when invoked”</i>; <i>“the description helps Claude decide when to load the skill automatically.”</i> [20] “Keyword-driven” therefore means: the model compares what you typed with every skill’s <code>description</code> / <code>when_to_use</code> (<i>“trigger phrases or example requests”</i>), and on a match the <b>whole</b> SKILL.md enters your context [20].</p>
+        <div class="table-scroll"><table>
+          <thead><tr><th>Switch</th><th>Effect</th><th>Official use</th></tr></thead>
+          <tbody>
+            <tr><td class="strong"><code>disable-model-invocation: true</code></td><td><i>“Claude can’t invoke the skill on its own”</i> — only you, by typing <code>/name</code>. If Claude tries to work around it, <i>“Claude Code blocks the call and instructs it not to reproduce the deploy steps another way.”</i></td><td><i>“workflows with side effects or that you want to control timing, like /commit, /deploy, or /send-slack-message”</i>; <i>“You don’t want Claude deciding to deploy because your code looks ready.”</i> [20]</td></tr>
+            <tr><td class="strong"><code>user-invocable: false</code></td><td>Hidden from the <code>/</code> menu; the model fetches it when relevant.</td><td><i>“background knowledge that isn’t actionable as a command”</i> [20]</td></tr>
+            <tr><td class="strong"><code>skillOverrides</code> in settings</td><td><code>user-invocable-only</code> (model can’t see it, you can type it) · <code>off</code> (hidden from both) — without editing someone else’s SKILL.md; the <code>/skills</code> menu can write it for you.</td><td>Taming a plugin’s skill that fires too often [20]</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3>Four rules for “not on a keyword”</h3>
+        <div class="ctr">
+          <div class="ci"><div class="n">1</div><div><div class="t">It has side effects</div><div class="d">Sends a message or email, deploys, writes a ledger, changes production data ⇒ <code>disable-model-invocation: true</code>, you type it. Same logic as the hook: “looks like it should be sent” is not “should be sent”.</div></div></div>
+          <div class="ci"><div class="n">2</div><div><div class="t">Timing matters</div><div class="d">Runs once a day, or waits for a human decision (a daily report, a group broadcast) ⇒ manual.</div></div></div>
+          <div class="ci"><div class="n">3</div><div><div class="t">The description is too wide</div><div class="d">If it is all common verbs (“analyse”, “tidy”, “report”) it will match one message in three ⇒ narrow the description (write <i>when NOT to use</i> into it) or make it manual.</div></div></div>
+          <div class="ci"><div class="n">4</div><div><div class="t">It is a large reference document</div><div class="d">One accidental trigger loads all of it, and <i>“its content stays in context across turns … every line is a recurring token cost”</i> [20] ⇒ split it, or <code>user-invocable: false</code> so only the model fetches it when truly needed.</div></div></div>
+        </div>
+        <div class="fig2">
+          <figure class="fig">
+            <svg viewBox="0 0 400 270" role="img" aria-label="Decision tree: side effects? yes means manual; no means can the description be narrow with trigger phrases? yes means auto, no means manual or hidden">
+              <text x="12" y="18" class="svgM">SHOULD THIS SKILL AUTO-TRIGGER?</text>
+              <rect x="100" y="30" width="200" height="40" rx="8" class="svgbox"/><text x="200" y="47" text-anchor="middle" class="svgT">Side effects?</text><text x="200" y="62" text-anchor="middle" class="svgt" style="font-size:10px">send · deploy · write a ledger · change data</text>
+              <path d="M300,50 L340,50 L340,96" class="svgp" marker-end="url(#arr)"/><text x="322" y="44" class="svgt" style="font-size:10px">yes</text>
+              <rect x="268" y="100" width="124" height="46" rx="8" class="svgbad"/><text x="330" y="118" text-anchor="middle" class="svgT" style="font-size:11px">Manual</text><text x="330" y="133" text-anchor="middle" class="svgt" style="font-size:9.5px">disable-model-invocation</text>
+              <path d="M200,72 L200,110" class="svgp" marker-end="url(#arr)"/><text x="180" y="96" class="svgt" style="font-size:10px">no</text>
+              <rect x="40" y="114" width="200" height="54" rx="8" class="svgbox"/><text x="140" y="134" text-anchor="middle" class="svgT">Can the description be</text><text x="140" y="150" text-anchor="middle" class="svgT">narrow, with trigger phrases?</text>
+              <path d="M90,170 L90,206" class="svgp" marker-end="url(#arr)"/><text x="98" y="192" class="svgt" style="font-size:10px">yes</text>
+              <rect x="20" y="210" width="140" height="46" rx="8" class="svgok"/><text x="90" y="228" text-anchor="middle" class="svgT" style="font-size:11px">Auto</text><text x="90" y="243" text-anchor="middle" class="svgt" style="font-size:9.5px">description-driven</text>
+              <path d="M200,170 L200,206" class="svgp" marker-end="url(#arr)"/><text x="208" y="192" class="svgt" style="font-size:10px">no</text>
+              <rect x="170" y="210" width="220" height="46" rx="8" class="svgbox2"/><text x="280" y="228" text-anchor="middle" class="svgT" style="font-size:11px">Manual, or user-invocable: false</text><text x="280" y="243" text-anchor="middle" class="svgt" style="font-size:9.5px">knowledge the model fetches when needed</text>
+            </svg>
+            <figcaption><b>Figure 15 · The trigger decision.</b> Rules 1–4 as a tree; switches from the skills page [20].</figcaption>
+          </figure>
+          <figure class="fig">
+            <svg viewBox="0 0 400 270" role="img" aria-label="Three stacked bars showing where skills spend tokens: descriptions every turn, a whole skill on trigger until compact, and re-paste after compact">
+              <text x="12" y="18" class="svgM">WHERE THE TOKENS GO</text>
+              <rect x="20" y="34" width="360" height="62" rx="8" class="svgbox2"/>
+              <text x="30" y="52" class="svgT" style="font-size:11px">① Descriptions · every turn</text>
+              <text x="30" y="68" class="svgt" style="font-size:10px">N skills × up to 1,536 chars each, re-sent on every message</text>
+              <text x="30" y="84" class="svgt" style="font-size:10px">(our coordinator session carries ≈70 of them)</text>
+              <rect x="20" y="106" width="360" height="62" rx="8" class="svgbox2"/>
+              <text x="30" y="124" class="svgT" style="font-size:11px">② One trigger · the whole SKILL.md</text>
+              <text x="30" y="140" class="svgt" style="font-size:10px">stays in context until compact — advised under 500 lines</text>
+              <text x="30" y="156" class="svgt" style="font-size:10px;fill:#cf2e25">a false trigger pays this for the rest of the session</text>
+              <rect x="20" y="178" width="360" height="62" rx="8" class="svgbox2"/>
+              <text x="30" y="196" class="svgT" style="font-size:11px">③ After compact · re-pasted</text>
+              <text x="30" y="212" class="svgt" style="font-size:10px">first 5,000 tokens per invoked skill, 25,000 in total,</text>
+              <text x="30" y="228" class="svgt" style="font-size:10px">oldest dropped first ⇒ put the must-keep lines at the top</text>
+              <text x="30" y="260" class="svgt" style="font-size:10px">/usage shows the attribution per skill — start cutting at ≥10 %.</text>
+            </svg>
+            <figcaption><b>Figure 16 · The token account.</b> Three line items, all from the skills page [20]; the ≈70 is our own count.</figcaption>
+          </figure>
+        </div>
+        <p><b>At Purple Ruler.</b> The <code>lark-*</code> family — read a doc, read a table, look up a contact — is <b>right</b> to auto-trigger on its description: read-only, no side effects. “Post to the group”, “write the ledger”, “build the daily report and DM it” (one of ours writes a Lark table and sends private messages) should be <code>disable-model-invocation: true</code> and typed by a person. The coordinator’s own rule is the same shape: anything sent in MJ’s name goes only on an explicit instruction, draft seen first.</p>
+      </section>
+
+      <!-- 05 -->
+      <section id="pitfalls">
+        <div class="act">05 · Pitfalls &amp; fixes · 4 min</div>
+        <h2>Twelve ways a session goes wrong — six to know by heart</h2>
+        <p class="lead">Every pitfall is <b>symptom → which of the nine words → fix</b>. Don’t read all twelve; find the one that happened to you this week.</p>
+        <figure class="fig">
+          <svg viewBox="0 0 820 190" role="img" aria-label="Flow from symptom to which word explains it to the fix, with three example rows">
+            <text x="20" y="20" class="svgM">SYMPTOM → WHICH WORD? → FIX</text>
+            <rect x="20" y="34" width="230" height="34" rx="8" class="svgbad"/><text x="135" y="56" text-anchor="middle" class="svgT">What you saw</text>
+            <path d="M254,51 L292,51" class="svgp" marker-end="url(#arr)"/>
+            <rect x="296" y="34" width="230" height="34" rx="8" class="svgbox"/><text x="411" y="56" text-anchor="middle" class="svgT">One of the nine words</text>
+            <path d="M530,51 L568,51" class="svgp" marker-end="url(#arr)"/>
+            <rect x="572" y="34" width="228" height="34" rx="8" class="svgok"/><text x="686" y="56" text-anchor="middle" class="svgT">Move that dial</text>
+            <text x="135" y="98" text-anchor="middle" class="svgt">slow, forgetful, repeats itself</text><text x="411" y="98" text-anchor="middle" class="svgt">T1 context · T7 compact</text><text x="686" y="98" text-anchor="middle" class="svgt">write to disk, /clear, new first prompt</text>
+            <text x="135" y="124" text-anchor="middle" class="svgt">changed five things, asked for one</text><text x="411" y="124" text-anchor="middle" class="svgt">T3 effort · T8 permission mode</text><text x="686" y="124" text-anchor="middle" class="svgt">lower effort, name the boundary, plan mode</text>
+            <text x="135" y="150" text-anchor="middle" class="svgt">it sent the email</text><text x="411" y="150" text-anchor="middle" class="svgt">T9 hook (absent)</text><text x="686" y="150" text-anchor="middle" class="svgt">today a sentence · Day 3 a lock (§03 A)</text>
+            <text x="135" y="176" text-anchor="middle" class="svgt">bill surprise</text><text x="411" y="176" text-anchor="middle" class="svgt">T2 model · T4 token</text><text x="686" y="176" text-anchor="middle" class="svgt">check status-bar field 4; clear old sessions</text>
+          </svg>
+          <figcaption><b>Figure 17 · The diagnostic.</b> If you can name the word, the fix is on its card in §02.</figcaption>
+        </figure>
+        <div class="pits">
+          <div class="pit"><div class="sym">The long session gets slow and strange, then starts forgetting</div>
+            <div class="why"><b>WORD</b>T1 / T7. Context is nearly full and recall falls as it fills [14]; compaction summarised away the detail you relied on [17].</div>
+            <div class="fix"><b>FIX</b>Have it write progress to a file, then <code>/clear</code> and start from that file. Two failed corrections on the same point ⇒ same answer: <i>“Run /clear and start fresh with a more specific prompt”</i> [1] (Figure 18).</div></div>
+          <div class="pit"><div class="sym">You asked it to change one thing; it changed five</div>
+            <div class="why"><b>WORD</b>T3 / T8. Effort too high for a one-line job — at lower effort it <i>“scopes its work to what was asked rather than doing more than requested”</i> [11] — and the permission mode let edits through.</div>
+            <div class="fix"><b>FIX</b>Say the boundary out loud (“only X, nothing else”), turn effort down for small changes [12], and for anything bigger than a sentence start in plan mode and approve the plan first [1][18].</div></div>
+          <div class="pit"><div class="sym">You asked it to “send” the email — and it sent it</div>
+            <div class="why"><b>WORD</b>T9. The verb was <i>send</i>, a sending tool was connected, and no hook stood in the way.</div>
+            <div class="fix"><b>FIX</b>Today: “draft only, do not send”. Permanently: the lock in §03 example A — a line in a file is advice, a hook is a lock [1][2].</div></div>
+          <div class="pit"><div class="sym">It said “Done!” — and it wasn’t</div>
+            <div class="why"><b>WORD</b>T5 (the ask had no check in it). <i>“Claude stops when the work looks done.”</i> [1]</div>
+            <div class="fix"><b>FIX</b>Ask for evidence, not a claim: the command output, the screenshot, the read-back. <i>“Have Claude show evidence rather than asserting success.”</i> [1] House version: “no error” is not “verified”.</div></div>
+          <div class="pit"><div class="sym">You pasted something sensitive (a pupil’s name, a password)</div>
+            <div class="why"><b>WORD</b>T1 / T6. Everything in the context can end up in transcripts, memory files and logs [2][17].</div>
+            <div class="fix"><b>FIX</b>Never paste it. Placeholders: “the pupil”, “the school”. This whole week runs with a zero-names, zero-credentials rule — practise it in the hands-on.</div></div>
+          <div class="pit"><div class="sym">Same question, two different answers</div>
+            <div class="why"><b>WORD</b>T5. No example and no fixed format, so it guessed twice; the model is not deterministic.</div>
+            <div class="fix"><b>FIX</b>Give one example of a good result and name the format. Facts that never change go into CLAUDE.md, not into the prompt (case E).</div></div>
+        </div>
+        <details class="more"><summary>Six more we see every week <span class="sub">· 07–12</span></summary>
+        <div class="pits" style="counter-reset:pit 6">
+          <div class="pit"><div class="sym">You complained about the format but never showed one</div>
+            <div class="why"><b>WORD</b>T5. It can only guess what “nicer” means.</div>
+            <div class="fix"><b>FIX</b>One example beats three adjectives — a small, typical set, not every edge case [19]. Paste a result you liked and say “like this”.</div></div>
+          <div class="pit"><div class="sym">You used the wrong model and paid for it</div>
+            <div class="why"><b>WORD</b>T2 / T4. Opus left as the default for a bulk, routine job — or Haiku asked for a judgment call.</div>
+            <div class="fix"><b>FIX</b>Look at status-bar field 4 before you start. Surprise spend <i>“usually traces back to long sessions that were never cleared or to Opus left as the default model”</i> [3].</div></div>
+          <div class="pit"><div class="sym">You assumed it remembered yesterday</div>
+            <div class="why"><b>WORD</b>T1. <i>“Each new session starts with a fresh context window”</i> [17]; nothing crosses unless it was written to a file.</div>
+            <div class="fix"><b>FIX</b><code>/resume</code> to pick up the old session [5], or — better — write the conclusion into a file and start clean.</div></div>
+          <div class="pit"><div class="sym">One message, five jobs; it did two well and lost three</div>
+            <div class="why"><b>WORD</b>T5. The official name is the kitchen-sink session [1].</div>
+            <div class="fix"><b>FIX</b>One job per ask, <code>/clear</code> between unrelated ones [1][16]. Or ask for the plan first and tick the parts off.</div></div>
+          <div class="pit"><div class="sym">It read two hundred files and the window was gone before it started</div>
+            <div class="why"><b>WORD</b>T1 / T9. <i>“The infinite exploration”</i> [1] — investigation in the main window.</div>
+            <div class="fix"><b>FIX</b><i>“Use subagents for investigation”</i> [1]: the reading happens in another window; only the summary comes back.</div></div>
+          <div class="pit"><div class="sym">The draft came back wrong, so you blamed the AI</div>
+            <div class="why"><b>WORD</b>T5. <i>“Claude can infer intent, but it can’t read your mind.”</i> [1]</div>
+            <div class="fix"><b>FIX</b>Re-read your own ask against the five elements of rung 2 (§06): role, background, example, format, don’ts. Which one was missing?</div></div>
+        </div>
+        </details>
+        <figure class="fig" style="max-width:520px">
+          <svg viewBox="0 0 400 200" role="img" aria-label="Decision tree: wrong, correct once, still wrong, correct twice, still wrong, then clear and write a better first prompt, not compact">
+            <text x="12" y="18" class="svgM">AFTER THE SECOND CORRECTION</text>
+            <rect x="20" y="34" width="90" height="34" rx="8" class="svgbad"/><text x="65" y="56" text-anchor="middle" class="svgt">wrong</text>
+            <path d="M112,51 L138,51" class="svgp" marker-end="url(#arr)"/>
+            <rect x="142" y="34" width="90" height="34" rx="8" class="svgbox2"/><text x="187" y="56" text-anchor="middle" class="svgt">correct #1</text>
+            <path d="M234,51 L260,51" class="svgp" marker-end="url(#arr)"/>
+            <rect x="264" y="34" width="110" height="34" rx="8" class="svgbad"/><text x="319" y="56" text-anchor="middle" class="svgt">still wrong</text>
+            <path d="M319,70 L319,96" class="svgp" marker-end="url(#arr)"/>
+            <rect x="264" y="100" width="110" height="34" rx="8" class="svgbox2"/><text x="319" y="122" text-anchor="middle" class="svgt">correct #2</text>
+            <path d="M262,117 L236,117" class="svgp" marker-end="url(#arr)"/>
+            <rect x="142" y="100" width="90" height="34" rx="8" class="svgbad"/><text x="187" y="122" text-anchor="middle" class="svgt">still wrong</text>
+            <path d="M187,136 L187,160" class="svgp" marker-end="url(#arr)"/>
+            <rect x="20" y="164" width="354" height="30" rx="8" class="svgok"/><text x="197" y="184" text-anchor="middle" class="svgT" style="font-size:11px">/clear + a better first prompt — not /compact, not correction #3</text>
+          </svg>
+          <figcaption><b>Figure 18 · Two strikes.</b> <i>“A clean session with a better prompt almost always outperforms a long session with accumulated corrections.”</i> [1]</figcaption>
+        </figure>
+      </section>
+
+      <!-- 06 -->
       <section id="rung2">
-        <div class="act">04 · Rung 2 · 10 min</div>
+        <div class="act">06 · Rung 2 · Asking well · 5 min</div>
         <h2>Rung 2 · The prompt: asking well, by hand</h2>
         <div class="askbox"><span class="tag">✋ SOUND FAMILIAR?</span>
           <ul>
-            <li>Do your best prompts live in a notes file or a sticky note you paste from — and drift a little every time?</li>
-            <li>When a draft comes back wrong, do you blame the AI — or check what you actually gave it?</li>
+            <li>Do your best prompts live in a notes file you paste from — and drift a little every time?</li>
             <li>Does a colleague doing the same job get different quality from the same tool? Why would that be?</li>
           </ul>
         </div>
-        <p class="lead">Rung 2 is the discovery that <b>how you ask changes everything</b>. A good ask has five parts. You will not need all five every time — but when a result disappoints, one of them is missing.</p>
+        <p class="lead">Rung 2 is the discovery that <b>how you ask changes everything</b>. A good ask has five parts. You won’t need all five every time — but when a result disappoints, one of them is missing.</p>
         <div class="table-scroll"><table>
           <thead><tr><th>Element</th><th>What it is</th><th>One line you might write</th></tr></thead>
           <tbody>
@@ -394,47 +851,91 @@
             <tr><td class="strong">Don’ts</td><td>The lines it must not cross</td><td>“Never promise a schedule change — those go to operations.”</td></tr>
           </tbody>
         </table></div>
-        <p>The official guidance says the same thing in engineering clothes: scope the task, point to sources, reference an existing pattern, describe the symptom and what “fixed” looks like [1]. And give it something it can check itself against — a test, an example, a screenshot — because <i>“Give Claude a check it can run … It’s the difference between a session you watch and one you walk away from.”</i> [1]</p>
-        <div class="insight"><span class="tag">INSIGHT 02</span>
+        <h3>The official before / after table, in our clothes</h3>
+        <p class="cap">The best-practices page gives four pairs — scope the task, point to sources, reference an existing pattern, describe the symptom [1]. Same four, Purple Ruler scenes.</p>
+        <div class="ba">
+          <div class="bac"><span class="k">SCOPE THE TASK</span><span class="b">“Tidy up the enrolment page.”</span><span class="g">“On the enrolment page only, make the error text under the date field readable on a phone. Change nothing else.”</span></div>
+          <div class="bac"><span class="k">POINT TO SOURCES</span><span class="b">“Why is this report wrong?”</span><span class="g">“Read docs/SPEC-… and the last three commits on this file, then tell me which rule the report breaks.”</span></div>
+          <div class="bac"><span class="k">REFERENCE A PATTERN</span><span class="b">“Add a popup.”</span><span class="g">“Add a confirm dialog the same way teacher-allocation does it — same component, same button order.”</span></div>
+          <div class="bac"><span class="k">DESCRIBE THE SYMPTOM</span><span class="b">“Fix the login.”</span><span class="g">“A school user who logs in on a tablet sees a blank page after the spinner; on a laptop it works. Fixed means the dashboard renders on both.”</span></div>
+        </div>
+        <p>And give it something it can check itself against: <i>“Give Claude a check it can run: tests, a build, a screenshot to compare. It’s the difference between a session you watch and one you walk away from.”</i> [1] The cost side has a rule too: <i>“If you could describe the diff in one sentence, skip the plan.”</i> [1]</p>
+        <div class="insight"><span class="tag">INSIGHT D1·3</span>
           <p>A good prompt is a draft of a rule. If you’ve pasted it three times, it wants to be a file.
             <span class="sub">The third paste is the signal. That’s the moment rung 3 — tomorrow — is calling.</span></p>
         </div>
       </section>
 
-      <!-- 05 -->
+      <!-- 07 -->
       <section id="cases">
-        <div class="act">05 · Two cases from our desk · 10 min</div>
-        <h2>Case A · One school email, three ways of asking</h2>
-        <p class="cap">The email is a composite. No school, pupil or colleague is named — and that is also the rule for your own hands-on.</p>
-        <p>A school writes: <i>“Can we confirm the start date for the new pupil, and can the Tuesday session move to Thursday?”</i> Three colleagues ask the same tool for a reply.</p>
-        <div class="asks">
-          <div class="ask"><div class="lv">RUNG 1 ASK</div>
-            <div class="txt">“Reply to this email.”</div>
-            <div class="out"><b>What comes back:</b> a confident, friendly reply that <i>confirms the start date</i> (we hadn’t) and <i>agrees to move the session to Thursday</i> (not ours to agree). Three guesses, three chances to be wrong. Ten minutes of editing — or worse, sent as is.</div></div>
-          <div class="ask"><div class="lv">RUNG 2 ASK · ROLE + FORMAT</div>
-            <div class="txt">“You draft replies for our school-support team. Warm, professional, British English, under 150 words. Reply to this email.”</div>
-            <div class="out"><b>What comes back:</b> the right tone and length — but it still confirms the date and agrees to the move, because nothing told it those are not ours to promise.</div></div>
-          <div class="ask good"><div class="lv">RUNG 2 ASK · ALL FIVE</div>
-            <div class="txt">“You draft replies for our school-support team. Background: the start date is not yet confirmed by operations; session changes are decided by operations, not by us. Here is one reply from last term that had the right feel: [example]. Under 150 words, British English, warm. Never confirm a date or a schedule change — say we will come back within two working days. Draft only; do not send.”</div>
-            <div class="out"><b>What comes back:</b> nearly sendable. Acknowledges both questions, promises a reply within two working days, commits to nothing. The difference was never the AI — it was the <b>background</b> and the <b>don’ts</b>.</div></div>
-        </div>
+        <div class="act">07 · Five cases from our desk · 10 min</div>
+        <h2>Same tool, two ways of asking, and where the difference came from</h2>
+        <p class="cap">All five are composites or paraphrases of real Purple Ruler sessions. No school, pupil, parent or colleague is named — and that is also the rule for your own hands-on.</p>
+        <div class="cases">
 
-        <h2 style="margin-top:36px">Case B · “Write it down first, then compact”</h2>
-        <p>This morning, one of our AI work-lanes (the Architect lane) had its context past 50% in the middle of a task. The coordinator’s instruction was, word for word: <i>first write your progress to the status board and the hand-over file; when that is done, reply with one line — “saved” — and the sentinel will run <code>/compact</code> for you.</i></p>
-        <p>Why that order and not the other way round? Because <code>/compact</code> produces a <b>summary written by the model</b>: it keeps what it judges important and drops the rest, with no way to tell afterwards what was dropped. A hand-over file is written <i>by the lane, before the loss</i>, and is read back from disk by the next session. The summary is lossy; the file is not. The same habit, scaled down, is the fix for pitfalls 1 and 12 above — and tomorrow it becomes a file called CLAUDE.md.</p>
-        <blockquote>“Anytime we see Claude do something incorrectly we add it to the CLAUDE.md, so Claude knows not to do it next time.”
-          <span class="src">— Boris Cherny, who leads Claude Code at Anthropic, on his team’s shared instruction file [7]</span></blockquote>
+          <div class="case">
+            <div class="hd"><span class="n">CASE A</span><span class="t">One school email</span><span class="w">T5 prompt</span></div>
+            <p style="padding:12px 18px 0;font-size:13.5px;margin:0">A school writes: <i>“Can we confirm the start date for the new pupil, and can the Tuesday session move to Thursday?”</i></p>
+            <div class="g3">
+              <div class="bad"><span class="k">✗ HOW IT WAS ASKED</span><span class="q">“Reply to this email.”</span><br><br>Comes back friendly and confident — and <b>confirms the start date</b> (we hadn’t) and <b>agrees to Thursday</b> (not ours to agree). Ten minutes of editing, or worse, sent as is.</div>
+              <div class="good"><span class="k">✓ HOW IT SHOULD BE ASKED</span><span class="q">“You draft replies for our school-support team. Background: the start date is not yet confirmed by operations; session changes are decided by operations, not us. Here is one reply from last term with the right feel: [example]. Under 150 words, British English, warm. Never confirm a date or a schedule change — say we will come back within two working days. Draft only; do not send.”</span></div>
+              <div class="why"><span class="k">WHERE THE DIFFERENCE CAME FROM</span>Not the model. Two of the five elements: <b>background</b> (what we don’t know yet) and <b>don’ts</b> (what isn’t ours to promise). Role + format alone fixed the tone and still made both wrong promises — try it.</div>
+            </div>
+          </div>
+
+          <div class="case">
+            <div class="hd"><span class="n">CASE B</span><span class="t">“Write it down first, then compact”</span><span class="w">T1 · T7</span></div>
+            <div class="g3">
+              <div class="bad"><span class="k">✗ HOW IT WAS ASKED</span><span class="q">“ctx is past 60 % — compact now and carry on.”</span><br><br>The summary is written by the model: it keeps what <i>it</i> judged important. The lane comes back with half its working state and no way to see which half.</div>
+              <div class="good"><span class="k">✓ HOW IT SHOULD BE ASKED</span><span class="q">Today, word for word from the coordinator to the Architect lane: “ctx is past 50 %: first write your progress to the status board and the hand-over file; when that is done reply with one line — ‘saved’ — and the sentinel will run /compact for you.”</span></div>
+              <div class="why"><span class="k">WHERE THE DIFFERENCE CAME FROM</span><b>Order.</b> <code>/compact</code> <i>“keeps your requests and key code snippets, but detailed instructions … may be lost”</i> [17]. A hand-over file is written <i>by the lane, before the loss</i>, and comes back from disk. The summary is lossy; the file is not. Scaled down, this is pitfall 1; tomorrow it becomes CLAUDE.md.</div>
+            </div>
+          </div>
+
+          <div class="case">
+            <div class="hd"><span class="n">CASE C</span><span class="t">A parent email — draft, never send</span><span class="w">T9 hook</span></div>
+            <div class="g3">
+              <div class="bad"><span class="k">✗ HOW IT WAS ASKED</span><span class="q">“Reply to the parent about the missed session and send it.”</span><br><br>With the mailbox tool connected and nothing in the way, it is sent — before anyone read it. Pitfall 3.</div>
+              <div class="good"><span class="k">✓ HOW IT SHOULD BE ASKED</span><span class="q">“Draft a reply to the parent about the missed session. Draft only — do not send. Show me the draft and anything you were unsure about.”</span><br><br>And on the coordinator’s machine the sentence is <i>redundant</i>: the PreToolUse hook on reply / reply-all / forward / send (§03 A) stops the call before it exists.</div>
+              <div class="why"><span class="k">WHERE THE DIFFERENCE CAME FROM</span>Today, one line in the prompt. Permanently, a lock in lane 2 (Figure 14): the model can be asked to send in any wording and the tool still does not run. That is why the week ends with hooks, not with better sentences.</div>
+            </div>
+          </div>
+
+          <div class="case">
+            <div class="hd"><span class="n">CASE D</span><span class="t">Two jobs, one afternoon</span><span class="w">T3 effort · T8</span></div>
+            <div class="g3">
+              <div class="bad"><span class="k">✗ HOW IT WAS ASKED</span><span class="q">“Set everything to the top model and max effort, give it both jobs, go to the meeting.”</span><br><br>The timetable check comes back slow and over-explained; the pricing analysis comes back half-done because both were in one window (pitfall 10).</div>
+              <div class="good"><span class="k">✓ HOW IT SHOULD BE ASKED</span><b>Job 1 — check next week’s timetable against the roster:</b> low effort, you watch each result, correct on the spot. <b>Job 2 — a pricing analysis with three options:</b> fresh session, plan mode first, effort high, you leave for two hours and come back to a plan to approve.</div>
+              <div class="why"><span class="k">WHERE THE DIFFERENCE CAME FROM</span>Effort follows <b>how far you step away</b>, not how important the job feels — low is for <i>“quick exchanges where you review each result”</i>, high for <i>“work where verification matters”</i> [4]. It is <i>“a behavioral signal, not a strict token budget”</i> [11], and the model’s own release note says to <b>dial it down</b> when it over-thinks [12].</div>
+            </div>
+            <div style="padding:0 16px 14px">
+              <div class="cmp">
+                <div class="hi"><span class="k">SAME ONE-LINE FIX · HIGH EFFORT</span>Asked to change one condition. Came back with that condition changed — plus three “while I was there” edits and one line rewritten as five. Review took longer than the fix.</div>
+                <div class="lo"><span class="k">SAME ONE-LINE FIX · LOW EFFORT</span>One line changed, nothing else touched. At lower effort the model <i>“scopes its work to what was asked rather than doing more than requested”</i> [11].</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="case">
+            <div class="hd"><span class="n">CASE E</span><span class="t">The third paste</span><span class="w">T6 instruction file</span></div>
+            <div class="g3">
+              <div class="bad"><span class="k">✗ HOW IT WAS ASKED</span><span class="q">For the third time this week: “British English, under 150 words, never confirm dates, draft only…” pasted at the top of a new session.</span><br><br>Works — until the day you forget one line, or a colleague never had it.</div>
+              <div class="good"><span class="k">✓ HOW IT SHOULD BE ASKED</span>Put those lines in the project’s <code>CLAUDE.md</code> once. Every session reads it; it comes back from disk after compact [16]; your colleague gets it for free from git. The prompt shrinks to the three facts that are new <i>this time</i>.</div>
+              <div class="why"><span class="k">WHERE THE DIFFERENCE CAME FROM</span>The third paste is the signal that a prompt wants to be a file. Boris Cherny’s team: <i>“Anytime we see Claude do something incorrectly we add it to the CLAUDE.md, so Claude knows not to do it next time.”</i> [7] Tomorrow is this case, for an hour.</div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <!-- 06 -->
+      <!-- 08 -->
       <section id="handson">
-        <div class="act">06 · Hands-on · 5 min · in Claude Code, not the website</div>
+        <div class="act">08 · Hands-on · 5 min · in Claude Code, not the website</div>
         <h2>Write one prompt you will actually reuse</h2>
         <p class="lead">Pick <b>the one thing you do most weeks</b> — a reply, a summary, a status note, a checklist. Write it as a five-element prompt, run it once, and paste <b>both the prompt and the result</b> to the Lark group. Zero names, zero credentials.</p>
         <div class="steps">
-          <div class="step">Open a terminal, go to any folder you own, type <code>claude</code>. Check the status bar: which model, how full is ctx? (Fresh session: it should read near 0%.)</div>
+          <div class="step">Open a terminal, go to any folder you own, type <code>claude</code>. Check the status bar: which model, how full is ctx? (Fresh session: near 0 %.)</div>
           <div class="step">Paste the template below and fill the brackets. Keep the <b>Don’ts</b> line — it is the one most people skip.</div>
-          <div class="step">Read the result against your ask. Which element did it ignore? Fix that one line and run it again. One correction, not five.</div>
+          <div class="step">Read the result against your ask. Which element did it ignore? Fix that one line and run it again. One correction, not five — and never a third (Figure 18).</div>
           <div class="step">Paste prompt + result to the group. Save the prompt somewhere you will find it tomorrow — you will need it for homework.</div>
         </div>
 <pre><span class="c">## paste into Claude Code and fill the brackets</span>
@@ -449,89 +950,106 @@ Show me the result, then list any assumption you made.
         <p class="cap">If you have nothing to hand, use Case A’s email above — it is already anonymised.</p>
       </section>
 
-      <!-- 07 -->
+      <!-- 09 -->
       <section id="homework">
-        <div class="act">07 · Homework · one line</div>
+        <div class="act">09 · Homework · one line</div>
         <div class="homework"><div class="tag">BEFORE TOMORROW</div>
           <p>Open a fresh session tomorrow, paste the same prompt, and write down what you had to explain <i>again</i>.
             <span class="sub">That list is the first draft of your CLAUDE.md. Bring it to Day 2.</span></p></div>
       </section>
 
-      <!-- 08 -->
+      <!-- 10 -->
       <section id="terms">
-        <div class="act">08 · Term cards</div>
-        <h2>Today’s words</h2>
+        <div class="act">10 · Term cards</div>
+        <h2>Today’s words, one line each</h2>
         <p class="cap">Same vocabulary as the Ladder page’s term map — nothing new invented here.</p>
         <div class="terms">
-          <div class="term"><div class="w">Context (window)</div><div class="d">The session’s working memory: everything said, read and run so far. Fixed size; fills up.</div></div>
-          <div class="term"><div class="w">ctx %</div><div class="d">Status-bar field showing how full the context is. Past 50%: write progress to a file.</div></div>
-          <div class="term"><div class="w">/compact</div><div class="d">Summarises the conversation so far to free space. Lossy. Write down first.</div></div>
-          <div class="term"><div class="w">/clear</div><div class="d">Starts a fresh conversation with empty context. Costs nothing. Use between unrelated tasks.</div></div>
-          <div class="term"><div class="w">Model</div><div class="d">Which brain answers. Read it off status-bar field 4; see the list and switch with /model. Pick by the docs’ rule, not by habit.</div></div>
-          <div class="term"><div class="w">Effort</div><div class="d">How long it thinks before answering: low → max. More = slower, costlier, steadier.</div></div>
+          <div class="term"><div class="w">Context window</div><div class="d">The session’s working memory: everything said, read and run so far. Fixed size; recall falls as it fills.</div></div>
+          <div class="term"><div class="w">ctx %</div><div class="d">Status-bar field showing how full the context is. Past 50 %: write progress to a file.</div></div>
+          <div class="term"><div class="w">/compact · /clear</div><div class="d">Compact = model-written summary, lossy. Clear = fresh window, free. Write down first; clear between unrelated tasks.</div></div>
+          <div class="term"><div class="w">Model</div><div class="d">Which brain answers. Status-bar field 4; <code>/model</code> to switch. Subagents inherit it.</div></div>
+          <div class="term"><div class="w">Effort</div><div class="d">A dial that follows how far you step away: low when you watch, high when you leave. Not “more is better”.</div></div>
           <div class="term"><div class="w">Token</div><div class="d">The billing unit, about ¾ of a word. The whole conversation is re-sent every turn.</div></div>
-          <div class="term"><div class="w">Usage window</div><div class="d">Your rolling 5-hour and 7-day allowance. /usage shows both; the status bar shows them as fields 6–7.</div></div>
           <div class="term"><div class="w">Prompt</div><div class="d">What you say this time. Five elements: role, background, example, format, don’ts.</div></div>
-          <div class="term"><div class="w">CLAUDE.md</div><div class="d">The instruction file read at the start of every session. What is true every time. Day 2.</div></div>
-          <div class="term"><div class="w">Plan mode</div><div class="d">A permission mode where Claude reads and proposes but changes nothing until you approve. Shift+Tab.</div></div>
-          <div class="term"><div class="w">Status bar</div><div class="d">The one-line dashboard at the bottom of every session: lane, repo, model, ctx, usage, mode.</div></div>
+          <div class="term"><div class="w">CLAUDE.md</div><div class="d">The instruction file read every session and re-injected after compact. Only what it can’t guess. Day 2.</div></div>
+          <div class="term"><div class="w">Permission mode</div><div class="d">Manual · acceptEdits · plan · auto · bypass. Shift+Tab. Plan mode reads and proposes, changes nothing.</div></div>
+          <div class="term"><div class="w">Hook</div><div class="d">A script Claude Code runs before / after a tool call. Exit 2 blocks it. A lock, not advice. Day 3.</div></div>
+          <div class="term"><div class="w">Skill</div><div class="d">A folder of instructions loaded on demand. Descriptions always in context; side-effect skills should be manual.</div></div>
+          <div class="term"><div class="w">Subagent</div><div class="d">A helper with its own context window that returns a summary. Use it for investigation. Still on your bill.</div></div>
         </div>
       </section>
 
-      <!-- 09 -->
+      <!-- 11 -->
       <section id="refs">
-        <div class="act">09 · Sources</div>
+        <div class="act">11 · Sources</div>
         <h2>Where today’s claims come from</h2>
+        <p class="cap">Every bracketed number on this page points here. Nothing on the page is asserted without one of these behind it.</p>
         <div class="refs"><ol>
           <li>Anthropic, <i>Best practices for Claude Code</i> — <a href="https://code.claude.com/docs/en/best-practices">code.claude.com/docs/en/best-practices</a> <span class="dt">accessed 2026-10-25</span></li>
           <li>Anthropic, <i>How Claude remembers your project</i> (CLAUDE.md &amp; memory) — <a href="https://code.claude.com/docs/en/memory">code.claude.com/docs/en/memory</a> <span class="dt">accessed 2026-10-25</span></li>
-          <li>Anthropic, <i>Manage costs effectively</i> (tokens, /usage, /compact, model choice) — <a href="https://code.claude.com/docs/en/costs">code.claude.com/docs/en/costs</a> <span class="dt">accessed 2026-10-25</span></li>
-          <li>Anthropic, <i>Model configuration</i> (/model, aliases, effort levels) — <a href="https://code.claude.com/docs/en/model-config">code.claude.com/docs/en/model-config</a> <span class="dt">accessed 2026-10-25</span></li>
-          <li>Anthropic, <i>Common workflows</i> (plan mode, /resume, prompt recipes) — <a href="https://code.claude.com/docs/en/common-workflows">code.claude.com/docs/en/common-workflows</a> <span class="dt">accessed 2026-10-25</span></li>
-          <li>S. De Simone, <i>“Claude Code creator shares his workflow”</i>, InfoQ — <a href="https://www.infoq.com/news/2026/01/claude-code-creator-workflow/">infoq.com/news/2026/01/claude-code-creator-workflow</a> <span class="dt">2026-01-10</span>; links Boris Cherny’s original thread <a href="https://x.com/bcherny/status/2007179832300581177">x.com/bcherny/status/2007179832300581177</a></li>
+          <li>Anthropic, <i>Manage costs effectively</i> — <a href="https://code.claude.com/docs/en/costs">code.claude.com/docs/en/costs</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Model configuration</i> (aliases, effort levels, subagent inheritance) — <a href="https://code.claude.com/docs/en/model-config">code.claude.com/docs/en/model-config</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Common workflows</i> — <a href="https://code.claude.com/docs/en/common-workflows">code.claude.com/docs/en/common-workflows</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>S. De Simone, <i>“Claude Code creator shares his workflow”</i>, InfoQ — <a href="https://www.infoq.com/news/2026/01/claude-code-creator-workflow/">infoq.com/news/2026/01/claude-code-creator-workflow</a> <span class="dt">2026-01-10</span></li>
           <li>M. Nuñez, <i>“The creator of Claude Code just revealed his workflow…”</i>, VentureBeat — <a href="https://venturebeat.com/technology/the-creator-of-claude-code-just-revealed-his-workflow-and-developers-are">venturebeat.com/…/the-creator-of-claude-code-just-revealed-his-workflow</a> <span class="dt">2026-01-04</span></li>
           <li>Anthropic, <i>Code w/ Claude 2026 — live coding session with Boris Cherny and Jarred Sumner</i> — <a href="https://claude.com/code-with-claude/session/sf-live-coding-session-with-boris-cherny-and-jarred-sumner">claude.com/code-with-claude/…</a> <span class="dt">2026-05-06</span></li>
           <li>Purple Ruler, <i>The Ladder</i> — <a href="../the-ladder.html#promptcraft">§03 Rung 2 · The prompt</a> and <a href="../the-ladder.html#cockpit">§09 Commands &amp; status bar</a> (internal)</li>
+          <li>Anthropic, <i>Thinking: steering and cost</i> (effort table, “no level guarantees a thinking block”) — <a href="https://platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost">platform.claude.com/docs/en/build-with-claude/thinking-steering-and-cost</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Effort</i> (“a behavioral signal, not a strict token budget”; per-model notes) — <a href="https://platform.claude.com/docs/en/build-with-claude/effort">platform.claude.com/docs/en/build-with-claude/effort</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Introducing Claude Opus 4.6</i> (“we recommend dialing effort down from its default setting (high) to medium”) — <a href="https://www.anthropic.com/news/claude-opus-4-6">anthropic.com/news/claude-opus-4-6</a> <span class="dt">2026-02-05</span></li>
+          <li>A. P. Gema et al., <i>Inverse Scaling in Test-Time Compute</i>, arXiv 2507.14417 — <a href="https://arxiv.org/abs/2507.14417">arxiv.org/abs/2507.14417</a> <span class="dt">2025-07-19 (v2 2025-12-15)</span></li>
+          <li>Anthropic Engineering, <i>Effective context engineering for AI agents</i> (“attention budget”, context rot) — <a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">anthropic.com/engineering/effective-context-engineering-for-ai-agents</a> <span class="dt">2025-09-29</span></li>
+          <li>Anthropic, <i>How Anthropic teams use Claude Code</i> — <a href="https://claude.com/blog/how-anthropic-teams-use-claude-code">claude.com/blog/how-anthropic-teams-use-claude-code</a> <span class="dt">2025-07-24</span></li>
+          <li>Anthropic, <i>Context window</i> (what survives compaction; /compact focus, /rewind, /autocompact) — <a href="https://code.claude.com/docs/en/context-window">code.claude.com/docs/en/context-window</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>How Claude Code works</i> (context window definition; what compaction keeps; auto memory limits) — <a href="https://code.claude.com/docs/en/how-claude-code-works">code.claude.com/docs/en/how-claude-code-works</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Permission modes</i> (“best for” table; auto-mode classifier) — <a href="https://code.claude.com/docs/en/permission-modes">code.claude.com/docs/en/permission-modes</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Claude prompting best practices</i> (clear instructions, examples, “avoid over-engineering”) — <a href="https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices">platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Skills</i> (description-driven loading, disable-model-invocation, user-invocable, skillOverrides, token budgets) — <a href="https://code.claude.com/docs/en/skills">code.claude.com/docs/en/skills</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Hooks</i> (lifecycle events, exit codes, stderr, permissionDecision, block-rm walkthrough) — <a href="https://code.claude.com/docs/en/hooks">code.claude.com/docs/en/hooks</a> and <a href="https://code.claude.com/docs/en/hooks-guide">hooks-guide</a> <span class="dt">accessed 2026-10-25</span></li>
         </ol></div>
       </section>
 
-      <!-- 10 -->
+      <!-- 12 -->
       <details class="trainer" id="trainer">
         <summary>Trainer notes <span class="sub">· for the person running the hour · collapsed by default</span></summary>
         <div class="body">
-          <h4>Minute plan (60)</h4>
+          <h4>Minute plan (54 + 6 buffer)</h4>
           <ul>
-            <li><b>0–2</b> §00 — show the week table; say the shape of every day once.</li>
-            <li><b>2–5</b> §01 — two SOUND FAMILIAR questions, hands up, move on. Don’t re-teach the Ladder.</li>
-            <li><b>5–20</b> §02 — five words, three minutes each. Read definition, tell the analogy in your own words, ask “when did you last meet this?”. Have a live Claude Code session on screen and point at status-bar fields 4, 5, 6–7 while you talk.</li>
-            <li><b>20–28</b> §03 — don’t read all twelve. Pick 1, 3, 6, 12; ask the room which others they recognise. The page is the reference.</li>
-            <li><b>28–38</b> §04 — five elements table. Ask: “which one do you always skip?” (It is Don’ts.)</li>
-            <li><b>38–48</b> §05 — Case A: read the three asks aloud; let them say where ask 2 still fails before you do. Case B: tell it as a story — the point is <i>order</i>.</li>
-            <li><b>48–53</b> §06 — everyone types. You walk the room. Nobody uses the website.</li>
-            <li><b>53–58</b> three people read out prompt + result. Praise a good Don’ts line.</li>
-            <li><b>58–60</b> §07 homework, one sentence. Point at D2.</li>
+            <li><b>0–2</b> §00 — Figure 1; say the shape of every day once.</li>
+            <li><b>2–4</b> §01 — two SOUND FAMILIAR questions, hands up, move on.</li>
+            <li><b>4–22</b> §02 — nine cards, two minutes each. Per card: read the definition sentence, tell the analogy in your own words, point at the figure, ask “when did you last meet this?”. Don’t read the “in a real project” row aloud — it is there for the reader. Spend the longest on T1 (Figures 2–3) and T3 (Figures 5–7). Live session on screen; point at status-bar fields 4, 5, 6–7.</li>
+            <li><b>22–26</b> §03 — walk Figure 14 lane by lane with your finger. Say the sentence “whether the tool runs is decided in lane 2” twice. Example A is the one people remember.</li>
+            <li><b>26–29</b> §04 — Figure 15 only; the token figure is for the reader. Ask: “which skill of yours sends something?”</li>
+            <li><b>29–33</b> §05 — Figure 17, then pitfalls 1, 2, 3, 4 only. The folded six are for the page.</li>
+            <li><b>33–38</b> §06 — five-element table; ask “which one do you always skip?” (Don’ts.) One before/after card read aloud.</li>
+            <li><b>38–48</b> §07 — two minutes per case. A and C read the asks aloud; B as a story (the point is <i>order</i>); D ask the room which job they would walk away from; E point at tomorrow.</li>
+            <li><b>48–53</b> §08 — everyone types. Walk the room. Nobody uses the website.</li>
+            <li><b>53–59</b> three people read out prompt + result. Praise a good Don’ts line. (This slot is also the buffer.)</li>
+            <li><b>59–60</b> §09 homework, one sentence. Point at Day 2.</li>
           </ul>
           <h4>Questions to ask the room</h4>
           <ul>
-            <li>After Word 1: “What does your ctx say right now? Who has never looked?”</li>
-            <li>After Word 2: “Which of your weekly tasks is intern-grade work you’ve been sending to the partner?”</li>
-            <li>After Case A: “Which sentence in ask 3 stopped the wrong promise?” (The Don’ts line.)</li>
+            <li>After T1: “What does your ctx say right now? Who has never looked?”</li>
+            <li>After T3: “Which of your tasks this week would you have walked away from — and which would you have watched?”</li>
+            <li>After §03: “If the hook blocks it, what does Claude see?” (Your stderr sentence — nothing else.)</li>
+            <li>After Case A: “Which sentence in the good ask stopped the wrong promise?” (The Don’ts line.)</li>
             <li>After Case B: “If we compacted first and wrote the file second, what would the file be written from?”</li>
           </ul>
           <h4>Questions learners usually ask</h4>
           <ul>
-            <li><b>“Should I just always use Opus?”</b> No — most drafting is Sonnet work; Opus for judgment calls. The bill and the 7-day window are shared across your week.</li>
-            <li><b>“Is compact or clear better?”</b> Neither is “better”. Clear when nothing needs to survive (cheapest, cleanest). Compact when you must keep continuity — and write down first.</li>
+            <li><b>“Should I just always use Opus?”</b> No — most drafting is Sonnet work; Opus for judgment calls; the docs’ own diagnosis of surprise bills is “Opus left as the default” [3].</li>
+            <li><b>“Isn’t higher effort just better?”</b> No. It follows how far you step away; on a small change it does more than you asked [11], and the release notes say to dial it down when it over-thinks [12]. And asking it in words to “think less” is unreliable — turn the dial [10].</li>
+            <li><b>“Is compact or clear better?”</b> Neither. Clear when nothing needs to survive (free, clean). Compact early with a focus when you must keep continuity — and write down first [16].</li>
             <li><b>“Where does what I paste go?”</b> Into the session transcript on your machine and possibly into memory files. Treat the prompt box like an email: nothing you wouldn’t forward.</li>
-            <li><b>“It asked me for permission — what do I click?”</b> Read what it wants to do. If it is a file edit in your own folder, fine. If it is sending, deleting or paying, say no today; Day 3 covers how to make that automatic.</li>
+            <li><b>“Can’t I just write ‘never send’ in CLAUDE.md?”</b> You can, and it will mostly listen — “mostly” is the point. A hook is the only thing that is not “mostly” (§03).</li>
             <li><b>“Can it remember my prompt for next time?”</b> Not on its own. That is literally tomorrow’s session.</li>
-            <li><b>“What is effort, really — is it the same as model?”</b> No. Model is <i>who</i> answers; effort is <i>how long they think</i>. Both move cost.</li>
           </ul>
           <h4>Things to have ready</h4>
           <ul>
-            <li>A live Claude Code session with the status bar visible, ctx near 0%.</li>
+            <li>A live Claude Code session with the status bar visible, ctx near 0 %.</li>
             <li>The Case A email in a text file so people can paste it for the hands-on.</li>
             <li>The Lark group open for the paste-ins; remind everyone: zero names, zero credentials.</li>
+            <li>Optional: the bash-guard denial on screen — run a harmless <code>rm -rf</code> probe in a scratch folder and show the one-line stderr.</li>
           </ul>
         </div>
       </details>
@@ -539,8 +1057,8 @@ Show me the result, then list any assumption you made.
     </div>
   </main>
 </div>
+
 <script>
-  // highlight current section in the sidebar (same behaviour as the-ladder.html)
   (function () {
     var links = Array.prototype.slice.call(document.querySelectorAll('.side .nav'));
     var ids = links.map(function (a) { return a.getAttribute('href').slice(1); });
