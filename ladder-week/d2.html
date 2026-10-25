@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Day 2 · From the Prompt to a Process · The Ladder Week · Purple Ruler Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* Same tokens as the-ladder.html — one look across the series. */
+  :root {
+    --p900:#2c1a52; --p800:#3a2266; --p700:#4b2e83; --p600:#5a3a9e; --p500:#6b4ab8;
+    --p300:#a98fd8; --p100:#ece6f8; --p50:#f6f2fc;
+    --ink:#191324; --muted:#615c70; --faint:#8a8693;
+    --bg:#fbfafd; --card:#ffffff; --line:#e8e6ef; --line2:#efedf5;
+    --green:#1f9d62; --amber:#c2710a; --red:#cf2e25;
+    --radius:18px; --radius-sm:10px;
+    --shadow:0 1px 2px rgba(28,18,55,.05),0 22px 48px -28px rgba(44,26,82,.30);
+    --font:'Geist',-apple-system,BlinkMacSystemFont,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior:auto; } }
+  body { background:var(--bg); color:var(--ink); font-family:var(--font);
+    letter-spacing:-.011em; -webkit-font-smoothing:antialiased; line-height:1.6; }
+  a { color:var(--p600); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  a:focus-visible { outline:2px solid var(--p500); outline-offset:2px; border-radius:4px; }
+  code { font-family:var(--mono); font-size:.86em; background:var(--p50); border:1px solid var(--line);
+    padding:1px 6px; border-radius:6px; color:var(--p700); white-space:nowrap; }
+  pre { font-family:var(--mono); font-size:12.5px; line-height:1.6; background:var(--p900); color:#f1ecfb;
+    border-radius:var(--radius-sm); padding:16px 18px; overflow-x:auto; margin:14px 0 18px; max-width:780px;
+    white-space:pre-wrap; overflow-wrap:anywhere; }
+  pre .c { color:#b7a8dc; }
+  .app { display:flex; min-height:100vh; }
+  .side { width:264px; flex:none; background:linear-gradient(185deg,var(--p700),var(--p900));
+    color:#fff; padding:22px 14px 18px; position:sticky; top:0; height:100vh; overflow-y:auto;
+    display:flex; flex-direction:column; scrollbar-width:thin; }
+  .brand { display:flex; align-items:center; gap:10px; font-weight:800; font-size:15.5px;
+    letter-spacing:-.02em; padding:4px 8px 16px; color:#fff; }
+  .brand .m { width:30px; height:30px; border-radius:8px; background:#fff; display:grid;
+    place-items:center; color:var(--p700); font-weight:800; font-size:15px; flex:none; }
+  .grp { font-family:var(--mono); font-size:10px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:rgba(255,255,255,.48); padding:16px 10px 6px; }
+  .nav { display:flex; align-items:baseline; gap:10px; padding:6px 11px; border-radius:10px;
+    color:rgba(255,255,255,.74); font-weight:600; font-size:13px; transition:.13s; }
+  .nav:hover { background:rgba(255,255,255,.10); color:#fff; text-decoration:none; }
+  .nav .n { font-family:var(--mono); font-size:10.5px; color:rgba(255,255,255,.45); width:20px; flex:none; }
+  .nav .min { margin-left:auto; font-family:var(--mono); font-size:9.5px; color:rgba(255,255,255,.4); }
+  .side-foot { margin-top:auto; padding:14px 10px 4px; border-top:1px solid rgba(255,255,255,.16);
+    font-size:11px; color:rgba(255,255,255,.55); line-height:1.5; }
+  .side-foot b { color:rgba(255,255,255,.85); }
+  .side-foot a { color:rgba(255,255,255,.85); }
+  .main { flex:1; min-width:0; }
+  .wrap { max-width:940px; margin:0 auto; padding:0 44px 120px; }
+  .topbar { display:none; }
+  @media (max-width: 920px) {
+    .side { display:none; }
+    .topbar { display:flex; position:sticky; top:0; z-index:20; align-items:center; gap:12px;
+      background:linear-gradient(120deg,var(--p700),var(--p900)); color:#fff; padding:12px 16px; }
+    .topbar .m { width:26px; height:26px; border-radius:7px; background:#fff; display:grid;
+      place-items:center; color:var(--p700); font-weight:800; font-size:13px; flex:none; }
+    .topbar .t { font-weight:800; font-size:14px; }
+    .topbar a { color:#fff; margin-left:auto; font-size:12px; font-weight:600; white-space:nowrap; }
+    .wrap { padding:0 16px 90px; }
+  }
+  .hero { padding:56px 0 40px; border-bottom:1px solid var(--line); }
+  .eyebrow { font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.22em;
+    text-transform:uppercase; color:var(--p500); margin-bottom:20px; }
+  .hero h1 { font-size:clamp(34px,5.4vw,56px); font-weight:800; letter-spacing:-.035em;
+    line-height:1.04; margin-bottom:18px; }
+  .hero h1 .dim { color:var(--p300); }
+  .hero .thesis { font-size:18px; color:var(--muted); max-width:640px; margin-bottom:26px; }
+  .hero .thesis b { color:var(--ink); }
+  .plan { display:grid; grid-template-columns:repeat(6,1fr); gap:8px; }
+  @media (max-width:760px){ .plan { grid-template-columns:repeat(2,1fr); } }
+  .plan .q { background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm);
+    padding:11px 12px 10px; box-shadow:var(--shadow); }
+  .plan .q .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em;
+    color:var(--p500); text-transform:uppercase; margin-bottom:5px; }
+  .plan .q p { font-size:12.5px; font-weight:600; line-height:1.4; margin:0; }
+  .plan .q .mn { display:block; font-family:var(--mono); font-size:10px; color:var(--faint); margin-top:4px; font-weight:600; }
+  section { padding-top:56px; }
+  .act { font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.2em;
+    text-transform:uppercase; color:var(--p500); display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .act::after { content:''; height:1px; flex:1; background:var(--line); }
+  h2 { font-size:clamp(25px,3.2vw,32px); font-weight:800; letter-spacing:-.028em; line-height:1.15; margin-bottom:14px; }
+  h3 { font-size:18px; font-weight:700; letter-spacing:-.015em; margin:30px 0 10px; }
+  p { margin-bottom:12px; max-width:72ch; }
+  .lead { font-size:16.5px; color:var(--muted); }
+  .lead b { color:var(--ink); }
+  .cap { font-size:12.5px; color:var(--faint); margin-top:-4px; }
+  .insight { display:flex; gap:16px; background:var(--p50); border:1px solid var(--p100);
+    border-radius:var(--radius); padding:18px 20px; margin:24px 0; max-width:780px; }
+  .insight .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:#fff; background:var(--p700); border-radius:7px; padding:5px 9px; height:fit-content; flex:none; margin-top:2px; }
+  .insight p { margin:0; font-size:16px; font-weight:700; letter-spacing:-.015em; line-height:1.5; color:var(--p900); }
+  .insight p .sub { display:block; font-weight:500; font-size:13px; color:var(--muted); margin-top:5px; }
+  .askbox { background:#fffaf2; border:1px solid #f1e2c6; border-left:4px solid var(--amber);
+    border-radius:var(--radius-sm); padding:14px 18px 12px; margin:18px 0 22px; max-width:780px; }
+  .askbox .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em;
+    color:var(--amber); display:block; margin-bottom:7px; }
+  .askbox ul { list-style:none; margin:0; padding:0; }
+  .askbox li { font-size:14.5px; font-style:italic; color:var(--ink); padding:4px 0 4px 26px; position:relative; line-height:1.55; }
+  .askbox li::before { content:"?"; position:absolute; left:4px; top:4px; font-family:var(--mono);
+    font-weight:700; font-style:normal; color:var(--amber); }
+  .table-scroll { overflow-x:auto; margin:16px 0 20px; border:1px solid var(--line);
+    border-radius:var(--radius-sm); background:var(--card); }
+  table { border-collapse:collapse; width:100%; font-size:13.5px; min-width:540px; }
+  th { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.1em;
+    text-transform:uppercase; color:var(--p600); text-align:left; padding:10px 14px;
+    background:var(--p50); border-bottom:2px solid var(--p100); white-space:nowrap; }
+  td { padding:10px 14px; border-bottom:1px solid var(--line2); vertical-align:top; line-height:1.5; }
+  tr:last-child td { border-bottom:none; }
+  td.strong { font-weight:700; }
+  /* concept cards */
+  .concepts { display:grid; gap:12px; margin:16px 0 8px; max-width:860px; }
+  .concept { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden; }
+  .concept .hd { display:flex; align-items:baseline; gap:12px; padding:12px 18px 10px; background:var(--p50); border-bottom:1px solid var(--p100); }
+  .concept .hd .n { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p500); }
+  .concept .hd .w { font-weight:800; font-size:17px; letter-spacing:-.015em; color:var(--p900); }
+  .concept .hd .cmd { margin-left:auto; font-family:var(--mono); font-size:10.5px; color:var(--p600); white-space:nowrap; }
+  .concept .rows { display:grid; grid-template-columns:120px 1fr; }
+  .concept .rows > div { padding:9px 18px; border-bottom:1px solid var(--line2); font-size:13.5px; line-height:1.5; }
+  .concept .rows > div:nth-last-child(-n+2) { border-bottom:none; }
+  .concept .rows .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); text-transform:uppercase; padding-top:11px; }
+  @media (max-width:640px){ .concept .rows { grid-template-columns:1fr; } .concept .rows .k { padding-bottom:0; border-bottom:none; }
+    .concept .hd { flex-wrap:wrap; } .concept .hd .cmd { margin-left:0; flex-basis:100%; } }
+  /* pitfalls */
+  .pits { counter-reset:pit; display:grid; gap:10px; margin:16px 0 8px; max-width:860px; }
+  .pit { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 16px 12px 52px; position:relative; }
+  .pit::before { counter-increment:pit; content:counter(pit,decimal-leading-zero); position:absolute; left:16px; top:13px;
+    font-family:var(--mono); font-size:11px; font-weight:700; color:var(--p500); }
+  .pit .sym { font-weight:800; font-size:14.5px; letter-spacing:-.01em; margin-bottom:4px; }
+  .pit .why, .pit .fix { font-size:13px; line-height:1.5; color:var(--muted); }
+  .pit .why b, .pit .fix b { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--faint); margin-right:6px; }
+  .pit .fix { color:var(--ink); margin-top:3px; }
+  .pit .fix b { color:var(--green); }
+  details.more { margin:10px 0 4px; max-width:860px; }
+  details.more summary { cursor:pointer; list-style:none; font-weight:700; font-size:13.5px; color:var(--p700);
+    padding:10px 14px; border:1px dashed var(--p300); border-radius:var(--radius-sm); background:var(--p50); }
+  details.more summary::-webkit-details-marker { display:none; }
+  details.more summary::before { content:'▸ '; font-family:var(--mono); }
+  details.more[open] summary::before { content:'▾ '; }
+  details.more summary .sub { font-weight:500; color:var(--muted); font-size:12px; }
+  details.more .pits { margin-top:10px; }
+  /* three asks */
+  .asks { display:grid; gap:10px; margin:14px 0 10px; max-width:860px; }
+  .ask { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 16px; }
+  .ask .lv { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.14em; color:var(--faint); }
+  .ask.good { border-color:var(--p300); background:var(--p50); }
+  .ask.good .lv { color:var(--p600); }
+  .ask .txt { font-size:13.5px; font-style:italic; margin:4px 0 6px; line-height:1.5; }
+  .ask .out { font-size:12.5px; color:var(--muted); line-height:1.5; }
+  .ask .out b { color:var(--ink); }
+  /* term cards */
+  .terms { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0 8px; }
+  @media (max-width:760px){ .terms { grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:480px){ .terms { grid-template-columns:1fr; } }
+  .term { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:11px 13px 10px; }
+  .term .w { font-weight:800; font-size:13.5px; letter-spacing:-.01em; margin-bottom:3px; color:var(--p900); }
+  .term .d { font-size:12px; color:var(--muted); line-height:1.5; }
+  /* trainer notes */
+  details.trainer { border:1.5px dashed var(--p300); border-radius:var(--radius); background:var(--p50); padding:0; margin:40px 0 0; max-width:860px; }
+  details.trainer summary { cursor:pointer; list-style:none; padding:16px 20px; font-weight:800; font-size:15px; color:var(--p900); display:flex; align-items:center; gap:10px; }
+  details.trainer summary::-webkit-details-marker { display:none; }
+  details.trainer summary::before { content:'▸'; font-family:var(--mono); color:var(--p500); }
+  details.trainer[open] summary::before { content:'▾'; }
+  details.trainer summary .sub { font-weight:500; font-size:12.5px; color:var(--muted); }
+  details.trainer .body { padding:0 20px 18px; }
+  details.trainer .body h4 { font-size:13.5px; font-weight:800; margin:14px 0 6px; color:var(--p800); }
+  details.trainer .body ul, details.trainer .body ol { padding-left:20px; font-size:13.5px; line-height:1.55; }
+  details.trainer .body li { margin-bottom:4px; }
+  /* refs */
+  .refs { font-size:12.5px; color:var(--muted); line-height:1.6; }
+  .refs ol { padding-left:22px; }
+  .refs li { margin-bottom:5px; overflow-wrap:anywhere; }
+  .refs .dt { font-family:var(--mono); font-size:10.5px; color:var(--faint); }
+  blockquote { border-left:3px solid var(--p300); padding:4px 0 4px 16px; margin:12px 0 14px; color:var(--p900); font-size:14.5px; max-width:720px; }
+  blockquote .src { display:block; font-size:12px; color:var(--faint); margin-top:4px; font-style:normal; }
+  .homework { background:linear-gradient(135deg,var(--p700),var(--p900)); color:#fff; border-radius:var(--radius); padding:20px 24px; margin:16px 0 8px; max-width:780px; }
+  .homework .tag { font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.16em; color:var(--p300); margin-bottom:8px; }
+  .homework p { color:#fff; margin:0; font-size:16px; font-weight:700; line-height:1.5; }
+  .homework p .sub { display:block; font-weight:500; font-size:13px; color:rgba(255,255,255,.75); margin-top:6px; }
+  .steps { counter-reset:st; display:grid; gap:8px; margin:12px 0 14px; max-width:780px; }
+  .step { position:relative; padding:10px 14px 10px 44px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); font-size:13.5px; line-height:1.5; }
+  .step::before { counter-increment:st; content:counter(st); position:absolute; left:14px; top:10px; width:20px; height:20px; border-radius:6px;
+    background:var(--p700); color:#fff; font-family:var(--mono); font-size:10.5px; font-weight:700; display:grid; place-items:center; }
+</style>
+<style>
+  /* ---- v2 additions: figures, cards, cases ---- */
+  figure.fig { margin:14px 0 18px; max-width:820px; border:1px solid var(--line); border-radius:var(--radius); background:var(--card); padding:14px 16px 10px; }
+  figure.fig svg { width:100%; height:auto; display:block; font-family:var(--font); }
+  figure.fig figcaption { font-size:12.5px; color:var(--muted); margin-top:8px; line-height:1.5; }
+  figure.fig figcaption b { color:var(--ink); }
+  .fig2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:860px; }
+  @media (max-width:760px){ .fig2 { grid-template-columns:1fr; } }
+  .fig2 figure.fig { margin:0; }
+  .svgt { font-size:11px; fill:var(--muted); }
+  .svgT { font-size:12px; font-weight:700; fill:var(--ink); }
+  .svgM { font-family:var(--mono); font-size:10px; font-weight:700; fill:var(--p600); letter-spacing:.08em; }
+  .svgp { fill:none; stroke:var(--p600); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+  .svgg { fill:none; stroke:var(--line); stroke-width:1; }
+  .svgax { fill:none; stroke:var(--faint); stroke-width:1.2; }
+  .svgr { fill:none; stroke:var(--red); stroke-width:2.5; stroke-linecap:round; stroke-dasharray:5 4; }
+  .svgfill { fill:var(--p100); }
+  .svgbox { fill:var(--card); stroke:var(--p300); stroke-width:1.2; }
+  .svgbox2 { fill:var(--p50); stroke:var(--p100); stroke-width:1; }
+  .svgbad { fill:#fdf1f0; stroke:#e5b9b5; stroke-width:1.2; }
+  .svgok { fill:#edf8f1; stroke:#b9e3c8; stroke-width:1.2; }
+  .ctr { display:grid; gap:10px; margin:14px 0 8px; max-width:860px; }
+  .ci { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:12px 16px; display:grid; grid-template-columns:40px 1fr; gap:12px; }
+  .ci .n { font-family:var(--mono); font-size:11px; font-weight:700; color:#fff; background:var(--p700); border-radius:8px; height:28px; display:grid; place-items:center; }
+  .ci .t { font-weight:800; font-size:14.5px; letter-spacing:-.01em; margin-bottom:3px; }
+  .ci .d { font-size:13px; color:var(--muted); line-height:1.5; }
+  .ci .d b { color:var(--ink); }
+  .ci .so { display:block; font-size:11.5px; color:var(--faint); margin-top:4px; }
+  .ci figure.fig { grid-column:1 / -1; margin:6px 0 0; padding:10px 12px 6px; }
+  .cases { display:grid; gap:14px; margin:14px 0 8px; max-width:860px; }
+  .case { border:1px solid var(--line); border-radius:var(--radius); background:var(--card); overflow:hidden; }
+  .case .hd { display:flex; gap:12px; align-items:baseline; padding:12px 18px 10px; background:var(--p50); border-bottom:1px solid var(--p100); flex-wrap:wrap; }
+  .case .hd .n { font-family:var(--mono); font-size:10px; font-weight:700; letter-spacing:.14em; color:var(--p500); }
+  .case .hd .t { font-weight:800; font-size:16px; letter-spacing:-.015em; color:var(--p900); }
+  .case .hd .w { margin-left:auto; font-family:var(--mono); font-size:10px; color:var(--faint); }
+  .case .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; }
+  @media (max-width:760px){ .case .g3 { grid-template-columns:1fr; } }
+  .case .g3 > div { padding:12px 16px; border-right:1px solid var(--line2); font-size:13px; line-height:1.5; }
+  .case .g3 > div:last-child { border-right:none; }
+  @media (max-width:760px){ .case .g3 > div { border-right:none; border-bottom:1px solid var(--line2); } .case .g3 > div:last-child { border-bottom:none; } }
+  .case .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; display:block; margin-bottom:5px; }
+  .case .bad .k { color:var(--red); } .case .good .k { color:var(--green); } .case .why .k { color:var(--p600); }
+  .case .q { font-style:italic; color:var(--ink); }
+  .case .bad { background:#fffafa; } .case .good { background:#f7fcf9; }
+  .ba { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0 8px; max-width:860px; }
+  @media (max-width:640px){ .ba { grid-template-columns:1fr; } }
+  .bac { border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--card); padding:11px 14px; font-size:13px; line-height:1.5; }
+  .bac .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; color:var(--p600); display:block; margin-bottom:4px; }
+  .bac .b { color:var(--red); font-style:italic; display:block; margin-bottom:4px; }
+  .bac .g { color:var(--ink); font-style:italic; display:block; }
+  .bac .b::before { content:"✗ "; font-style:normal; } .bac .g::before { content:"✓ "; color:var(--green); font-style:normal; }
+  .concept .rows .k { white-space:nowrap; }
+  .step, .ci, .ci > div, .case .g3 > div { min-width:0; }
+  .step code, .ci code { white-space:normal; overflow-wrap:anywhere; }
+  .cmp { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:10px 0 6px; }
+  @media (max-width:640px){ .cmp { grid-template-columns:1fr; } }
+  .cmp > div { border-radius:var(--radius-sm); padding:10px 12px; font-size:12.5px; line-height:1.5; }
+  .cmp .hi { background:#fdf1f0; border:1px solid #e5b9b5; } .cmp .lo { background:#edf8f1; border:1px solid #b9e3c8; }
+  .cmp .k { font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:.12em; display:block; margin-bottom:4px; }
+  .cmp .hi .k { color:var(--red); } .cmp .lo .k { color:var(--green); }
+</style>
+</head>
+<body>
+
+<div class="topbar"><div class="m">PR</div><div class="t">Day 2 · From the prompt to a process</div><a href="index.html">Week ↗</a></div>
+
+<div class="app">
+  <aside class="side" aria-label="Contents">
+    <a class="brand" href="index.html"><div class="m">PR</div>The Ladder · Week</a>
+    <div class="grp">Day 2 · first rung · 15 minutes</div>
+    <a class="nav" href="#why"><span class="n">00</span>Why these three words<span class="min">2′</span></a>
+    <a class="nav" href="#spec"><span class="n">01</span>Spec<span class="min">4′</span></a>
+    <a class="nav" href="#plan"><span class="n">02</span>Plan<span class="min">3′</span></a>
+    <a class="nav" href="#handover"><span class="n">03</span>Handover doc<span class="min">4′</span></a>
+    <a class="nav" href="#handson"><span class="n">04</span>Hands-on<span class="min">2′</span></a>
+    <a class="nav" href="#terms"><span class="n">05</span>Term cards</a>
+    <a class="nav" href="#refs"><span class="n">06</span>Sources</a>
+    <div class="grp">Rest of Day 2 · after Day 1 feedback</div>
+    <a class="nav" href="#next"><span class="n">··</span>Rung 3 · CLAUDE.md</a>
+    <div class="side-foot">Purple Ruler · Team training<br>
+      <b>Day 2 of 5</b> · <a href="d1.html">← Day 1</a> · <a href="../the-ladder.html">The Ladder</a></div>
+  </aside>
+
+  <main class="main">
+    <div class="wrap">
+
+      <header class="hero">
+        <div class="eyebrow">Purple Ruler · The Ladder Week · Day 2 of 5 · first rung</div>
+        <h1>From the prompt <span class="dim">to a process</span></h1>
+        <p class="thesis">Day 1 ended with one good prompt. Before that prompt can become a file (rung 3), three words sit between “asking well” and “working as a team”: <b>spec</b>, <b>plan</b>, <b>handover doc</b>. Each is a piece of paper written <i>before</i> something expensive happens — before code, before edits, before memory is lost. Same card shape as Day 1: definition, analogy, one figure, a real project, one counter-intuitive fact.</p>
+        <div class="plan">
+          <div class="q"><div class="k">00</div><p>Why three words<span class="mn">2 min</span></p></div>
+          <div class="q"><div class="k">01</div><p>Spec<span class="mn">4 min</span></p></div>
+          <div class="q"><div class="k">02</div><p>Plan<span class="mn">3 min</span></p></div>
+          <div class="q"><div class="k">03</div><p>Handover doc<span class="mn">4 min</span></p></div>
+          <div class="q"><div class="k">04</div><p>Hands-on<span class="mn">2 min</span></p></div>
+          <div class="q"><div class="k">··</div><p>Rung 3 · CLAUDE.md<span class="mn">after feedback</span></p></div>
+        </div>
+      </header>
+
+      <!-- 00 -->
+      <section id="why">
+        <div class="act">00 · Why these three words · 2 min</div>
+        <h2>Three pieces of paper, each written before something expensive</h2>
+        <p class="lead">On Day 1 the chatbox evaporated (rung 1) and a good prompt fixed one conversation (rung 2). The three words today are what turns one person’s good prompt into something a <b>second person</b> — or the <b>same person tomorrow</b> — can pick up: the spec says what we are building and how we will know; the plan says in what order and touching which files; the handover doc says where we got to when the lights went out.</p>
+        <figure class="fig">
+          <svg viewBox="0 0 820 200" role="img" aria-label="Three gates on one piece of work: spec before code, plan before edits, handover before memory loss; review sits at the end and checks only correctness">
+            <text x="20" y="22" class="svgM">WHERE EACH PIECE OF PAPER SITS</text>
+            <line x1="40" y1="110" x2="780" y2="110" class="svgax"/>
+            <rect x="60" y="80" width="130" height="60" rx="8" class="svgbox"/><text x="125" y="104" text-anchor="middle" class="svgT">Spec</text><text x="125" y="122" text-anchor="middle" class="svgt">before any code</text>
+            <rect x="230" y="80" width="130" height="60" rx="8" class="svgbox"/><text x="295" y="104" text-anchor="middle" class="svgT">Plan</text><text x="295" y="122" text-anchor="middle" class="svgt">before any edit</text>
+            <rect x="400" y="80" width="130" height="60" rx="8" class="svgbox2"/><text x="465" y="104" text-anchor="middle" class="svgT">Build</text><text x="465" y="122" text-anchor="middle" class="svgt">the expensive part</text>
+            <rect x="570" y="80" width="130" height="60" rx="8" class="svgbox2"/><text x="635" y="104" text-anchor="middle" class="svgT">Review</text><text x="635" y="122" text-anchor="middle" class="svgt">“built right?”</text>
+            <path d="M192,110 L226,110" class="svgp" marker-end="url(#arr)"/><path d="M362,110 L396,110" class="svgp" marker-end="url(#arr)"/><path d="M532,110 L566,110" class="svgp" marker-end="url(#arr)"/>
+            <rect x="60" y="30" width="300" height="30" rx="6" class="svgok"/><text x="210" y="49" text-anchor="middle" class="svgt" style="fill:#1f9d62;font-weight:700">human gate: “the right thing?” — plain words, free to change</text>
+            <rect x="570" y="30" width="130" height="30" rx="6" class="svgbad"/><text x="635" y="49" text-anchor="middle" class="svgt" style="fill:#cf2e25">cannot ask that</text>
+            <rect x="400" y="150" width="300" height="34" rx="8" class="svgbox" style="stroke-dasharray:4 3"/><text x="550" y="166" text-anchor="middle" class="svgT" style="font-size:11px">Handover doc</text><text x="550" y="180" text-anchor="middle" class="svgt" style="font-size:10px">written whenever memory is about to be lost — any stage</text>
+            <text x="60" y="190" class="svgt">Left of “Build” everything is cheap to change. Right of it, every change is a rewrite.</text>
+          </svg>
+          <figcaption><b>Figure 1 · Three gates, one line of work.</b> Review at the end can only check whether the thing was built correctly. Only the spec, at the front, can check whether it was the right thing [7].</figcaption>
+        </figure>
+      </section>
+
+      <!-- 01 -->
+      <section id="spec">
+        <div class="act">01 · Spec · 4 min</div>
+        <h2>Spec · say it back in plain words before anyone builds</h2>
+        <div class="concepts">
+          <div class="concept">
+            <div class="hd"><span class="n">W1</span><span class="w">Spec</span><span class="cmd">house rule: no approved spec, no code</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>Before writing any code, the builder writes back <b>three things in plain language</b> for the owner to confirm: ① <i>what I understand you want</i>; ② <i>how I intend to do it</i>; ③ <i>acceptance criteria</i> written as behaviour — “input X gives Y”, “click this, get that” — so someone who never reads code can verify it by using it. All unclear points are listed <b>once, together</b>; building starts only after the owner confirms [7]. The official guidance has the same shape for larger features: <i>“have Claude interview you first … Keep interviewing until we’ve covered everything, then write a complete spec to SPEC.md.”</i> Then: <i>“Once the spec is complete, start a fresh session to execute it.”</i> And: <i>“The most useful specs are self-contained: they name the files and interfaces involved, state what is out of scope, and end with an end-to-end verification step that proves the feature works.”</i> [1]</div>
+              <div class="k">Analogy</div><div>A builder’s quote. You don’t discover the extension is on the wrong side of the house by inspecting the brickwork — you discover it on the drawing, where moving it costs a pencil line.</div>
+              <div class="k">Counter-intuitive</div><div><b>The human check belongs at the front, not the end.</b> Code review (a second model, a colleague, a gate) can answer <i>“was this built correctly?”</i>; it cannot answer <i>“was this the right thing to build?”</i> A misunderstood requirement, built perfectly, is the wrong thing done very well [7]. Corollary: an acceptance criterion that cannot be turned into one experiment is not a criterion but a wish — <i>“the audit should be robust”</i> fails; <i>“If the audit insert fails, then the system shall still play the recording and the response shall carry auditDegraded: true”</i> passes, because you can make the insert fail once and look at two things [8].</div>
+              <div class="k">In a real project</div><div>Anthropic’s workflow: interview → SPEC.md → fresh session that only implements [1]. At Purple Ruler every work order passes a <b>spec gate</b> before a line is written: acceptance sentences must fit one of six EARS shapes (always / while / when / where / if-then / combined); unclear points go through a ten-class clarify list (scope, data model, user flow, non-functional, integrations, failure handling, trade-offs, terms, done-signal, scale) and anything unanswered is left in the document as a visible <code>[NEEDS CLARIFICATION: …]</code> marker — at most five questions per round, multiple choice preferred; an implementation may not start while a marker remains [8]. For guard-type work the spec is five fixed tables (decision points, truth table, break cells, mutation matrix, replace / not-do) and a script pre-checks them before a human reviewer sees it [9].</div>
+              <div class="k">At the desk</div><div>The three-line template, in plain words: <i>“Here is what I think you want: … Here is how I’ll do it: … You’ll know it works when: …”</i> Your owner reads it in a minute and corrects it for free. That minute is the cheapest hour of the project.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 230" role="img" aria-label="A spec card with three boxes: what I understand, how I will do it, acceptance as behaviour sentences; a side list of six EARS shapes and the clarify marker">
+                <text x="20" y="22" class="svgM">THE THREE-LINE SPEC</text>
+                <rect x="20" y="36" width="470" height="48" rx="8" class="svgbox"/><text x="32" y="56" class="svgT" style="font-size:11.5px">① What I understand you want</text><text x="32" y="74" class="svgt">one paragraph, the owner’s words, no code</text>
+                <rect x="20" y="92" width="470" height="48" rx="8" class="svgbox"/><text x="32" y="112" class="svgT" style="font-size:11.5px">② How I intend to do it</text><text x="32" y="130" class="svgt">approach, what is out of scope, what already exists that I’ll reuse</text>
+                <rect x="20" y="148" width="470" height="70" rx="8" class="svgok"/><text x="32" y="168" class="svgT" style="font-size:11.5px">③ You’ll know it works when…</text><text x="32" y="186" class="svgt">When a school submits the form, the system shall show a reference number.</text><text x="32" y="202" class="svgt">If the email fails to send, then the system shall still save the request and show “we’ll call you”.</text>
+                <rect x="510" y="36" width="290" height="182" rx="8" class="svgbox2"/><text x="522" y="56" class="svgM" style="font-size:9.5px">SIX SHAPES A CRITERION MAY TAKE</text>
+                <text x="522" y="76" class="svgt">always · The system shall …</text><text x="522" y="92" class="svgt">while · While ‹state›, the system shall …</text><text x="522" y="108" class="svgt">when · When ‹event›, the system shall …</text><text x="522" y="124" class="svgt">where · Where ‹feature›, the system shall …</text><text x="522" y="140" class="svgt">if-then · If ‹bad thing›, then the system shall …</text><text x="522" y="156" class="svgt">combined · While …, when …, the system shall …</text>
+                <text x="522" y="184" class="svgt" style="fill:#cf2e25">unanswered? leave it visible:</text><text x="522" y="200" class="svgt" style="font-family:JetBrains Mono,monospace;font-size:9.5px;fill:#cf2e25">[NEEDS CLARIFICATION: which school types?]</text>
+              </svg>
+              <figcaption><b>Figure 2 · A spec you can read in a minute.</b> Box ③ is the one people skip; the six shapes on the right are the test of whether a sentence is a criterion or a wish [7][8].</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section id="plan">
+        <div class="act">02 · Plan · 3 min</div>
+        <h2>Plan · the order and the files, approved before the first edit</h2>
+        <div class="concepts">
+          <div class="concept">
+            <div class="hd"><span class="n">W2</span><span class="w">Plan · plan mode</span><span class="cmd">Shift+Tab · /plan · claude --permission-mode plan · Ctrl+G</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>A plan is <b>the steps, the files each step touches, and the order</b> — proposed by the builder, approved by the owner before anything is executed; the builder proposes the order so the owner never has to dictate it step by step [7]. Claude Code has a mode for exactly this: <i>“Plan mode tells Claude to research and propose changes without making them. Claude reads files, runs shell commands to explore, and writes a plan, but does not edit your source … edits stay blocked until you approve the plan.”</i> Enter with <code>Shift+Tab</code> (status bar shows <code>⏸ plan mode on</code>), prefix one prompt with <code>/plan</code>, or start with <code>claude --permission-mode plan</code>. <i>“When the plan is ready, Claude presents it and asks how to proceed”</i>: approve and run in auto mode, approve and review each edit, or <i>“No, keep planning”</i>; <code>Ctrl+G</code> opens the plan in your editor to change it directly [4][5].</div>
+              <div class="k">Analogy</div><div>The route on the map, agreed with the passenger before the engine starts. The spec said <i>where</i> and <i>how you’ll know you arrived</i>; the plan says <i>which roads, in which order</i>.</div>
+              <div class="k">Counter-intuitive</div><div>Planning has a price, and the docs say so: <i>“Plan mode is useful, but also adds overhead … If you could describe the diff in one sentence, skip the plan.”</i> [1] Plan when you are unsure of the approach, the change touches several files, or the code is unfamiliar [1]. And a plan is one of the few things that <b>survives compaction</b> — it is re-injected from disk along with CLAUDE.md [3] — so a plan on paper is also insurance.</div>
+              <div class="k">In a real project</div><div>Anthropic’s recommended four phases: <b>Explore</b> (plan mode, read, ask) → <b>Plan</b> (“what files need to change? create a plan”, edit it with Ctrl+G) → <b>Implement</b> (approve, then “implement from your plan, write tests, run them”) → <b>Commit</b> [1]. At Purple Ruler the plan gate follows the spec gate: a work order lists its steps and files, the owner approves, then tests are written to fail first and the implementation turns them green [7].</div>
+              <div class="k">At the desk</div><div>For a non-code task the plan is the same three columns — <i>step · what it touches · order</i> — in a message the owner can tick. “1 draft the letter (file A) · 2 you check the two facts · 3 I send to the group”: thirty seconds to write, and it stops step 3 happening before step 2.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 190" role="img" aria-label="Four phases explore, plan, implement, commit; plan mode covers the first two; approval sits between plan and implement with three choices">
+                <text x="20" y="22" class="svgM">EXPLORE → PLAN → IMPLEMENT → COMMIT</text>
+                <rect x="40" y="40" width="340" height="110" rx="10" class="svgfill"/><text x="210" y="58" text-anchor="middle" class="svgM" style="font-size:9.5px">⏸ PLAN MODE ON · READS, NO EDITS</text>
+                <rect x="56" y="70" width="140" height="64" rx="8" class="svgbox"/><text x="126" y="94" text-anchor="middle" class="svgT">Explore</text><text x="126" y="112" text-anchor="middle" class="svgt">read files · ask questions</text>
+                <rect x="224" y="70" width="140" height="64" rx="8" class="svgbox"/><text x="294" y="94" text-anchor="middle" class="svgT">Plan</text><text x="294" y="112" text-anchor="middle" class="svgt">steps · files · order</text><text x="294" y="126" text-anchor="middle" class="svgt" style="font-size:9.5px">Ctrl+G to edit it</text>
+                <path d="M198,102 L220,102" class="svgp" marker-end="url(#arr)"/>
+                <rect x="400" y="62" width="110" height="80" rx="8" class="svgok"/><text x="455" y="82" text-anchor="middle" class="svgT" style="font-size:11px">Approve?</text><text x="455" y="100" text-anchor="middle" class="svgt" style="font-size:9.5px">yes · auto mode</text><text x="455" y="114" text-anchor="middle" class="svgt" style="font-size:9.5px">yes · review each edit</text><text x="455" y="128" text-anchor="middle" class="svgt" style="font-size:9.5px">no · keep planning</text>
+                <path d="M382,102 L396,102" class="svgp" marker-end="url(#arr)"/>
+                <rect x="540" y="70" width="120" height="64" rx="8" class="svgbox2"/><text x="600" y="94" text-anchor="middle" class="svgT">Implement</text><text x="600" y="112" text-anchor="middle" class="svgt">tests first, then green</text>
+                <path d="M512,102 L536,102" class="svgp" marker-end="url(#arr)"/>
+                <rect x="680" y="70" width="110" height="64" rx="8" class="svgbox2"/><text x="735" y="94" text-anchor="middle" class="svgT">Commit</text><text x="735" y="112" text-anchor="middle" class="svgt">PR · review</text>
+                <path d="M662,102 L676,102" class="svgp" marker-end="url(#arr)"/>
+                <text x="40" y="176" class="svgt">One-sentence diff? Skip the plan and ask directly — the overhead is real [1].</text>
+              </svg>
+              <figcaption><b>Figure 3 · The four phases, and where the owner says yes.</b> Plan mode covers the two left boxes; nothing is edited until the green box [1][4].</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section id="handover">
+        <div class="act">03 · Handover doc · 4 min</div>
+        <h2>Handover doc · the only thing that crosses the gap</h2>
+        <div class="concepts">
+          <div class="concept">
+            <div class="hd"><span class="n">W3</span><span class="w">Handover doc</span><span class="cmd">written before compact · read first after</span></div>
+            <div class="rows">
+              <div class="k">Definition</div><div>A file, written <b>by the person or lane doing the work, before memory is lost</b>, that the next session reads <i>first</i>. It holds five kinds of fact: <b>coordinates</b> (where things live), <b>in flight</b> (what is half-done and on which branch or ticket), <b>waiting on whom</b>, <b>needs the owner</b> (decisions only a human can make), and <b>precedents</b> (what we learned the hard way this segment). Why a file and not the chat: <i>“Each new session starts with a fresh context window, without the conversation history from previous sessions”</i> [2]; compaction <i>“keeps your requests and key code snippets, but detailed instructions from early in the conversation may be lost”</i> [2]; and only the root instruction file, auto memory and the plan come back from disk by themselves [3].</div>
+              <div class="k">Analogy</div><div>The ward handover at shift change. The night nurse does not hope the day nurse “remembers”; she writes the sheet — who is on what, what changed, what is due, who to call — and the day nurse reads it before touching a patient.</div>
+              <div class="k">Counter-intuitive</div><div>① <b>Write it before the loss, not after.</b> The summary that compaction produces is written by the model from what is left; you cannot audit which half went missing (Day 1, Figure 2). The hand-written file is written by you, from the full picture, while you still have it. ② A handover must carry its own <b>probes</b>: one to three commands with the expected output (“this PR should still be OPEN”, “this file should exist”). The next session runs them first; if any fails the note is stale and it stops instead of acting on an old picture. A note without probes reads just as confidently when it is wrong. ③ It is append-only and dated — you never edit history, you add a section, so the trail of what was believed when stays readable.</div>
+              <div class="k">In a real project</div><div>Our coordinator keeps one progress file in git, one dated section per compaction, each section opening with a fixed <b>“ten lines to recover”</b>: ① coordinates unchanged · ② waiters that die on restart and must be re-armed · ③ merged this segment · ④–⑦ one line per live workstream · ⑧ everything else in flight · ⑨ what needs the owner · ⑩ new precedents, numbered [10]. A private, git-ignored pointer file on each machine says only <i>where</i> that anchor lives — because anything you rely on to recover from a disaster cannot live in the place the disaster destroys [10]. Day 1’s case B is this habit under pressure: “write to the board and the handover file, reply ‘saved’, then compact”. The official advice for the model’s own summary is the same instinct, one size smaller: tell CLAUDE.md <i>“When compacting, always preserve the full list of modified files and any test commands.”</i> [1]</div>
+              <div class="k">At the desk</div><div>Five lines at the end of your working day, in a file you’ll open tomorrow: where I am · what is half-done · who I’m waiting on · what I need from my manager · one thing I learned. Write it while you still know; tomorrow’s you reads it before opening anything else.</div>
+            </div>
+            <figure class="fig" style="margin:0 16px 14px">
+              <svg viewBox="0 0 820 230" role="img" aria-label="Timeline: session fills to 50 percent, handover written with five boxes, reply saved, compact, next session reads the file first and runs probes, then starts">
+                <text x="20" y="22" class="svgM">ACROSS THE GAP</text>
+                <line x1="30" y1="150" x2="790" y2="150" class="svgax"/>
+                <rect x="40" y="110" width="110" height="40" rx="6" class="svgbox2"/><text x="95" y="128" text-anchor="middle" class="svgt">working…</text><text x="95" y="143" text-anchor="middle" class="svgt" style="font-size:9.5px">ctx 50 %</text>
+                <path d="M152,130 L176,130" class="svgp" marker-end="url(#arr)"/>
+                <rect x="180" y="40" width="200" height="110" rx="8" class="svgok"/><text x="280" y="58" text-anchor="middle" class="svgT" style="font-size:11px">write the handover</text>
+                <text x="192" y="76" class="svgt" style="font-size:10px">coordinates · in flight</text><text x="192" y="91" class="svgt" style="font-size:10px">waiting on whom · needs the owner</text><text x="192" y="106" class="svgt" style="font-size:10px">precedents</text><text x="192" y="124" class="svgt" style="font-size:10px;fill:#1f9d62">+ probes: command → expected</text><text x="192" y="140" class="svgt" style="font-size:10px">append a dated section, never edit old ones</text>
+                <path d="M382,130 L406,130" class="svgp" marker-end="url(#arr)"/>
+                <rect x="410" y="110" width="80" height="40" rx="6" class="svgbox"/><text x="450" y="134" text-anchor="middle" class="svgt">“saved”</text>
+                <path d="M492,130 L516,130" class="svgp" marker-end="url(#arr)"/>
+                <rect x="520" y="110" width="90" height="40" rx="6" class="svgbad"/><text x="565" y="128" text-anchor="middle" class="svgt" style="fill:#cf2e25">compact</text><text x="565" y="143" text-anchor="middle" class="svgt" style="font-size:9.5px">chat → summary</text>
+                <path d="M612,130 L636,130" class="svgp" marker-end="url(#arr)"/>
+                <rect x="640" y="60" width="150" height="90" rx="8" class="svgbox"/><text x="715" y="80" text-anchor="middle" class="svgT" style="font-size:11px">next session</text><text x="715" y="98" text-anchor="middle" class="svgt" style="font-size:10px">1 read the file first</text><text x="715" y="113" text-anchor="middle" class="svgt" style="font-size:10px">2 run the probes</text><text x="715" y="128" text-anchor="middle" class="svgt" style="font-size:10px">3 all green? start</text><text x="715" y="143" text-anchor="middle" class="svgt" style="font-size:10px;fill:#cf2e25">any red? stop, re-check</text>
+                <text x="30" y="178" class="svgt">What crosses the gap by itself: root CLAUDE.md · auto memory · the plan [3].</text>
+                <text x="30" y="196" class="svgt">What crosses only if you wrote it down: everything else.</text>
+                <text x="30" y="214" class="svgt" style="fill:#cf2e25">Wrong order — compact first, write second — means the note is written from the summary, not from the work.</text>
+              </svg>
+              <figcaption><b>Figure 4 · The handover crosses the gap; the chat does not.</b> The probes are what make the note trustworthy on the far side [1][2][3][10].</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="insight"><span class="tag">INSIGHT D2·1</span>
+          <p>Spec before code, plan before edits, handover before forgetting. Each is a page written while changing your mind is still free.
+            <span class="sub">Review at the end checks the work. Only paper at the front checks the intent.</span></p>
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section id="handson">
+        <div class="act">04 · Hands-on · 2 min</div>
+        <h2>Write the handover for what you are doing right now</h2>
+        <div class="steps">
+          <div class="step">Open a text file. Five lines: <b>where I am · what is half-done · who I’m waiting on · what I need from my manager · one thing I learned today</b>. Zero names, zero credentials.</div>
+          <div class="step">Add one probe: a fact a colleague could check in ten seconds that would tell them the note is out of date (“the draft is still in the shared folder”, “the ticket is still open”).</div>
+          <div class="step">Paste it to the group. Tomorrow, read someone else’s and say whether you could start from it cold.</div>
+        </div>
+      </section>
+
+      <!-- 05 -->
+      <section id="terms">
+        <div class="act">05 · Term cards</div>
+        <h2>Today’s three words, one line each</h2>
+        <div class="terms">
+          <div class="term"><div class="w">Spec</div><div class="d">Plain-words write-back before any build: what I understand · how I’ll do it · how you’ll know it works (behaviour sentences). Unclear points listed once; nothing built until confirmed.</div></div>
+          <div class="term"><div class="w">Plan · plan mode</div><div class="d">Steps, files, order — approved before the first edit. In Claude Code: Shift+Tab; reads and proposes, edits nothing until you say yes. Skip it for one-sentence diffs.</div></div>
+          <div class="term"><div class="w">Handover doc</div><div class="d">A dated, append-only file written before memory is lost: coordinates · in flight · waiting on whom · needs the owner · precedents, plus probes. Read first, next session.</div></div>
+        </div>
+      </section>
+
+      <!-- 06 -->
+      <section id="refs">
+        <div class="act">06 · Sources</div>
+        <h2>Where today’s claims come from</h2>
+        <div class="refs"><ol>
+          <li>Anthropic, <i>Best practices for Claude Code</i> (explore → plan → implement → commit; “skip the plan”; interview → SPEC.md; compaction instruction) — <a href="https://code.claude.com/docs/en/best-practices">code.claude.com/docs/en/best-practices</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>How Claude Code works</i> (fresh context per session; what compaction keeps) — <a href="https://code.claude.com/docs/en/how-claude-code-works">code.claude.com/docs/en/how-claude-code-works</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Context window</i> (what survives compaction) — <a href="https://code.claude.com/docs/en/context-window">code.claude.com/docs/en/context-window</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Permission modes</i> (plan mode: definition, Shift+Tab, /plan, approval choices, Ctrl+G) — <a href="https://code.claude.com/docs/en/permission-modes">code.claude.com/docs/en/permission-modes</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Anthropic, <i>Common workflows</i> (“Plan before editing”) — <a href="https://code.claude.com/docs/en/common-workflows">code.claude.com/docs/en/common-workflows</a> <span class="dt">accessed 2026-10-25</span></li>
+          <li>Purple Ruler, <i>The Ladder</i> — <a href="../the-ladder.html">the-ladder.html</a> and <a href="d1.html">Day 1</a> (internal)</li>
+          <li>Purple Ruler, house workflow rule <i>“the human gate goes at the front of requirements, not the end of code”</i> — four gates: spec · plan · build · review (internal, in every operator’s global instruction file)</li>
+          <li>Purple Ruler, <i>Spec gate: EARS acceptance shapes + clarify list</i> — six sentence shapes, ten clarify classes, the visible <code>[NEEDS CLARIFICATION]</code> marker, five questions per round (internal rules file)</li>
+          <li>Purple Ruler, <i>r0 spec template</i> — five fixed tables and the script pre-check before a human reviewer (internal rules file)</li>
+          <li>Purple Ruler, coordinator’s progress file — dated sections, each opening with “ten lines to recover”; private pointer file per machine (internal; structure only, no identifiers reproduced here)</li>
+        </ol></div>
+      </section>
+
+      <section id="next">
+        <div class="act">·· · Rest of Day 2</div>
+        <h2>Rung 3 · Context: write it down once</h2>
+        <p class="lead">CLAUDE.md, memory and project files — and why the third paste is the signal. Hands-on: the first version of your own role’s CLAUDE.md. <b>Drafted after Day 1 has been taught</b>; the three words above are its first rung and stay as they are.</p>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  (function () {
+    var links = Array.prototype.slice.call(document.querySelectorAll('.side .nav'));
+    var ids = links.map(function (a) { return a.getAttribute('href').slice(1); });
+    function update() {
+      var y = window.scrollY + 120, cur = ids[0];
+      ids.forEach(function (id) { var el = document.getElementById(id); if (el && el.offsetTop <= y) cur = id; });
+      links.forEach(function (a) { a.classList.toggle('on', a.getAttribute('href') === '#' + cur); });
+    }
+    window.addEventListener('scroll', update, { passive: true }); update();
+  })();
+</script>
+</body>
+</html>
